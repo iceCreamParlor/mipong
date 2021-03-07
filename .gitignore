@@ -1,7 +1,9 @@
 # compiled output
+
 dist
 node_modules
 react-build
+.env
 
 # Logs
 logs
