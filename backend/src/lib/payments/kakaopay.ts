@@ -38,15 +38,33 @@ export class KakaoPayService {
     if (!Object.keys(readyParam).includes('cid')) {
       params.append('cid', this.getCid());
     }
+
+    const axiosResponse = (
+      await this._kakaoPayAxios.post('/v1/payment/ready', params)
+    ).data;
+
+    return axiosResponse;
+  }
+
+  async approveSinglePayment(approveParam: ApproveSingplePaymentParam) {
+    let params = new URLSearchParams();
+    Object.keys(approveParam).forEach((p) => {
+      params.append(
+        p,
+        approveParam[p as keyof ApproveSingplePaymentParam] as string,
+      );
+    });
+    if (!Object.keys(approveParam).includes('cid')) {
+      params.append('cid', this.getCid());
+    }
     console.log(`param: ${params}`);
 
-    const axiosResponse = await this._kakaoPayAxios
-      .post('/v1/payment/ready', params)
-      .then((data) => console.log(data))
-      .catch((err) => console.error(err));
+    const axiosResponse = (
+      await this._kakaoPayAxios.post('/v1/payment/approve', params)
+    ).data;
 
     console.log(
-      `Ready Single Payment Response : ${JSON.stringify(axiosResponse)}`,
+      `Approve Single Payment Response : ${JSON.stringify(axiosResponse)}`,
     );
     return axiosResponse;
   }
@@ -81,6 +99,16 @@ export class KakaoPayService {
 
 export default KakaoPayService;
 
+export interface ApproveSingplePaymentParam {
+  cid?: string;
+  cid_secret?: string;
+  tid: string;
+  partner_order_id: string;
+  partner_user_id: string;
+  pg_token: string;
+  payload?: string;
+  total_amount?: number;
+}
 export interface ReadySinglePaymentParam {
   cid?: string;
   cid_secret?: string;
