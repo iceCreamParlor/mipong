@@ -1,13 +1,18 @@
 import { Controller, Get, Inject, Post, Query, Req } from '@nestjs/common';
 import { KakaoPayService } from '../lib/payments/kakaopay';
+import { TossService } from '../lib/payments/toss';
 
 @Controller('payments')
 export class PaymentsController {
   private baseUrl = 'http://localhost:8080';
   private tid = '';
 
-  constructor(private kakaoPayService: KakaoPayService) {
+  constructor(
+    private kakaoPayService: KakaoPayService,
+    private tossService: TossService,
+  ) {
     kakaoPayService = new KakaoPayService();
+    tossService = new TossService();
   }
 
   @Post('/kakao/ready')
@@ -46,5 +51,29 @@ export class PaymentsController {
     console.log(query);
     this.tid = query.tid;
     console.log(`tid: ${this.tid}`);
+  }
+
+  @Get('/toss/onetime/success')
+  async approveTossOnetime(@Query() query): Promise<object> {
+    const paymentKey = query.paymentKey;
+    const orderId = query.orderId;
+    const amount = query.amount;
+
+    console.log(
+      `paymentKey: ${paymentKey}, orderId: ${orderId}, amount: ${amount}`,
+    );
+
+    const approveParam = {
+      orderId,
+      amount,
+    };
+
+    const result = await this.tossService.approveOneTime(
+      paymentKey,
+      approveParam,
+    );
+    console.log(result);
+
+    return result;
   }
 }

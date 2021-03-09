@@ -1,7 +1,7 @@
 import { RouteComponentProps } from "react-router";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { defaultUrl } from "../App";
+import { apiUrl } from "../App";
 
 const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
   const { match } = props;
@@ -10,14 +10,14 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
 
   useEffect(() => {
     const fetchReadyResponse = async () => {
-      return (await axios.post(`${defaultUrl}/api/payments/kakao/ready`)).data;
+      return (await axios.post(`${apiUrl}/api/payments/kakao/ready`)).data;
     };
     fetchReadyResponse().then((res) => {
       setNextRedirectPcUrl(res.next_redirect_pc_url);
       console.log(`set tid : ${res.tid}`);
       setTid(res.tid);
       axios
-        .get(`${defaultUrl}/api/payments/kakao/setTid?tid=${res.tid}`)
+        .get(`${apiUrl}/api/payments/kakao/setTid?tid=${res.tid}`)
         .then(() => (document.location.href = res.next_redirect_pc_url));
     });
   }, []);
