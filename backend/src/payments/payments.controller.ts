@@ -16,7 +16,7 @@ export class PaymentsController {
   }
 
   @Post('/kakao/ready')
-  readyKakao(): object {
+  readyKakao(): any {
     const readyResponse = this.kakaoPayService.readySinglePayment({
       partner_order_id: '10000',
       partner_user_id: '698500',
@@ -33,7 +33,7 @@ export class PaymentsController {
   }
 
   @Get('/kakao/approve')
-  approveKakao(@Query() query): object {
+  approveKakao(@Query() query): any {
     console.log(`pgToken : ${query.pg_token}`);
     console.log(`ordercid : ${query.ordercid}`);
     const approveResponse = this.kakaoPayService.approveSinglePayment({
@@ -54,7 +54,7 @@ export class PaymentsController {
   }
 
   @Get('/toss/onetime/success')
-  async approveTossOnetime(@Query() query): Promise<object> {
+  async approveTossOnetime(@Query() query): Promise<any> {
     const paymentKey = query.paymentKey;
     const orderId = query.orderId;
     const amount = query.amount;
@@ -64,12 +64,12 @@ export class PaymentsController {
     );
 
     const approveParam = {
+      paymentKey,
       orderId,
       amount,
     };
 
     const result = await this.tossService.approveOneTime(
-      paymentKey,
       approveParam,
     );
     console.log(result);
