@@ -1,9 +1,14 @@
-import axios, { AxiosInstance } from 'axios';
-import { AnyTxtRecord } from 'dns';
-import { isEmpty } from '../misc/string';
-
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import {
+  PaymentType,
+  PaymentResponse,
+  withPaymentResponse,
+} from '../misc/payment';
+import * as _ from 'lodash';
 export class TossService {
   private _tossAxios: AxiosInstance;
+  private static instance: TossService | undefined = undefined;
+  private pg: PaymentType = 'toss';
 
   constructor(private clientId?: string, private secretKey?: string) {
     clientId = clientId ?? this.getClientId();
@@ -15,39 +20,105 @@ export class TossService {
         Authorization: `Basic ${this.convert2Base64(secretKey + ':')}`,
         'Content-Type': 'application/json',
       },
+      timeout: 10 * 1000,
     });
   }
-
+  /**
+   * Singleton Design
+   * @param clientId
+   * @param secretKey
+   * @returns
+   */
+  public static getInstance(clientId?: string, secretKey?: string) {
+    if (this.instance === undefined) {
+      this.instance = new TossService(clientId, secretKey);
+    }
+    return this.instance;
+  }
   /**
    * 일회구매 결제 승인
    * @param param
    */
   async approveOneTime(
     param: TossApproveParam,
-  ): Promise<TossOnetimeApproveResponse> {
-    return (
-      await this._tossAxios.post(`/v1/payments/${param.paymentKey}`, param)
-    ).data;
+  ): Promise<TossResponse<TossApproveResponse>> {
+    const approveParam = _.pickBy(param, _.identity);
+    delete approveParam.paymentKey;
+    return withPaymentResponse(this.pg, async () =>
+      this._tossAxios.post(`/v1/payments/${param.paymentKey}`, approveParam),
+    );
   }
-
   /**
-   * TODO 테스트 필요
-   * 단건결제 취소
+   * 결제 취소
    * @param param
    */
-  async cancelOneTime(param: TossOnetimeCancelParam) {
-    return (
-      await this._tossAxios.post(`/v1/payments/${param.paymentKey}/cancel`)
-    ).data;
+  async cancelPayment(param: TossCancelParam) {
+    return withPaymentResponse(this.pg, async () =>
+      this._tossAxios.post(`/v1/payments/${param.paymentKey}/cancel`, param),
+    );
   }
   /**
-   * TODO 테스트 필요
    * 단건결제 조회
    * @param paymentKey
    */
-  async getOnetime(paymentKey: string) {
-    return (await this._tossAxios.get(`/v1/payments/${paymentKey}`)).data;
+  async getPayment(
+    paymentKey: string,
+  ): Promise<TossResponse<TossApproveResponse>> {
+    return withPaymentResponse(this.pg, async () =>
+      this._tossAxios.get(`/v1/payments/${paymentKey}`),
+    );
   }
+
+  /**
+   * 정기결제 빌링키 발급
+   * @param str
+   * @returns
+   */
+  async getSubscriptionBillingKey(
+    param: TossSubscriptionGetBillingKeyParam,
+  ): Promise<TossResponse<TossSubscriptionGetBillingKeyResponse>> {
+    const getBillingKeyParam = _.pickBy(param, _.identity);
+
+    return withPaymentResponse(this.pg, async () =>
+      this._tossAxios.post(
+        `/v1/billing/authorizations/${param.authKey}`,
+        getBillingKeyParam,
+      ),
+    );
+  }
+  /**
+   * 정기결제 승인 API
+   * @param param
+   * @returns
+   */
+  async approveSubscription(
+    param: TossSubscriptionApproveParam,
+  ): Promise<TossResponse<TossApproveResponse>> {
+    const approveParam = _.pickBy(param, _.identity);
+    delete approveParam.billingKey;
+
+    return withPaymentResponse(this.pg, async () =>
+      this._tossAxios.post(`/v1/billing/${param.billingKey}`, approveParam),
+    );
+  }
+  async getSubscriptionBillingKeyWithCard(
+    param: TossSubscriptionGetBillingKeyWithCardParam,
+  ): Promise<TossResponse<TossSubscriptionGetBillingKeyResponse>> {
+    const getBillingKeyParam = _.pickBy(param, _.identity);
+    return withPaymentResponse(this.pg, async () =>
+      this._tossAxios.post('v1/billing/authorizations/card', param),
+    );
+  }
+  /**
+   * 카드 프로모션 조회
+   * @returns
+   */
+  async getCardPromition(): Promise<TossResponse<TossCardPromotionResponse>> {
+    return withPaymentResponse(this.pg, async () =>
+      this._tossAxios.get('/v1/promotions/card'),
+    );
+  }
+
   /**
    * 문자열을 Base64 로 인코딩
    * @param str
@@ -62,28 +133,26 @@ export class TossService {
 
   getSecretKey = (): string => {
     const secretKey = process.env.TOSS_SECRET_KEY;
-    if (secretKey === undefined || isEmpty(secretKey)) {
-      throw new Error('Toss Secret Key is Empty');
+    if (secretKey === undefined || secretKey === '') {
+      throw new Error('TOSS_SECRET_KEY is Empty');
     }
     return secretKey;
   };
 
   getClientId = (): string => {
     const clientId = process.env.TOSS_CLIENT_ID;
-    if (clientId === undefined || isEmpty(clientId)) {
-      throw new Error('Toss Client Id is Empty');
+    if (clientId === undefined || clientId === '') {
+      throw new Error('TOSS_CLIENT_ID is Empty');
     }
     return clientId;
   };
 }
-
 export interface TossApproveParam {
   paymentKey: string;
   orderId: string;
   amount: number;
 }
-
-export interface TossOnetimeCancelParam {
+export interface TossCancelParam {
   paymentKey: string;
   cancelReason: string;
   cancelAmount?: number;
@@ -107,41 +176,10 @@ export interface TossOnetimeCancelParam {
   taxFreeAmount?: number;
   refundableAmount?: number;
 }
-/*
-{
-  "paymentKey": "5zJ4xY7m0kODnyRpQWGrN2xqGlNvLrKwv1M9ENjbeoPaZdL6",
-  "orderId": "ADZje8FJB4vNUmm1aUnlZ",
-  "mId": "tvivarepublica",
-  "currency": "KRW",
-  "method": "카드",
-  "totalAmount": 15000,
-  "balanceAmount": 15000,
-  "status": "DONE",
-  "requestedAt": "2020-09-25T10:41:35+09:00",
-  "approvedAt": "2020-09-25T10:44:39.846+09:00",
-  "useDiscount": false,
-  "discount": null,
-  "useEscrow": false,
-  "useCashReceipt": false,
-  "card": {
-    "company": "현대",
-    "number": "949085******1312",
-    "installmentPlanMonths": 0,
-    "approveNo": "00000000",
-    "useCardPoint": false,
-    "cardType": "신용",
-    "ownerType": "개인",
-    "receiptUrl": "https://merchants.tosspayments.com/web/serve/merchant/test_ck_OEP59LybZ8Bdv6A1JxkV6GYo7pRe/receipt/5zJ4xY7m0kODnyRpQWGrN2xqGlNvLrKwv1M9ENjbeoPaZdL6",
-    "acquireStatus": "READY",
-    "isInterestFree": false
-  },
-  "virtualAccount": null,
-  "cashReceipt": null,
-  "cancels": [],
-  "secret": null
-}
-*/
-export interface TossOnetimeApproveResponse {
+/**
+ * 정기결제, 일반결제 모두 동일한 형태를 사용한다.
+ */
+export interface TossApproveResponse {
   paymentKey: string;
   orderId: string;
   mId: string;
@@ -171,5 +209,76 @@ export interface TossOnetimeApproveResponse {
   virtualAccount: any;
   cashReceipt: any;
   cancels: any[];
-  secret: any;
+  secret: string;
 }
+export interface TossSubscriptionGetBillingKeyParam {
+  authKey: string;
+  customerKey: string;
+}
+export interface TossSubscriptionGetBillingKeyResponse {
+  mId: string;
+  customerKey: string;
+  authenticatedAt: string;
+  method: string;
+  billingKey: string;
+  cardCompany: string;
+  cardNumber: string;
+}
+export interface TossSubscriptionApproveParam {
+  billingKey: string;
+  amount: number;
+  customerKey: string;
+  orderId: string;
+  customerEmail?: string;
+  customerName?: string;
+  orderName?: string;
+}
+export interface TossSubscriptionGetBillingKeyWithCardParam {
+  // 카드번호
+  cardNumber: string;
+  // 카드 유효 년도 (2자리)
+  cardExpirationYear: string;
+  // 카드 유효 월 (2자리)
+  cardExpirationMonth: string;
+  // 카드 비밀번호 앞 2자리
+  cardPassword: string;
+  // 사용자 생년월일 6자리 (YYMMDD) 또는 사업자번호 10자리
+  customerBirthday: string;
+  // 고객 고유 ID
+  customerKey: string;
+}
+export interface TossCardPromotionResponse {
+  discountCards: [
+    {
+      cardCompany: string;
+      discountAmount: number;
+      balance: number;
+      discountCode: string;
+      dueDate: string;
+      maximumPaymentAmount: number;
+      minimumPaymentAmount: number;
+    },
+  ];
+  interestFreeCards: [
+    {
+      cardCompany: string;
+      dueDate: string;
+      installmentFreeMonths: number[];
+      minimumPaymentAmount: number;
+    },
+  ];
+}
+export interface TossSuccess<T> extends PaymentResponse {
+  success: true;
+  pg: 'toss';
+  data: T;
+}
+export interface TossFail {
+  success: false;
+  pg: 'toss';
+  data: {
+    code: string;
+    message: string;
+  };
+}
+type TossResponse<T> = TossSuccess<T> | TossFail;

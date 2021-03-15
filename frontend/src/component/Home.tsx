@@ -1,36 +1,166 @@
 import { RouteComponentProps } from "react-router";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { apiUrl } from "../App";
+import { Link } from "react-router-dom";
+import { setConstantValue } from "typescript";
 
 const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
-  const { match } = props;
-  const [nextRedirectPcUrl, setNextRedirectPcUrl] = useState(null);
-  const [tid, setTid] = useState(null);
+  const [billingKey, setBillingKey] = useState(
+    "HuQh7DpY37VwJJ4OuwOJiJS-A2L2RLVRJsaNy6rup10="
+  );
+  const [paymentKey, setPaymentKey] = useState("");
+  let [cardNumber, setCardNumber] = useState("");
+  let [cardExpirationYear, setCardExpirationYear] = useState("");
+  let [cardExpirationMonth, setCardExpirationMonth] = useState("");
+  let [cardPassword, setCardPassword] = useState("");
+  let [customerBirthday, setCustomerBirthday] = useState("");
+  let [customerKey, setCustomerKey] = useState("");
 
-  useEffect(() => {
-    const fetchReadyResponse = async () => {
-      return (await axios.post(`${apiUrl}/api/payments/kakao/ready`)).data;
+  const apiAxios = axios.create({
+    baseURL: apiUrl,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const requestSubscription = async () => {
+    console.log(billingKey);
+    const param = {
+      billingKey: billingKey,
+      amount: 8900,
+      customerKey: "hjkim@wiselyshave.com",
+      orderId: `${Math.floor(Math.random() * 10000000)}`,
+      customerEmail: "heejjeeh@gmail.com",
+      customerName: "김희재",
+      orderName: "리필면도날",
+      taxFreeAmount: 0,
     };
-    fetchReadyResponse().then((res) => {
-      setNextRedirectPcUrl(res.next_redirect_pc_url);
-      console.log(`set tid : ${res.tid}`);
-      setTid(res.tid);
-      axios
-        .get(`${apiUrl}/api/payments/kakao/setTid?tid=${res.tid}`)
-        .then(() => (document.location.href = res.next_redirect_pc_url));
-    });
-  }, []);
+    const result = await apiAxios.post(
+      "/api/payments/toss/subscription",
+      param
+    );
+    console.log(result);
+  };
 
-  console.log(`props : ${props}`);
+  const cancelOrder = async () => {
+    const result = await apiAxios.post("/api/payments/toss/cancelPayment", {
+      paymentKey,
+    });
+    console.log(result);
+  };
+
+  const requestKeyInBillingKey = async () => {
+    const param = {
+      cardNumber,
+      cardExpirationMonth,
+      cardExpirationYear,
+      customerBirthday,
+      customerKey,
+      cardPassword,
+    };
+    const result = await apiAxios.post(
+      "/api/payments/toss/getKeyInBillingKey",
+      param
+    );
+    console.log(result);
+  };
+
+  const setBillingKeyValue = (e: ChangeEvent) => {
+    console.log(e.target);
+  };
+
   return (
     <>
-      {JSON.stringify(nextRedirectPcUrl)}
-      {nextRedirectPcUrl ? (
-        <iframe width="500" height="500" src={nextRedirectPcUrl!}></iframe>
-      ) : (
-        "loading..."
-      )}
+      <p>Home</p>
+      <div>
+        <p>카카오</p>
+        <Link to="/kakao">
+          <button>Kakao</button>
+        </Link>
+      </div>
+      <div>
+        <p>토스</p>
+        <Link to="/toss/onetime">
+          <button>Toss 일회구매</button>
+        </Link>
+        <Link to="/toss/vbank">
+          <button>Toss 무통장입금</button>
+        </Link>
+        <Link to="/toss/subscription">
+          <button>Toss 정기구매(빌링키 발급)</button>
+        </Link>
+        <div>
+          <form>
+            <input
+              name="billingKey"
+              onChange={(e) => setBillingKey(e.target.value)}
+              value={billingKey}
+              type="text"
+            />
+            <button onClick={requestSubscription} type="button">
+              정기결제
+            </button>
+          </form>
+        </div>
+        <div>
+          <form>
+            <input
+              name="paymentKey"
+              onChange={(e) => setPaymentKey(e.target.value)}
+              value={paymentKey}
+              type="text"
+            />
+            <button onClick={cancelOrder} type="button">
+              환불하기
+            </button>
+          </form>
+        </div>
+        <div>
+          <p>Toss 키인 빌링키 발급</p>
+          <form>
+            <input
+              name="cardNumber"
+              onChange={(e) => setCardNumber(e.target.value)}
+              value={cardNumber}
+              placeholder="cardNumber"
+            />
+            <input
+              name="cardExpirationYear"
+              onChange={(e) => setCardExpirationYear(e.target.value)}
+              value={cardExpirationYear}
+              placeholder="cardExpirationYear"
+            />
+            <input
+              name="cardExpirationMonth"
+              onChange={(e) => setCardExpirationMonth(e.target.value)}
+              value={cardExpirationMonth}
+              placeholder="cardExpirationMonth"
+            />
+            <input
+              name="cardPassword"
+              onChange={(e) => setCardPassword(e.target.value)}
+              value={cardPassword}
+              placeholder="cardPassword"
+            />
+            <input
+              name="customerBirthday"
+              onChange={(e) => setCustomerBirthday(e.target.value)}
+              value={customerBirthday}
+              placeholder="customerBirthday"
+            />
+            <input
+              name="customerKey"
+              onChange={(e) => setCustomerKey(e.target.value)}
+              value={customerKey}
+              placeholder="customerKey"
+            />
+            <button onClick={requestKeyInBillingKey} type="button">
+              키인 빌링키 발급
+            </button>
+          </form>
+        </div>
+      </div>
     </>
   );
 };

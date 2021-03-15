@@ -25,13 +25,15 @@ export class KakaoPayService {
     }
   }
 
-  async readySinglePayment(readyParam: ReadySinglePaymentParam) {
+  async readySinglePayment(
+    readyParam: ReadyOnetimePaymentParam,
+  ): Promise<KakaoPayResponse<ReadyOnetimePaymentResponse>> {
     let params = new URLSearchParams();
 
     Object.keys(readyParam).forEach((p) => {
       params.append(
         p,
-        readyParam[p as keyof ReadySinglePaymentParam] as string,
+        readyParam[p as keyof ReadyOnetimePaymentParam] as string,
       );
     });
 
@@ -46,18 +48,19 @@ export class KakaoPayService {
     return axiosResponse;
   }
 
-  async approveSinglePayment(approveParam: ApproveSingplePaymentParam) {
+  async approveSinglePayment(
+    approveParam: ApproveSinglePaymentParam,
+  ): Promise<KakaoPayResponse<ApproveOnetimePaymentResponse>> {
     let params = new URLSearchParams();
     Object.keys(approveParam).forEach((p) => {
       params.append(
         p,
-        approveParam[p as keyof ApproveSingplePaymentParam] as string,
+        approveParam[p as keyof ApproveSinglePaymentParam] as string,
       );
     });
     if (!Object.keys(approveParam).includes('cid')) {
       params.append('cid', this.getCid());
     }
-    console.log(`param: ${params}`);
 
     const axiosResponse = (
       await this._kakaoPayAxios.post('/v1/payment/approve', params)
@@ -99,7 +102,7 @@ export class KakaoPayService {
 
 export default KakaoPayService;
 
-export interface ApproveSingplePaymentParam {
+export interface ApproveSinglePaymentParam {
   cid?: string;
   cid_secret?: string;
   tid: string;
@@ -109,7 +112,7 @@ export interface ApproveSingplePaymentParam {
   payload?: string;
   total_amount?: number;
 }
-export interface ReadySinglePaymentParam {
+export interface ReadyOnetimePaymentParam {
   cid?: string;
   cid_secret?: string;
   partner_order_id: string;
@@ -135,3 +138,45 @@ export interface ReadySinglePaymentParam {
    */
   customJson?: object;
 }
+export interface ReadyOnetimePaymentResponse {
+  tid: string;
+  next_redirect_app_url: string;
+  next_redirect_mobile_url: string;
+  next_redirect_pc_url: string;
+  android_app_scheme: string;
+  ios_app_scheme: string;
+  created_at: string;
+}
+export interface ApproveOnetimePaymentResponse {
+  aid: string;
+  tid: string;
+  cid: string;
+  partner_order_id: string;
+  partner_user_id: string;
+  payment_method_type: string;
+  item_name: string;
+  quantity: number;
+  amount: {
+    total: number;
+    tax_free: number;
+    vat: number;
+    point: number;
+    discount: number;
+  };
+  created_at: string;
+  approved_at: string;
+}
+export interface KakaoPaySuccess<T> {
+  success: true;
+  pg: 'kakaopay';
+  data: T;
+}
+export interface KakaoPayFail {
+  success: false;
+  pg: 'kakaopay';
+  data: {
+    code: number;
+    msg: string;
+  };
+}
+type KakaoPayResponse<T> = KakaoPaySuccess<T> | KakaoPayFail;
