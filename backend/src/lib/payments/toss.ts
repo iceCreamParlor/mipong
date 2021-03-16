@@ -52,7 +52,9 @@ export class TossService {
    * 결제 취소
    * @param param
    */
-  async cancelPayment(param: TossCancelParam) {
+  async cancelPayment(
+    param: TossCancelParam,
+  ): Promise<TossResponse<TossCancelResponse>> {
     return withPaymentResponse(this.pg, async () =>
       this._tossAxios.post(`/v1/payments/${param.paymentKey}/cancel`, param),
     );
@@ -101,6 +103,11 @@ export class TossService {
       this._tossAxios.post(`/v1/billing/${param.billingKey}`, approveParam),
     );
   }
+  /**
+   * 키인 방식으로 빌링키 발급
+   * @param param
+   * @returns
+   */
   async getSubscriptionBillingKeyWithCard(
     param: TossSubscriptionGetBillingKeyWithCardParam,
   ): Promise<TossResponse<TossSubscriptionGetBillingKeyResponse>> {
@@ -152,23 +159,25 @@ export interface TossApproveParam {
   orderId: string;
   amount: number;
 }
+
+export type TossBankCode =
+  | '농협'
+  | '국민'
+  | '우리'
+  | '신한'
+  | '기업'
+  | '하나'
+  | '경남'
+  | '대구'
+  | '부산'
+  | '수협'
+  | '우체국';
 export interface TossCancelParam {
   paymentKey: string;
   cancelReason: string;
   cancelAmount?: number;
   refundReceiveAccount?: {
-    bank:
-      | '농협'
-      | '국민'
-      | '우리'
-      | '신한'
-      | '기업'
-      | '하나'
-      | '경남'
-      | '대구'
-      | '부산'
-      | '수협'
-      | '우체국';
+    bank: TossBankCode;
     accountNumber: string;
     holderName: string;
   };
@@ -210,6 +219,82 @@ export interface TossApproveResponse {
   cashReceipt: any;
   cancels: any[];
   secret: string;
+}
+
+export type TossPaymentStatus =
+  | 'READY'
+  | 'IN_PROGRESS'
+  | 'WAITING_FOR_DEPOSIT'
+  | 'DONE'
+  | 'CANCELED'
+  | 'ABORTED'
+  | 'PARTIAL_CANCELED';
+export interface TossCancelResponse {
+  paymentKey: string;
+  orderId: string;
+  mId: string;
+  currency: string;
+  method: string;
+  totalAmount: number;
+  balanceAmount: number;
+  status: TossPaymentStatus;
+  requestedAt: string;
+  approvedAt?: string;
+  useDiscount: boolean;
+  discountAmount?: number;
+  useEscrow: boolean;
+  useCashReceipt: boolean;
+  cancels?: {
+    cancelAmount: number;
+    calcelReason: string;
+    taxFreeAmount: number;
+    taxAmount?: number;
+    refundableAmount: number;
+    canceledAt: string;
+  };
+  card?: {
+    company: string;
+    number: string;
+    installmentPlanMonths: number;
+    approveNo: string;
+    useCardPoint: boolean;
+    cardType: string;
+    ownerType: string;
+    acquiredStatus:
+      | 'READY'
+      | 'REQUESTED'
+      | 'COMPLETED'
+      | 'CANCEL_REQUESTED'
+      | 'CANCELED';
+  };
+  receiptUrl: string;
+  isInterestFree: boolean;
+  secret?: string;
+  virtualAccount?: {
+    accountNumber: string;
+    bank: TossBankCode;
+    customerName: string;
+    dueDate: string;
+    refundStatus:
+      | 'NONE'
+      | 'FAILED'
+      | 'PENDING'
+      | 'PARTIAL_FAILED'
+      | 'COMPLETED';
+  };
+  mobilePhone?: {
+    customerMobilePhone: string;
+  };
+  giftCertificate?: {
+    approveNo: string;
+  };
+  cashReceipt?: {
+    type: string;
+    amount: number;
+    taxFreeAmount: number;
+    issueNumber: string;
+    receiptUrl: string;
+  };
 }
 export interface TossSubscriptionGetBillingKeyParam {
   authKey: string;

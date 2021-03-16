@@ -87,6 +87,9 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
         <Link to="/toss/vbank">
           <button>Toss 무통장입금</button>
         </Link>
+        <Link to="/toss/phone">
+          <button>Toss 휴대폰</button>
+        </Link>
         <Link to="/toss/subscription">
           <button>Toss 정기구매(빌링키 발급)</button>
         </Link>

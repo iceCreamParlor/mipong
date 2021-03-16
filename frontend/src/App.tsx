@@ -8,6 +8,7 @@ import Kakao from "./component/Kakao";
 import OrderComplete from "./component/OrderComplete";
 import TossSubscription from "./component/TossSubscription";
 import TossVBank from "./component/TossVBank";
+import TossPhone from "./component/TossPhone";
 
 const App: React.FC = () => (
   <BrowserRouter>
@@ -15,6 +16,7 @@ const App: React.FC = () => (
       <Route path="/" exact component={Home} />
       <Route path="/kakao" exact component={Kakao} />
       <Route path="/toss/vbank" exact component={TossVBank} />
+      <Route path="/toss/phone" exact component={TossPhone} />
       <Route path="/toss/onetime" exact component={Toss} />
       <Route path="/toss/subscription" exact component={TossSubscription} />
       <Route path="/orderComplete" exact component={OrderComplete} />
