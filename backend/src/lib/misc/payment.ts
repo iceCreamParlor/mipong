@@ -7,7 +7,12 @@ export interface PaymentResponse {
   data: any;
 }
 
-export type PaymentType = 'iamport' | 'nicepayments' | 'naverpay' | 'toss';
+export type PaymentType =
+  | 'iamport'
+  | 'nicepayments'
+  | 'naverpay'
+  | 'toss'
+  | 'tosspay';
 
 export async function withPaymentResponse(
   paymentType: PaymentType,
