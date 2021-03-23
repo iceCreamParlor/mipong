@@ -9,16 +9,18 @@ import OrderComplete from "./component/OrderComplete";
 import TossSubscription from "./component/TossSubscription";
 import TossVBank from "./component/TossVBank";
 import TossPhone from "./component/TossPhone";
+import TossRoute from "./route/TossRoute";
+import NaverpayRoute from "./route/NaverpayRoute";
 
 const App: React.FC = () => (
   <BrowserRouter>
     <Switch>
       <Route path="/" exact component={Home} />
       <Route path="/kakao" exact component={Kakao} />
-      <Route path="/toss/vbank" exact component={TossVBank} />
-      <Route path="/toss/phone" exact component={TossPhone} />
-      <Route path="/toss/onetime" exact component={Toss} />
-      <Route path="/toss/subscription" exact component={TossSubscription} />
+
+      <Route path="/toss" component={TossRoute} />
+      <Route path="/naverpay" component={NaverpayRoute} />
+
       <Route path="/orderComplete" exact component={OrderComplete} />
 
       <Redirect path="*" to="/" />

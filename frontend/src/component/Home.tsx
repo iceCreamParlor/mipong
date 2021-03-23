@@ -73,6 +73,14 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
   return (
     <>
       <p>Home</p>
+
+      <div>
+        <p>네이버페이</p>
+        <Link to="/naverpay/onetime">
+          <button>네이버페이 일회구매</button>
+        </Link>
+      </div>
+
       <div>
         <p>카카오</p>
         <Link to="/kakao">

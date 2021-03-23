@@ -166,17 +166,17 @@ export class PaymentsController {
     return result;
   }
 
-  @Get('/toss/vbank/success/:orderId')
-  async vbankSuccessCallback(@Query() query) {
-    console.log(query);
-    const { paymentKey, orderId, amount } = query;
-    const param = {
-      paymentKey,
-      orderId,
-      amount,
-    };
-    const result = await this.tossService.approveVBank(param);
-    console.log(result);
-    return result;
-  }
+  // @Get('/toss/vbank/success/:orderId')
+  // async vbankSuccessCallback(@Query() query) {
+  //   console.log(query);
+  //   const { paymentKey, orderId, amount } = query;
+  //   const param = {
+  //     paymentKey,
+  //     orderId,
+  //     amount,
+  //   };
+  //   const result = await this.tossService.approveVBank(param);
+  //   console.log(result);
+  //   return result;
+  // }
 }
