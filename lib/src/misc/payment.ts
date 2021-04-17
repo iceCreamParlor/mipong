@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { URLSearchParams } from 'url';
-import { AxiosResponse } from 'axios';
+import axios from "axios";
+import { URLSearchParams } from "url";
+import { AxiosResponse } from "axios";
 
 export abstract class PaymentSerivce {
   abstract readyPayment?(param: PaymentParam): Promise<PaymentResponse>;
@@ -16,7 +16,7 @@ export abstract class PaymentSerivce {
   abstract approveSubscription?(param: PaymentParam): Promise<PaymentResponse>;
   // 정기결제 해지
   abstract inactivateSubscription?(
-    param: PaymentParam,
+    param: PaymentParam
   ): Promise<PaymentResponse>;
 }
 
@@ -30,24 +30,24 @@ export interface PaymentResponse {
 }
 
 export type PaymentType =
-  | 'iamport'
-  | 'nicepayments'
-  | 'naverpay'
-  | 'toss'
-  | 'tosspay'
-  | 'kakaopay';
+  | "iamport"
+  | "nicepayments"
+  | "naverpay"
+  | "toss"
+  | "tosspay"
+  | "kakaopay";
 
 export async function withPaymentResponse(
   paymentType: PaymentType,
-  fn: () => Promise<AxiosResponse<any>>,
+  fn: () => Promise<AxiosResponse<any>>
 ): Promise<any> {
   try {
     const result = await fn();
 
     let success: boolean = false;
-    if (['toss', 'kakaopay'].includes(paymentType)) {
+    if (["toss", "kakaopay"].includes(paymentType)) {
       success = result.status === 200;
-    } else if (paymentType === 'tosspay') {
+    } else if (paymentType === "tosspay") {
       // 0 : 성공 / -1 : 실패
       success = (result as any).code === 0;
     } else {
@@ -90,7 +90,6 @@ export interface PaymentSecret {
 
 export function getSecret(): PaymentSecret {
   const source = process.env;
-  console.log(`source : ${JSON.stringify(source)}`);
   return {
     kakaopay: {
       adminKey: source.KAKAOPAY_ADMIN_KEY,
@@ -108,6 +107,6 @@ export function getSecret(): PaymentSecret {
 }
 
 export enum SubscriptionPayNowEnum {
-  SUCCESS = 'success',
-  PAYMENT_FAIL = 'paymentFail',
+  SUCCESS = "success",
+  PAYMENT_FAIL = "paymentFail",
 }

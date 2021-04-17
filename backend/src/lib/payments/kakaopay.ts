@@ -1,29 +1,50 @@
 import axios, { AxiosInstance } from 'axios';
 import { URLSearchParams } from 'url';
-import { PaymentType, withPaymentResponse } from '../misc/payment';
+import {
+  getSecret,
+  PaymentParam,
+  PaymentSerivce,
+  PaymentType,
+  withPaymentResponse,
+} from '../misc/payment';
 
-export class KakaoPayService {
+export class KakaoPayService implements PaymentSerivce {
   private _kakaoPayAxios: AxiosInstance;
   private _adminKey: string;
   private _onetimeCid: string;
   private _subscriptionCid: string;
-  private pg: PaymentType = 'kakaopay';
+  private _pg: PaymentType = 'kakaopay';
+  private static instance: KakaoPayService | undefined = undefined;
 
-  constructor(
+  public static getInstance() {
+    if (this.instance === undefined) {
+      this.instance = KakaoPayService.BUILD();
+    }
+    return this.instance;
+  }
+
+  public static BUILD(
     adminKey?: string,
     onetimeCid?: string,
     subscriptionCid?: string,
-  ) {
-    if (adminKey === undefined || adminKey === '') {
-      adminKey = this.getAdminKey();
-    }
-    if (onetimeCid === undefined || onetimeCid === '') {
-      onetimeCid = this.getOnetimeCid();
-    }
-    if (subscriptionCid === undefined || subscriptionCid === '') {
-      subscriptionCid = this.getSubscriptionCid();
+  ): KakaoPayService {
+    const { kakaopay } = getSecret();
+    adminKey = adminKey ?? kakaopay.adminKey;
+    onetimeCid = onetimeCid ?? kakaopay.onetimeCid;
+    subscriptionCid = subscriptionCid ?? kakaopay.subscriptionCid;
+
+    if (
+      adminKey === undefined ||
+      onetimeCid === undefined ||
+      subscriptionCid === undefined
+    ) {
+      throw new Error('(KAKAOPAY) Invalid Api Key');
     }
 
+    return new KakaoPayService(adminKey, onetimeCid, subscriptionCid);
+  }
+
+  constructor(adminKey: string, onetimeCid: string, subscriptionCid: string) {
     this._adminKey = adminKey;
     this._onetimeCid = onetimeCid;
     this._subscriptionCid = subscriptionCid;
@@ -45,6 +66,7 @@ export class KakaoPayService {
       throw new Error('카카오페이 생성자 실행 제대로 안됨');
     }
   }
+
   /**
    * 1회구매, 정기구매 거래를 준비한다.
    * @param readyParam
@@ -63,10 +85,27 @@ export class KakaoPayService {
       params.append('cid', this._subscriptionCid);
     }
 
-    return withPaymentResponse(this.pg, async () =>
+    return withPaymentResponse(this._pg, async () =>
       this._kakaoPayAxios.post('/v1/payment/ready', params),
     );
   }
+
+  async registerSubscription(
+    param: ReadyParam,
+  ): Promise<KakaoPayResponse<ReadyResponse>> {
+    return this.ready(param, 'subscription');
+  }
+  async approveOnetime(
+    approveParam: ApproveParam,
+  ): Promise<KakaoPayResponse<ApproveResponse>> {
+    return this.approve(approveParam, 'onetime');
+  }
+  async approveSubscription(
+    approveParam: ApproveParam,
+  ): Promise<KakaoPayResponse<ApproveResponse>> {
+    return this.approve(approveParam, 'subscription');
+  }
+
   /**
    * 1회구매, 정기구매 승인
    *
@@ -86,7 +125,7 @@ export class KakaoPayService {
       params.append('cid', this._subscriptionCid);
     }
 
-    return withPaymentResponse(this.pg, async () =>
+    return withPaymentResponse(this._pg, async () =>
       this._kakaoPayAxios.post('/v1/payment/approve', params),
     );
   }
@@ -102,7 +141,7 @@ export class KakaoPayService {
     const params = this.convertUrlEncodedParam(inactivateSubscriptionParam);
     params.append('cid', this._subscriptionCid);
 
-    return withPaymentResponse(this.pg, async () =>
+    return withPaymentResponse(this._pg, async () =>
       this._kakaoPayAxios.post(
         '/v1/payment/manage/subscription/inactive',
         params,
@@ -115,13 +154,13 @@ export class KakaoPayService {
    * @param cancelParam
    * @returns
    */
-  async cancel(
+  async cancelPayment(
     cancelParam: CancelParam,
   ): Promise<KakaoPayResponse<CancelResponse>> {
     const params = this.convertUrlEncodedParam(cancelParam);
     params.append('cid', this._subscriptionCid);
 
-    return withPaymentResponse(this.pg, async () =>
+    return withPaymentResponse(this._pg, async () =>
       this._kakaoPayAxios.post('/v1/payment/cancel', params),
     );
   }
@@ -139,7 +178,7 @@ export class KakaoPayService {
     const params = this.convertUrlEncodedParam(getSubscriptionParam);
     params.append('cid', this._subscriptionCid);
 
-    return withPaymentResponse(this.pg, async () =>
+    return withPaymentResponse(this._pg, async () =>
       this._kakaoPayAxios.post(
         '/v1/payment/manage/subscription/status',
         params,
@@ -149,56 +188,20 @@ export class KakaoPayService {
   /**
    * 주문 조회
    * 개별 주문의 상세정보를 조회
-   * @param getOrderParam
+   * @param getPaymentParam
    * @returns
    */
-  async getOrder(
-    getOrderParam: GetOrderParam,
-  ): Promise<KakaoPayResponse<GetOrderResponse>> {
-    const params = this.convertUrlEncodedParam(getOrderParam);
+  async getPayment(
+    getPaymentParam: GetPaymentParam,
+  ): Promise<KakaoPayResponse<GetPaymentResponse>> {
+    const params = this.convertUrlEncodedParam(getPaymentParam);
     params.append('cid', this._subscriptionCid);
-    return withPaymentResponse(this.pg, async () =>
+    return withPaymentResponse(this._pg, async () =>
       this._kakaoPayAxios.post('/v1/payment/order', params),
     );
   }
-  /**
-   * 카카오페이 Admin Key 를 환경 변수에서 뽑아온다.
-   * @returns
-   */
-  getAdminKey(): string {
-    const adminKey = process.env.KAKAOPAY_ADMIN_KEY;
-    if (adminKey === undefined || adminKey === '') {
-      throw new Error('Kakao Admin Key is Empty');
-    }
-    return adminKey;
-  }
-  /**
-   * 카카오페이 CID 를 환경 변수에서 뽑아온다.
-   * @returns
-   */
-  getOnetimeCid(): string {
-    const onetimeCid = process.env.KAKAOPAY_ONETIME_CID;
-    if (onetimeCid === undefined || onetimeCid === '') {
-      throw new Error('KakaoPay Onetime CID Key is Empty');
-    }
-    return onetimeCid;
-  }
-  /**
-   * 카카오페이 CID 를 환경 변수에서 뽑아온다.
-   * @returns
-   */
-  getSubscriptionCid(): string {
-    const subscriptionCid = process.env.KAKAOPAY_SUBSCRIPTION_CID;
-    if (subscriptionCid === undefined || subscriptionCid === '') {
-      throw new Error('KakaoPay Subscription CID Key is Empty');
-    }
-    return subscriptionCid;
-  }
 
-  get kakaoPayAxios(): AxiosInstance {
-    return this._kakaoPayAxios;
-  }
-  convertUrlEncodedParam(param: object): URLSearchParams {
+  private convertUrlEncodedParam(param: object): URLSearchParams {
     let params = new URLSearchParams();
     Object.keys(param).forEach((p) => {
       params.append(p, param[p]);
@@ -208,7 +211,7 @@ export class KakaoPayService {
 }
 
 export default KakaoPayService;
-export interface CancelParam {
+export interface CancelParam extends PaymentParam {
   // 결제 고유번호
   tid: string;
   // 취소 금액
@@ -261,11 +264,11 @@ export interface CancelResponse {
   payload: string;
 }
 
-export interface GetOrderParam {
+export interface GetPaymentParam extends PaymentParam {
   // 결제 고유 번호
   tid: string;
 }
-export interface GetOrderResponse {
+export interface GetPaymentResponse {
   // 결제 고유 번호
   tid: string;
   // 가맹점 코드
@@ -325,7 +328,7 @@ export interface GetSubscriptionStatusResponse {
   // 정기결제 비활성화 시각
   inactivated_at: string;
 }
-export interface InactivateSubscriptionParam {
+export interface InactivateSubscriptionParam extends PaymentParam {
   // 정기 결제 고유번호, 20자
   sid: string;
 }
@@ -341,7 +344,7 @@ export interface InactivateSubscriptionResponse {
   // 정기결제 비활성화 시각
   inactivated_at: string;
 }
-export interface ApproveParam {
+export interface ApproveParam extends PaymentParam {
   // 결제 고유번호, 결제 준비 API 응답에 포함
   tid: string;
   // 가맹점 주문번호, 결제 준비 API  요청과 일치해야 함
@@ -495,11 +498,13 @@ export interface ApproveSubscriptionResponse {
 }
 export interface KakaoPaySuccess<T> {
   success: true;
+  statusCode: number;
   pg: 'kakaopay';
   data: T;
 }
 export interface KakaoPayFail {
   success: false;
+  statusCode: number;
   pg: 'kakaopay';
   data: {
     code: number;

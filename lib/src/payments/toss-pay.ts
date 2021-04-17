@@ -1,16 +1,16 @@
-import { Param } from '@nestjs/common';
-import axios, { AxiosInstance } from 'axios';
-import * as _ from 'lodash';
+import { Param } from "@nestjs/common";
+import axios, { AxiosInstance } from "axios";
+import * as _ from "lodash";
 import {
   getSecret,
   PaymentParam,
   PaymentSerivce,
   PaymentType,
   withPaymentResponse,
-} from '../misc/payment';
+} from "../misc/payment";
 export class TossPayService implements PaymentSerivce {
   private _tossAxios: AxiosInstance;
-  private _pg: PaymentType = 'tosspay';
+  private _pg: PaymentType = "tosspay";
   private static _instance: TossPayService | undefined = undefined;
   /**
    * Singleton Design
@@ -28,7 +28,7 @@ export class TossPayService implements PaymentSerivce {
     apiKey = apiKey ?? tosspay.apiKey;
 
     if (apiKey === undefined) {
-      throw new Error('(TOSSPAY) Invalid Api Key');
+      throw new Error("(TOSSPAY) Invalid Api Key");
     }
 
     return new TossPayService(autoExecute, apiKey);
@@ -40,10 +40,10 @@ export class TossPayService implements PaymentSerivce {
    */
   constructor(private autoExecute: boolean, private apiKey: string) {
     this._tossAxios = axios.create({
-      baseURL: 'https://pay.toss.im',
+      baseURL: "https://pay.toss.im",
       headers: {
         // Authorization: `Basic ${this.convert2Base64(secretKey + ':')}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       timeout: 10 * 1000,
     });
@@ -55,7 +55,7 @@ export class TossPayService implements PaymentSerivce {
    * @returns
    */
   async createPayment(
-    param: TossPayCreatePaymentParam,
+    param: TossPayCreatePaymentParam
   ): Promise<TossPayResponse<TossPayCreatePaymentResponse>> {
     let requestParam = {
       ...param,
@@ -64,7 +64,7 @@ export class TossPayService implements PaymentSerivce {
     };
     return withPaymentResponse(
       this._pg,
-      async () => await this._tossAxios.post('/api/v2/payments', requestParam),
+      async () => await this._tossAxios.post("/api/v2/payments", requestParam)
     );
   }
 
@@ -81,7 +81,7 @@ export class TossPayService implements PaymentSerivce {
     };
     return withPaymentResponse(
       this._pg,
-      async () => await this._tossAxios.post('/api/v2/execute', requestParam),
+      async () => await this._tossAxios.post("/api/v2/execute", requestParam)
     );
   }
   /**
@@ -94,7 +94,7 @@ export class TossPayService implements PaymentSerivce {
    * @returns
    */
   async cancelPayment(
-    param: TossPayCancelPaymentParam,
+    param: TossPayCancelPaymentParam
   ): Promise<TossPayResponse<TossPayCancelPaymentResponse>> {
     const requestParam = {
       ...param,
@@ -102,7 +102,7 @@ export class TossPayService implements PaymentSerivce {
     };
     return withPaymentResponse(
       this._pg,
-      async () => await this._tossAxios.post('/api/v2/refunds', requestParam),
+      async () => await this._tossAxios.post("/api/v2/refunds", requestParam)
     );
   }
   /**
@@ -110,7 +110,7 @@ export class TossPayService implements PaymentSerivce {
    * @param payToken
    */
   async getPayment(
-    payToken: string,
+    payToken: string
   ): Promise<TossPayResponse<TossPayGetPaymentResponse>> {
     const requestParam = {
       apiKey: this.apiKey,
@@ -118,7 +118,7 @@ export class TossPayService implements PaymentSerivce {
     };
     return withPaymentResponse(
       this._pg,
-      async () => await this._tossAxios.post('/api/v2/status', requestParam),
+      async () => await this._tossAxios.post("/api/v2/status", requestParam)
     );
   }
   /**
@@ -138,7 +138,7 @@ export class TossPayService implements PaymentSerivce {
     }
     return withPaymentResponse(
       this._pg,
-      async () => await axios.post(requestUrl),
+      async () => await axios.post(requestUrl)
     );
   }
   /**
@@ -146,18 +146,18 @@ export class TossPayService implements PaymentSerivce {
    * @param str
    */
   convert2Base64(str: string): string {
-    return Buffer.from(str).toString('base64');
+    return Buffer.from(str).toString("base64");
   }
 }
 export interface TossPaySuccess<T> extends PaymentResponse {
   success: true;
-  pg: 'toss';
+  pg: "toss";
   statusCode: number;
   data: T;
 }
 export interface TossPayFail {
   success: false;
-  pg: 'toss';
+  pg: "toss";
   statusCode: number;
   data: {
     code: string;
@@ -233,15 +233,15 @@ export interface TossPayGetPaymentResponse {
   orderNo: string;
   // 결제 상태
   payStatus:
-    | 'PAY_STANDBY'
-    | 'PAY_APPROVED'
-    | 'PAY_CANCEL'
-    | 'PAY_PROGRESS'
-    | 'PAY_COMPLETE'
-    | 'REFUND_PROGRESS'
-    | 'REFUND_SUCCESS'
-    | 'SETTLEMENT_COMPLETE'
-    | 'SETTLEMENT_REFUND_COMPLETE';
+    | "PAY_STANDBY"
+    | "PAY_APPROVED"
+    | "PAY_CANCEL"
+    | "PAY_PROGRESS"
+    | "PAY_COMPLETE"
+    | "REFUND_PROGRESS"
+    | "REFUND_SUCCESS"
+    | "SETTLEMENT_COMPLETE"
+    | "SETTLEMENT_REFUND_COMPLETE";
   // 결제 수단
   payMethod: string;
   // 결제 요청금액

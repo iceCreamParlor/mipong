@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 import {
   PaymentType,
   PaymentResponse,
@@ -6,12 +6,12 @@ import {
   withPaymentResponse,
   PaymentParam,
   getSecret,
-} from '../misc/payment';
-import * as _ from 'lodash';
+} from "../misc/payment";
+import * as _ from "lodash";
 export class TossService implements PaymentSerivce {
   private _tossAxios: AxiosInstance;
   private static _instance: TossService | undefined = undefined;
-  private _pg: PaymentType = 'toss';
+  private _pg: PaymentType = "toss";
 
   static BUILD(clientId?: string, secretKey?: string): TossService {
     const { toss } = getSecret();
@@ -19,7 +19,7 @@ export class TossService implements PaymentSerivce {
     secretKey = secretKey ?? toss.secretKey;
 
     if (clientId === undefined || secretKey === undefined) {
-      throw new Error('(TOSS) Invalid Api Key');
+      throw new Error("(TOSS) Invalid Api Key");
     }
 
     return new TossService(clientId, secretKey);
@@ -27,10 +27,10 @@ export class TossService implements PaymentSerivce {
 
   constructor(private clientId: string, private secretKey: string) {
     this._tossAxios = axios.create({
-      baseURL: 'https://api.tosspayments.com',
+      baseURL: "https://api.tosspayments.com",
       headers: {
-        Authorization: `Basic ${this.convert2Base64(secretKey + ':')}`,
-        'Content-Type': 'application/json',
+        Authorization: `Basic ${this.convert2Base64(secretKey + ":")}`,
+        "Content-Type": "application/json",
       },
       timeout: 10 * 1000,
     });
@@ -52,12 +52,12 @@ export class TossService implements PaymentSerivce {
    * @param param
    */
   async approveOnetime(
-    param: TossApproveParam,
+    param: TossApproveParam
   ): Promise<TossResponse<TossApproveResponse>> {
     const approveParam = _.pickBy(param, _.identity);
     delete approveParam.paymentKey;
     return withPaymentResponse(this._pg, async () =>
-      this._tossAxios.post(`/v1/payments/${param.paymentKey}`, approveParam),
+      this._tossAxios.post(`/v1/payments/${param.paymentKey}`, approveParam)
     );
   }
   /**
@@ -65,10 +65,10 @@ export class TossService implements PaymentSerivce {
    * @param param
    */
   async cancelPayment(
-    param: TossCancelParam,
+    param: TossCancelParam
   ): Promise<TossResponse<TossCancelResponse>> {
     return withPaymentResponse(this._pg, async () =>
-      this._tossAxios.post(`/v1/payments/${param.paymentKey}/cancel`, param),
+      this._tossAxios.post(`/v1/payments/${param.paymentKey}/cancel`, param)
     );
   }
   /**
@@ -76,10 +76,10 @@ export class TossService implements PaymentSerivce {
    * @param paymentKey
    */
   async getPayment(
-    paymentKey: string,
+    paymentKey: string
   ): Promise<TossResponse<TossApproveResponse>> {
     return withPaymentResponse(this._pg, async () =>
-      this._tossAxios.get(`/v1/payments/${paymentKey}`),
+      this._tossAxios.get(`/v1/payments/${paymentKey}`)
     );
   }
 
@@ -89,15 +89,15 @@ export class TossService implements PaymentSerivce {
    * @returns
    */
   async registerSubscription(
-    param: TossRegisterSubscriptionParam,
+    param: TossRegisterSubscriptionParam
   ): Promise<TossResponse<TossRegisterSubscriptionResponse>> {
     const getBillingKeyParam = _.pickBy(param, _.identity);
 
     return withPaymentResponse(this._pg, async () =>
       this._tossAxios.post(
         `/v1/billing/authorizations/${param.authKey}`,
-        getBillingKeyParam,
-      ),
+        getBillingKeyParam
+      )
     );
   }
   /**
@@ -106,13 +106,13 @@ export class TossService implements PaymentSerivce {
    * @returns
    */
   async approveSubscription(
-    param: TossSubscriptionApproveParam,
+    param: TossSubscriptionApproveParam
   ): Promise<TossResponse<TossApproveResponse>> {
     const approveParam = _.pickBy(param, _.identity);
     delete approveParam.billingKey;
 
     return withPaymentResponse(this._pg, async () =>
-      this._tossAxios.post(`/v1/billing/${param.billingKey}`, approveParam),
+      this._tossAxios.post(`/v1/billing/${param.billingKey}`, approveParam)
     );
   }
   /**
@@ -121,11 +121,11 @@ export class TossService implements PaymentSerivce {
    * @returns
    */
   async getSubscriptionBillingKeyWithCard(
-    param: TossSubscriptionGetBillingKeyWithCardParam,
+    param: TossSubscriptionGetBillingKeyWithCardParam
   ): Promise<TossResponse<TossRegisterSubscriptionResponse>> {
     const getBillingKeyParam = _.pickBy(param, _.identity);
     return withPaymentResponse(this._pg, async () =>
-      this._tossAxios.post('v1/billing/authorizations/card', param),
+      this._tossAxios.post("v1/billing/authorizations/card", param)
     );
   }
   /**
@@ -134,7 +134,7 @@ export class TossService implements PaymentSerivce {
    */
   async getCardPromition(): Promise<TossResponse<TossCardPromotionResponse>> {
     return withPaymentResponse(this._pg, async () =>
-      this._tossAxios.get('/v1/promotions/card'),
+      this._tossAxios.get("/v1/promotions/card")
     );
   }
 
@@ -143,7 +143,7 @@ export class TossService implements PaymentSerivce {
    * @param str
    */
   convert2Base64(str: string): string {
-    return Buffer.from(str).toString('base64');
+    return Buffer.from(str).toString("base64");
   }
 }
 export interface TossApproveParam extends PaymentParam {
@@ -153,17 +153,17 @@ export interface TossApproveParam extends PaymentParam {
 }
 
 export type TossBankCode =
-  | '농협'
-  | '국민'
-  | '우리'
-  | '신한'
-  | '기업'
-  | '하나'
-  | '경남'
-  | '대구'
-  | '부산'
-  | '수협'
-  | '우체국';
+  | "농협"
+  | "국민"
+  | "우리"
+  | "신한"
+  | "기업"
+  | "하나"
+  | "경남"
+  | "대구"
+  | "부산"
+  | "수협"
+  | "우체국";
 export interface TossCancelParam extends PaymentParam {
   paymentKey: string;
   cancelReason: string;
@@ -214,13 +214,13 @@ export interface TossApproveResponse {
 }
 
 export type TossPaymentStatus =
-  | 'READY'
-  | 'IN_PROGRESS'
-  | 'WAITING_FOR_DEPOSIT'
-  | 'DONE'
-  | 'CANCELED'
-  | 'ABORTED'
-  | 'PARTIAL_CANCELED';
+  | "READY"
+  | "IN_PROGRESS"
+  | "WAITING_FOR_DEPOSIT"
+  | "DONE"
+  | "CANCELED"
+  | "ABORTED"
+  | "PARTIAL_CANCELED";
 export interface TossCancelResponse {
   paymentKey: string;
   orderId: string;
@@ -253,11 +253,11 @@ export interface TossCancelResponse {
     cardType: string;
     ownerType: string;
     acquiredStatus:
-      | 'READY'
-      | 'REQUESTED'
-      | 'COMPLETED'
-      | 'CANCEL_REQUESTED'
-      | 'CANCELED';
+      | "READY"
+      | "REQUESTED"
+      | "COMPLETED"
+      | "CANCEL_REQUESTED"
+      | "CANCELED";
   };
   receiptUrl: string;
   isInterestFree: boolean;
@@ -268,11 +268,11 @@ export interface TossCancelResponse {
     customerName: string;
     dueDate: string;
     refundStatus:
-      | 'NONE'
-      | 'FAILED'
-      | 'PENDING'
-      | 'PARTIAL_FAILED'
-      | 'COMPLETED';
+      | "NONE"
+      | "FAILED"
+      | "PENDING"
+      | "PARTIAL_FAILED"
+      | "COMPLETED";
   };
   mobilePhone?: {
     customerMobilePhone: string;
@@ -334,7 +334,7 @@ export interface TossCardPromotionResponse {
       dueDate: string;
       maximumPaymentAmount: number;
       minimumPaymentAmount: number;
-    },
+    }
   ];
   interestFreeCards: [
     {
@@ -342,19 +342,19 @@ export interface TossCardPromotionResponse {
       dueDate: string;
       installmentFreeMonths: number[];
       minimumPaymentAmount: number;
-    },
+    }
   ];
 }
 export interface TossSuccess<T> extends PaymentResponse {
   success: true;
   statusCode: number;
-  pg: 'toss';
+  pg: "toss";
   data: T;
 }
 export interface TossFail {
   success: false;
   statusCode: number;
-  pg: 'toss';
+  pg: "toss";
   data: {
     code: string;
     message: string;

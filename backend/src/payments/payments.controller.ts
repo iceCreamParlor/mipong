@@ -17,7 +17,7 @@ import {
   TossFail,
   TossService,
   TossSubscriptionApproveParam,
-  TossSubscriptionGetBillingKeyResponse,
+  TossRegisterSubscriptionResponse,
   TossSubscriptionGetBillingKeyWithCardParam,
 } from '../lib/payments/toss';
 
@@ -25,13 +25,14 @@ import {
 export class PaymentsController {
   private baseUrl = 'http://localhost:8080';
   private tid = '';
+  private kakaoPayService = KakaoPayService.getInstance();
+  private tossService = TossService.getInstance();
 
-  constructor(
-    private kakaoPayService: KakaoPayService,
-    private tossService: TossService,
-  ) {
-    kakaoPayService = new KakaoPayService();
-    tossService = new TossService();
+  constructor() // private kakaoPayService: KakaoPayService,
+  // private tossService: TossService,
+  {
+    // kakaoPayService = KakaoPayService.getInstance();
+    // tossService = TossService.getInstance();
   }
 
   @Post('/kakao/ready')
@@ -65,7 +66,7 @@ export class PaymentsController {
   }
   @Post('/kakao/cancel/:tid')
   cancelKakao(@Param('tid') tid: string): any {
-    const readyResponse = this.kakaoPayService.cancel({
+    const readyResponse = this.kakaoPayService.cancelPayment({
       tid,
       cancel_amount: 8900,
       cancel_tax_free_amount: 0,
@@ -75,7 +76,7 @@ export class PaymentsController {
   }
   @Post('/kakao/get-order/:tid')
   getOrder(@Param('tid') tid: string): any {
-    const readyResponse = this.kakaoPayService.getOrder({
+    const readyResponse = this.kakaoPayService.getPayment({
       tid,
     });
     console.log(JSON.stringify(readyResponse));
@@ -141,7 +142,7 @@ export class PaymentsController {
       amount,
     };
 
-    const result = await this.tossService.approveOneTime(approveParam);
+    const result = await this.tossService.approveOnetime(approveParam);
 
     if (result.success === true) {
       res.redirect(
@@ -156,7 +157,7 @@ export class PaymentsController {
   async subscriptionSuccess(@Query() query, @Res() res: ExResponse) {
     const { customerKey, authKey } = query;
     console.log(`customerKey : ${customerKey} authKey: ${authKey}`);
-    const result = await this.tossService.getSubscriptionBillingKey({
+    const result = await this.tossService.registerSubscription({
       authKey,
       customerKey,
     });
