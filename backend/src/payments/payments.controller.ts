@@ -36,31 +36,74 @@ export class PaymentsController {
 
   @Post('/kakao/ready')
   readyKakao(): any {
-    const readyResponse = this.kakaoPayService.readySinglePayment({
-      partner_order_id: '10000',
-      partner_user_id: '698500',
-      item_name: '면도기',
-      quantity: 1,
-      total_amount: 8900,
-      tax_free_amount: 0,
-      approval_url: `${this.baseUrl}/api/payments/kakao/approve`,
-      cancel_url: `${this.baseUrl}/api/payments/kakao/cancel`,
-      fail_url: `${this.baseUrl}/api/payments/kakao/fail`,
-    });
+    const paymentType = 'subscription';
+    const readyResponse = this.kakaoPayService.ready(
+      {
+        partner_order_id: '10000',
+        partner_user_id: '698500',
+        item_name: '면도기',
+        quantity: 1,
+        total_amount: 8900,
+        tax_free_amount: 0,
+        approval_url: `${this.baseUrl}/api/payments/kakao/approve`,
+        cancel_url: `${this.baseUrl}/api/payments/kakao/cancel`,
+        fail_url: `${this.baseUrl}/api/payments/kakao/fail`,
+      },
+      paymentType,
+    );
 
+    return readyResponse;
+  }
+
+  @Post('/kakao/inactivate/:sid')
+  inactivateKakao(@Param('sid') sid: string): any {
+    const readyResponse = this.kakaoPayService.inactivateSubscription({
+      sid,
+    });
+    console.log(JSON.stringify(readyResponse));
+    return readyResponse;
+  }
+  @Post('/kakao/cancel/:tid')
+  cancelKakao(@Param('tid') tid: string): any {
+    const readyResponse = this.kakaoPayService.cancel({
+      tid,
+      cancel_amount: 8900,
+      cancel_tax_free_amount: 0,
+    });
+    console.log(JSON.stringify(readyResponse));
+    return readyResponse;
+  }
+  @Post('/kakao/get-order/:tid')
+  getOrder(@Param('tid') tid: string): any {
+    const readyResponse = this.kakaoPayService.getOrder({
+      tid,
+    });
+    console.log(JSON.stringify(readyResponse));
+    return readyResponse;
+  }
+  @Post('/kakao/get-subscription-status/:sid')
+  getSubscriptionStatus(@Param('sid') sid: string): any {
+    const readyResponse = this.kakaoPayService.getSubscription({
+      sid,
+    });
+    console.log(JSON.stringify(readyResponse));
     return readyResponse;
   }
 
   @Get('/kakao/approve')
   approveKakao(@Query() query): any {
+    const paymentType = 'subscription';
     console.log(`pgToken : ${query.pg_token}`);
     console.log(`ordercid : ${query.ordercid}`);
-    const approveResponse = this.kakaoPayService.approveSinglePayment({
-      pg_token: query.pg_token,
-      partner_order_id: '10000',
-      partner_user_id: '698500',
-      tid: this.tid,
-    });
+    const approveResponse = this.kakaoPayService.approve(
+      {
+        pg_token: query.pg_token,
+        partner_order_id: '10000',
+        partner_user_id: '698500',
+        tid: this.tid,
+      },
+      paymentType,
+    );
 
     return approveResponse;
   }
