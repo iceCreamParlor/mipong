@@ -198,7 +198,7 @@ export class KakaoPayService implements PaymentSerivce {
     );
   }
 
-  private convertUrlEncodedParam(param: object): URLSearchParams {
+  private convertUrlEncodedParam(param: any): URLSearchParams {
     let params = new URLSearchParams();
     Object.keys(param).forEach((p) => {
       params.append(p, param[p]);

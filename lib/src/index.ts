@@ -1,3 +1,3 @@
-import KakaoPayService from "./payments/kakaopay";
+import KakaoPayService from "./payments-mono/kakaopay";
 
-export { KakaoPayService } from "./payments/kakaopay";
+export { KakaoPayService } from "./payments-mono/kakaopay";
