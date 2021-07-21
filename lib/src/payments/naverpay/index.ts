@@ -1,33 +1,46 @@
 import { BillingKeyCheckable, Inactivable, Payment, PaymentLib } from "..";
+import {
+  KakaoPayBillingKeyCheckParam,
+  KakaoPayInactivateBillingKeyParam,
+} from "../kakaopay/type";
+import { ExecuteSubscriptionResponse } from "../type";
+import {
+  NaverPayApproveOnetimeParam,
+  NaverPayBillingKeyCheckParam,
+  NaverPayFailResponse,
+  NaverPayInactivateBillingKeyParam,
+} from "./type";
 
 export class NaverPay
-  extends PaymentLib
+  extends PaymentLib<Payment.NAVERPAY>
   implements
-    Inactivable<Payment.KAKAOPAY>,
-    BillingKeyCheckable<Payment.KAKAOPAY>
+    Inactivable<Payment.NAVERPAY>,
+    BillingKeyCheckable<Payment.NAVERPAY>
 {
-  approveOnetime(input: any, order: any): Promise<PaymentResponse> {
+  approveOnetime(input: NaverPayApproveOnetimeParam): Promise<{}> {
     throw new Error("Method not implemented.");
   }
-  registerSubscription(input: any): Promise<any> {
+  registerSubscription(input: {}): Promise<{}> {
     throw new Error("Method not implemented.");
   }
-  executeSubscription(order: any, subscriptionKey: string): Promise<any> {
+  executeSubscription(input: {}): Promise<ExecuteSubscriptionResponse> {
     throw new Error("Method not implemented.");
   }
-  executeFirstSubscription(input: any, order: any): Promise<any> {
+  executeFirstSubscription(input: {}): Promise<{}> {
     throw new Error("Method not implemented.");
   }
-  cancelPayment(order: any, UNID: number, amount: number): Promise<any> {
+  cancelPayment(input: {}): Promise<{}> {
     throw new Error("Method not implemented.");
   }
-  checkBillingKeyStatus(param: {
-    cid_secret?: string | undefined;
-    sid: string;
-  }): Promise<boolean> {
+  getPayment(input: {}): Promise<{} | NaverPayFailResponse> {
     throw new Error("Method not implemented.");
   }
-  inactivateBillingKey(param: { sid: string }): Promise<boolean> {
+  checkBillingKeyStatus(param: NaverPayBillingKeyCheckParam): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
+  inactivateBillingKey(
+    param: NaverPayInactivateBillingKeyParam
+  ): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
 }

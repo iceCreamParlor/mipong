@@ -1,12 +1,9 @@
 import { BillingKeyCheckable, Inactivable, Payment, PaymentLib } from "..";
 import { ExecuteSubscriptionResponse } from "../type";
-import { TossPayApproveOnetimeParam } from "./type";
+import { TossPaymentsApproveOnetimeParam } from "./type";
 
-export class TossPay
-  extends PaymentLib<Payment.TOSSPAY>
-  implements Inactivable<Payment.TOSSPAY>, BillingKeyCheckable<Payment.TOSSPAY>
-{
-  approveOnetime(input: TossPayApproveOnetimeParam): Promise<{}> {
+export class TossPayments extends PaymentLib<Payment.TOSS_PAYMENTS> {
+  approveOnetime(input: TossPaymentsApproveOnetimeParam): Promise<{}> {
     throw new Error("Method not implemented.");
   }
   registerSubscription(input: {}): Promise<{}> {
@@ -22,16 +19,6 @@ export class TossPay
     throw new Error("Method not implemented.");
   }
   getPayment(input: {}): Promise<{}> {
-    throw new Error("Method not implemented.");
-  }
-
-  checkBillingKeyStatus(param: {
-    userId: string;
-    displayId: string;
-  }): Promise<boolean> {
-    throw new Error("Method not implemented.");
-  }
-  inactivateBillingKey(param: { billingKey: string }): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
 }

@@ -2,16 +2,25 @@ import {
   ApproveOnetimeParam,
   ApproveOnetimeResponse,
   BillingKeyCheckParam,
+  CancelPaymentParam,
+  CancelPaymentResponse,
+  ExecuteFirstSubscriptionParam,
+  ExecuteSubscriptionParam,
+  ExecuteSubscriptionResponse,
+  GetPaymentParam,
+  GetPaymentResponse,
   InactivateBillingKeyParam,
+  RegisterSubscriptionParam,
+  RegisterSubscriptionResponse,
 } from "./type";
 
 export enum Payment {
-  KAKAOPAY = "kakaopay",
-  NAVERPAY = "naverpay",
-  NICEPAY = "nicepay",
-  TOSS = "toss",
-  TOSSPAY = "tosspay",
-  IAMPORT = "iamport",
+  KAKAOPAY,
+  NAVERPAY,
+  NICEPAY,
+  TOSS_PAYMENTS,
+  TOSSPAY,
+  IAMPORT,
 }
 export type InactivablePayment =
   | Payment.KAKAOPAY
@@ -36,25 +45,23 @@ export abstract class PaymentLib<T extends Payment> {
 
   // 정기결제 실행
   abstract executeSubscription(
-    order: tbOrder,
-    subscriptionKey: string
+    input: ExecuteSubscriptionParam[T]
   ): Promise<ExecuteSubscriptionResponse>;
 
   // 첫정기결제 실행
   abstract executeFirstSubscription(
-    input: ExecuteFirstSubscriptionParam,
-    order: tbOrder
-  ): Promise<ExecuteSubscriptionResponse>;
+    input: ExecuteFirstSubscriptionParam[T]
+  ): Promise<ExecuteSubscriptionResponse[T]>;
 
   // 결제 취소
   abstract cancelPayment(
-    order: tbOrder,
-    UNID: number,
-    amount: number
-  ): Promise<CommonCancelPaymentResponse>;
+    input: CancelPaymentParam[T]
+  ): Promise<CancelPaymentResponse[T]>;
 
   // 결제 조회
-  abstract getPayment(order: tbOrder): Promise<CommonGetPaymentResponse>;
+  abstract getPayment(
+    input: GetPaymentParam[T]
+  ): Promise<GetPaymentResponse[T]>;
 }
 export abstract class Inactivable<T extends InactivablePayment> {
   // 정기결제키 비활성화

@@ -1,5 +1,14 @@
 import { BillingKeyCheckable, Inactivable, Payment, PaymentLib } from "..";
-import { KakaoPayApproveResponse, KakaoPayFailResponse } from "./type";
+import { ExecuteSubscriptionResponse } from "../type";
+import {
+  KakaoPayApproveParam,
+  KakaoPayApproveResponse,
+  KakaoPayBillingKeyCheckParam,
+  KakaoPayFailResponse,
+  KakaoPayGetPaymentParam,
+  KakaoPayGetPaymentResponse,
+  KakaoPayInactivateBillingKeyParam,
+} from "./type";
 
 export class Kakaopay
   extends PaymentLib<Payment.KAKAOPAY>
@@ -7,31 +16,34 @@ export class Kakaopay
     Inactivable<Payment.KAKAOPAY>,
     BillingKeyCheckable<Payment.KAKAOPAY>
 {
-  approveOnetime(input: { orderCid: string; pgToken: string; }): Promise<KakaoPayApproveResponse | KakaoPayFailResponse> {
+  approveOnetime(
+    input: KakaoPayApproveParam
+  ): Promise<KakaoPayApproveResponse | KakaoPayFailResponse> {
     throw new Error("Method not implemented.");
   }
- 
-  registerSubscription(input: any): Promise<any> {
+  registerSubscription(input: {}): Promise<{}> {
     throw new Error("Method not implemented.");
   }
-  executeSubscription(order: any, subscriptionKey: string): Promise<any> {
+  executeSubscription(input: {}): Promise<ExecuteSubscriptionResponse> {
     throw new Error("Method not implemented.");
   }
-  executeFirstSubscription(input: any, order: any): Promise<any> {
+  executeFirstSubscription(input: {}): Promise<{}> {
     throw new Error("Method not implemented.");
   }
-  cancelPayment(order: any, UNID: number, amount: number): Promise<any> {
+  cancelPayment(input: {}): Promise<{}> {
     throw new Error("Method not implemented.");
   }
-  getPayment(order: any): Promise<any> {
+  getPayment(
+    input: KakaoPayGetPaymentParam
+  ): Promise<KakaoPayFailResponse | KakaoPayGetPaymentResponse> {
     throw new Error("Method not implemented.");
   }
-  checkBillingKeyStatus(param: { cid_secret?: string | undefined; sid: string; }): Promise<boolean> {
+  checkBillingKeyStatus(param: KakaoPayBillingKeyCheckParam): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
-  inactivateBillingKey(param: { sid: string; }): Promise<boolean> {
+  inactivateBillingKey(
+    param: KakaoPayInactivateBillingKeyParam
+  ): Promise<boolean> {
     throw new Error("Method not implemented.");
-  }
-
   }
 }

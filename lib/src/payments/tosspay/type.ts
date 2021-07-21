@@ -26,3 +26,23 @@ export interface TossPayFailResponse {
   errorCode: string;
   status: number;
 }
+export interface TossPayApproveOnetimeParam {
+  payToken: string;
+  orderNo: string;
+}
+export interface TossPayBillingKeyCheckParam {
+  userId: string;
+  displayId: string;
+}
+export interface TossPayBillingKeyCheckResponse {
+  code: 0;
+  status: TossPayBillingKeyStatus;
+  userId: string;
+  displayId: string;
+  billingKey: string;
+  payMethod: TossPayPayMethod;
+  cardCompanyNo?: string;
+  cardCompanyName?: string;
+  accountBankCode?: string;
+  accountBankName?: string;
+}

@@ -10,3 +10,50 @@ type NaverpayFailCode =
   | "AlreadyOnGoing"
   | "AlreadyComplete"
   | "OwnerAuthFail";
+
+export interface NaverPayInactivateBillingKeyParam {
+  // 해지할 정기/반복결제 등록 번호
+  recurrentId: string;
+  // 해지 요청자(1: 구매자, 2: 가맹점 관리자) 구분하기 어려우면 가맹점 관리자로 입력합니다
+  expireRequester: string;
+  expireReason: string;
+}
+export interface NaverPayInactivateBiilingKeyResponse {
+  code: "Success";
+  message: string;
+  body: {
+    recurrentId: string;
+  };
+}
+
+export interface NaverPayBillingKeyCheckParam {
+  recurrentId: string;
+  // VALID: 유효, EXPIRED: 만료, ALL: 전체값이 없으면 ALL로 간주합니다
+  state?: "VALID" | "EXPIRED" | "ALL";
+}
+export interface NaverPayBillingKeyCheckResponse {
+  code: "Success";
+  message: string;
+  body: {
+    list: [
+      {
+        recurrentId: string;
+        productCode: string;
+        naverPointUse: string;
+        primaryPayMeans: string;
+        primaryPayMeansCorpCd: string;
+        primaryPayMeansNo: string;
+        recurrentState: string;
+        registYmdt: string;
+        expireYmdt: string;
+      }
+    ];
+    totalCount: number;
+    responseCount: number;
+    totalPageCount: number;
+    currentPageNumber: number;
+  };
+}
+export interface NaverPayApproveOnetimeParam {
+  paymentId: string;
+}
