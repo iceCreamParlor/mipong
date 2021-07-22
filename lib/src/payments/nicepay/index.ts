@@ -3,6 +3,12 @@ import { ExecuteSubscriptionResponse } from "../type";
 import { NicePayApproveOnetimeParam } from "./type";
 
 export class NicePay extends PaymentLib<Payment.NICEPAY> {
+  private static _instance: NicePay = new NicePay();
+
+  public static get instance(): NicePay {
+    return this._instance;
+  }
+
   approveOnetime(input: NicePayApproveOnetimeParam): Promise<{}> {
     throw new Error("Method not implemented.");
   }

@@ -6,6 +6,12 @@ export class TossPay
   extends PaymentLib<Payment.TOSSPAY>
   implements Inactivable<Payment.TOSSPAY>, BillingKeyCheckable<Payment.TOSSPAY>
 {
+  private static _instance: TossPay = new TossPay();
+
+  public static get instance(): TossPay {
+    return this._instance;
+  }
+
   approveOnetime(input: TossPayApproveOnetimeParam): Promise<{}> {
     throw new Error("Method not implemented.");
   }

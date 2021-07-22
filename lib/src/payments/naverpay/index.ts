@@ -17,6 +17,12 @@ export class NaverPay
     Inactivable<Payment.NAVERPAY>,
     BillingKeyCheckable<Payment.NAVERPAY>
 {
+  private static _instance: NaverPay = new NaverPay();
+
+  public static get instance(): NaverPay {
+    return this._instance;
+  }
+
   approveOnetime(input: NaverPayApproveOnetimeParam): Promise<{}> {
     throw new Error("Method not implemented.");
   }

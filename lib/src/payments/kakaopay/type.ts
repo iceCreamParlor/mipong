@@ -1,3 +1,12 @@
+export enum KakaoPayAPI {
+  Ready = "ready",
+  Approve = "approve",
+  ApproveSubscription = "approveSubscription",
+  InactivateSubscription = "inactivateSubscription",
+  Cancel = "cancel",
+  CheckBillingKey = "checkBillingKey",
+  GetPayment = "getPayment",
+}
 export interface KakaoPayFailResponse {
   code: number;
   msg: string;
@@ -5,6 +14,56 @@ export interface KakaoPayFailResponse {
     method_result_code: string;
     method_result_message: string;
   };
+}
+export interface KakaoPayReadyParam {
+  // 가맹점 주문번호, 최대 100자
+  partner_order_id: string;
+  // 가맹점 회원id, 최대 100자
+  partner_user_id: string;
+  // 상품명, 최대 100자
+  item_name: string;
+  // 상품 수량
+  quantity: number;
+  // 상품 총액
+  total_amount: number;
+  // 상품 비과세 금액
+  tax_free_amount: number;
+  // 상품 부가세 금액  (상품총액 - 상품 비과세 금액)/11, 소수점 이하 반올림
+  vat_amount?: number;
+  // 결제 성공 시 redirect url, 최대 255자
+  approval_url: string;
+  // 결제 취소 시 redirect url, 최대 255자
+  cancel_url: string;
+  // 결제 실패 시 redirect url, 최대 255자
+  fail_url: string;
+  // ["HANA", "BC"]
+  available_cards?: string[];
+  // CARD, MONEY
+  payment_method_type?: string;
+  // 0 ~ 12
+  installMonth?: number;
+  /**
+   * ex) iOS에서 사용자 인증 완료 후 가맹점 앱으로 자동 전환하는 방법(iOS만 예외 처리, 안드로이드 동작 안 함)
+   - 다음과 같이 return_custom_url key 정보에 앱스킴을 넣어서 전송
+   "return_custom_url":"kakaotalk://"
+   */
+  customJson?: object;
+}
+export interface KakaoPayReadyResponse {
+  // 결제 고유 번호, 20자
+  tid: string;
+  // 요청한 클라이언트(Client)가 모바일 앱일 경우 카카오톡 결제 페이지 Redirect URL
+  next_redirect_app_url: string;
+  // 요청한 클라이언트가 모바일 웹일 경우 카카오톡 결제 페이지 Redirect URL
+  next_redirect_mobile_url: string;
+  // 요청한 클라이언트가 PC 웹일 경우 카카오톡으로 결제 요청 메시지(TMS)를 보내기 위한 사용자 정보 입력 화면 Redirect URL
+  next_redirect_pc_url: string;
+  // 카카오페이 결제 화면으로 이동하는 Android 앱 스킴(Scheme)
+  android_app_scheme: string;
+  // 카카오페이 결제 화면으로 이동하는 iOS 앱 스킴
+  ios_app_scheme: string;
+  // 결제 준비 요청 시간
+  created_at: string;
 }
 export interface KakaoPayApproveParam {
   orderCid: string;

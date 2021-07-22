@@ -40,7 +40,15 @@ export type ApproveOnetimeResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: KakaoPayApproveResponse | KakaoPayFailResponse;
+  [Payment.KAKAOPAY]: KakaoPayApproveResponse;
+  [Payment.NAVERPAY]: {};
+  [Payment.TOSSPAY]: {};
+};
+export type ApproveOnetimeFailResponse = {
+  [Payment.IAMPORT]: {};
+  [Payment.NICEPAY]: {};
+  [Payment.TOSS_PAYMENTS]: {};
+  [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
@@ -146,3 +154,16 @@ export type CancelPaymentResponse = {
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
+export interface SuccessResponse<T> {
+  success: true;
+  statusCode: number;
+  data: T;
+}
+export interface FailResponse<T> {
+  success: false;
+  statusCode: number;
+  data: T;
+}
+export type PaymentResponse<SUCCESS_TYPE, FAIL_TYPE> =
+  | SuccessResponse<SUCCESS_TYPE>
+  | FailResponse<FAIL_TYPE>;

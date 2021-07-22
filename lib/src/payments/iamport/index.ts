@@ -1,15 +1,16 @@
-import { BillingKeyCheckable, Inactivable, Payment, PaymentLib } from "..";
-import { ExecuteSubscriptionResponse } from "../type";
-import { TossPaymentsApproveOnetimeParam } from "./type";
+import { Payment, PaymentLib } from "..";
+import { PaymentResponse, ExecuteSubscriptionResponse } from "../type";
+import { IamportApproveOnetimeParam } from "./type";
 
-export class TossPayments extends PaymentLib<Payment.TOSS_PAYMENTS> {
-  private static _instance: TossPayments = new TossPayments();
+export class Iamport extends PaymentLib<Payment.IAMPORT> {
+  private static _instance: Iamport = new Iamport();
 
-  public static get instance(): TossPayments {
+  public static get instance(): Iamport {
     return this._instance;
   }
-
-  approveOnetime(input: TossPaymentsApproveOnetimeParam): Promise<{}> {
+  approveOnetime(
+    input: IamportApproveOnetimeParam
+  ): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
   registerSubscription(input: {}): Promise<{}> {
