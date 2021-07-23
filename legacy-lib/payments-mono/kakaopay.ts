@@ -8,7 +8,7 @@ import {
   withPaymentResponse,
 } from "../misc/payment";
 
-export class KakaoPayService implements PaymentSerivce {
+class KakaoPayService implements PaymentSerivce {
   private _kakaoPayAxios: AxiosInstance;
   private _adminKey: string;
   private _onetimeCid: string;
@@ -207,7 +207,6 @@ export class KakaoPayService implements PaymentSerivce {
   }
 }
 
-export default KakaoPayService;
 export interface CancelParam extends PaymentParam {
   // 결제 고유번호
   tid: string;

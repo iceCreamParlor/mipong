@@ -1,20 +1,28 @@
+import { AxiosResponse } from "axios";
 import { BillingKeyCheckable, Inactivable, Payment, PaymentLib } from "..";
-import { ExecuteSubscriptionResponse } from "../type";
+import { ExecuteSubscriptionResponse, PaymentResponse } from "../type";
 import { TossPayApproveOnetimeParam } from "./type";
 
 export class TossPay
-  extends PaymentLib<Payment.TOSSPAY>
-  implements Inactivable<Payment.TOSSPAY>, BillingKeyCheckable<Payment.TOSSPAY>
+  implements
+    PaymentLib<Payment.TOSSPAY>,
+    Inactivable<Payment.TOSSPAY>,
+    BillingKeyCheckable<Payment.TOSSPAY>
 {
+  withPaymentResponse(fn: () => Promise<AxiosResponse<any>>): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+  approveOnetime(
+    input: TossPayApproveOnetimeParam
+  ): Promise<PaymentResponse<{}, {}>> {
+    throw new Error("Method not implemented.");
+  }
   private static _instance: TossPay = new TossPay();
 
   public static get instance(): TossPay {
     return this._instance;
   }
 
-  approveOnetime(input: TossPayApproveOnetimeParam): Promise<{}> {
-    throw new Error("Method not implemented.");
-  }
   registerSubscription(input: {}): Promise<{}> {
     throw new Error("Method not implemented.");
   }

@@ -1,8 +1,12 @@
+import { AxiosResponse } from "axios";
 import { Payment, PaymentLib } from "..";
 import { PaymentResponse, ExecuteSubscriptionResponse } from "../type";
 import { IamportApproveOnetimeParam } from "./type";
 
-export class Iamport extends PaymentLib<Payment.IAMPORT> {
+export class Iamport implements PaymentLib<Payment.IAMPORT> {
+  withPaymentResponse(fn: () => Promise<AxiosResponse<any>>): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
   private static _instance: Iamport = new Iamport();
 
   public static get instance(): Iamport {

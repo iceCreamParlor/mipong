@@ -1,14 +1,17 @@
 import { AxiosResponse } from "axios";
-import KakaoPayService from "../payments-mono/kakaopay";
 import { Iamport } from "./iamport";
 import { KakaoPay } from "./kakaopay";
-import { KakaoPayAPI, KakaoPayReadyParam, KakaoPayReadyResponse } from "./kakaopay/type";
+import {
+  KakaoPayAPI,
+  KakaoPayReadyParam,
+  KakaoPayReadyResponse,
+} from "./kakaopay/type";
 import { NaverPay } from "./naverpay";
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
 import { TossPay } from "./tosspay";
 import {
-  ,
+  ApproveOnetimeFailResponse,
   ApproveOnetimeParam,
   ApproveOnetimeResponse,
   BillingKeyCheckParam,
@@ -20,35 +23,38 @@ import {
   GetPaymentParam,
   GetPaymentResponse,
   InactivateBillingKeyParam,
+  PaymentResponse,
   RegisterSubscriptionParam,
   RegisterSubscriptionResponse,
-  PaymentResponse,
-  ApproveOnetimeFailResponse,
 } from "./type";
 
-export const DEFAULT_RETRY_TIME = 5;
-export const DEFAULT_RETRY_INTERVAL = 10;
+export type PaymentType = {
+  [Payment.IAMPORT]: Iamport;
+  [Payment.KAKAOPAY]: KakaoPay;
+  [Payment.NAVERPAY]: NaverPay;
+  [Payment.NICEPAY]: NicePay;
+  [Payment.TOSS_PAYMENTS]: TossPayments;
+  [Payment.TOSSPAY]: TossPay;
+};
 
-export function getPayment(payment: Payment) {
-  if (payment === Payment.IAMPORT) {
+export class Mipong {
+  public static DEFAULT_RETRY_TIME = 5;
+  public static DEFAULT_RETRY_INTERVAL = 10;
+  public static getIamport() {
     return Iamport.instance;
   }
-  if (payment === Payment.KAKAOPAY) {
+  public static getKakaoPay() {
     return KakaoPay.instance;
   }
-  if (payment === Payment.NAVERPAY) {
+  public static getNaverPay() {
     return NaverPay.instance;
   }
-  if (payment === Payment.NICEPAY) {
-    return NicePay.instance;
-  }
-  if (payment === Payment.TOSS_PAYMENTS) {
+  public static getTossPayments() {
     return TossPayments.instance;
   }
-  if (payment === Payment.TOSSPAY) {
+  public static getTossPay() {
     return TossPay.instance;
   }
-  die("invalid Payment");
 }
 
 export enum Payment {
@@ -105,30 +111,19 @@ export const PaymentAPI = {
 };
 export type PaymentAPISignature = {
   [Payment.KAKAOPAY]: {
-    [KakaoPayAPI.Ready]: [
-      KakaoPayReadyParam,
-      KakaoPayReadyResponse
-    ];
-    [KakaoPayAPI.Approve]: [
-      KakaoPayReadyParam,
-      KakaoPayReadyResponse]
+    [KakaoPayAPI.Ready]: [KakaoPayReadyParam, KakaoPayReadyResponse];
+    [KakaoPayAPI.Approve]: [KakaoPayReadyParam, KakaoPayReadyResponse];
     [KakaoPayAPI.ApproveSubscription]: [
       KakaoPayReadyParam,
-      KakaoPayReadyResponse,
+      KakaoPayReadyResponse
     ];
     [KakaoPayAPI.InactivateSubscription]: [
       KakaoPayReadyParam,
       KakaoPayReadyResponse
     ];
-    [KakaoPayAPI.Cancel]: [
-      KakaoPayReadyParam,
-      KakaoPayReadyResponse
-    ];
-    [KakaoPayAPI.CheckBillingKey]: [
-      KakaoPayReadyParam,
-      KakaoPayReadyResponse,
-    ];
-    [KakaoPayAPI.GetPayment]: [any, any]
+    [KakaoPayAPI.Cancel]: [KakaoPayReadyParam, KakaoPayReadyResponse];
+    [KakaoPayAPI.CheckBillingKey]: [KakaoPayReadyParam, KakaoPayReadyResponse];
+    [KakaoPayAPI.GetPayment]: [any, any];
   };
 };
 
@@ -143,12 +138,7 @@ export type BillingKeyCheckablePayment =
   | Payment.TOSSPAY;
 
 export abstract class PaymentLib<T extends Payment> {
-  abstract callAPI(
-    api: any,
-    params: any,
-    type?: "onetime" | "subscription"
-  ): Promise<any>;
-
+  constructor() {}
   abstract withPaymentResponse(
     fn: () => Promise<AxiosResponse<any>>
   ): Promise<any>;
@@ -219,8 +209,8 @@ export function handleError(err: Error) {
 }
 export async function retry<T>({
   fn,
-  times = DEFAULT_RETRY_TIME,
-  interval = DEFAULT_RETRY_INTERVAL,
+  times = Mipong.DEFAULT_RETRY_TIME,
+  interval = Mipong.DEFAULT_RETRY_INTERVAL,
 }: {
   fn: (...args: any[]) => T;
   times?: number;
@@ -234,7 +224,7 @@ export async function retry<T>({
     try {
       const result = await fn();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       if (++attemptCount >= times) {
         throw error;
       }

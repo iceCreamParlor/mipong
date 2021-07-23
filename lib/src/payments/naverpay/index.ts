@@ -1,9 +1,6 @@
+import { AxiosResponse } from "axios";
 import { BillingKeyCheckable, Inactivable, Payment, PaymentLib } from "..";
-import {
-  KakaoPayBillingKeyCheckParam,
-  KakaoPayInactivateBillingKeyParam,
-} from "../kakaopay/type";
-import { ExecuteSubscriptionResponse } from "../type";
+import { ExecuteSubscriptionResponse, PaymentResponse } from "../type";
 import {
   NaverPayApproveOnetimeParam,
   NaverPayBillingKeyCheckParam,
@@ -12,20 +9,25 @@ import {
 } from "./type";
 
 export class NaverPay
-  extends PaymentLib<Payment.NAVERPAY>
   implements
+    PaymentLib<Payment.NAVERPAY>,
     Inactivable<Payment.NAVERPAY>,
     BillingKeyCheckable<Payment.NAVERPAY>
 {
+  withPaymentResponse(fn: () => Promise<AxiosResponse<any>>): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+  approveOnetime(
+    input: NaverPayApproveOnetimeParam
+  ): Promise<PaymentResponse<{}, {}>> {
+    throw new Error("Method not implemented.");
+  }
   private static _instance: NaverPay = new NaverPay();
 
   public static get instance(): NaverPay {
     return this._instance;
   }
 
-  approveOnetime(input: NaverPayApproveOnetimeParam): Promise<{}> {
-    throw new Error("Method not implemented.");
-  }
   registerSubscription(input: {}): Promise<{}> {
     throw new Error("Method not implemented.");
   }
