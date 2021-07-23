@@ -3,28 +3,36 @@ import { IamportApproveOnetimeParam } from "./iamport/type";
 import {
   KakaoPayApproveParam,
   KakaoPayApproveResponse,
-  KakaoPayBillingKeyCheckParam,
-  KakaoPayBillingKeyCheckResponse,
+  KakaoPayCancelParam,
+  KakaoPayCancelResponse,
+  KakaoPayCheckSubscriptionParam,
+  KakaoPayCheckSubscriptionResponse,
+  KakaoPayExecuteSubscriptionParam,
+  KakaoPayExecuteSubscriptionResponse,
   KakaoPayFailResponse,
   KakaoPayGetPaymentParam,
   KakaoPayGetPaymentResponse,
-  KakaoPayInactivateBillingKeyParam,
-  KakaoPayInactivateBillingKeyResponse,
+  KakaoPayInactivateSubscriptionParam,
+  KakaoPayInactivateSubscriptionResponse,
+  KakaoPayReadyParam,
+  KakaoPayReadyResponse,
+  KakaoPayRegisterSubscriptionParam,
+  KakaoPayRegisterSubscriptionResponse,
 } from "./kakaopay/type";
 import {
   NaverPayApproveOnetimeParam,
-  NaverPayBillingKeyCheckParam,
-  NaverPayBillingKeyCheckResponse,
+  NaverPayBillingKeyCheckParam as NaverPayCheckSubscriptionParam,
+  NaverPayBillingKeyCheckResponse as NaverPayCheckSubscriptionResponse,
   NaverPayFailResponse,
-  NaverPayInactivateBiilingKeyResponse,
-  NaverPayInactivateBillingKeyParam,
+  NaverPayInactivateBiilingKeyResponse as NaverPayInactivateSubscriptionResponse,
+  NaverPayInactivateBillingKeyParam as NaverPayInactivateSubscriptionParam,
 } from "./naverpay/type";
 import { NicePayApproveOnetimeParam } from "./nicepay/type";
 import { TossPaymentsApproveOnetimeParam } from "./toss-payments/type";
 import {
   TossPayApproveOnetimeParam,
-  TossPayBillingKeyCheckParam,
-  TossPayBillingKeyCheckResponse,
+  TossPayBillingKeyCheckParam as TossPayCheckSubscriptionParam,
+  TossPayBillingKeyCheckResponse as TossPayCheckSubscriptionResponse,
   TossPayFailResponse,
 } from "./tosspay/type";
 
@@ -65,43 +73,61 @@ export type GetPaymentResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: KakaoPayGetPaymentResponse | KakaoPayFailResponse;
-  [Payment.NAVERPAY]: {} | NaverPayFailResponse;
+  [Payment.KAKAOPAY]: KakaoPayGetPaymentResponse;
+  [Payment.NAVERPAY]: {};
+  [Payment.TOSSPAY]: {};
+};
+export type GetPaymentFailResponse = {
+  [Payment.IAMPORT]: {};
+  [Payment.NICEPAY]: {};
+  [Payment.TOSS_PAYMENTS]: {};
+  [Payment.KAKAOPAY]: KakaoPayFailResponse;
+  [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
 
-export type InactivateBillingKeyParam = {
-  [Payment.KAKAOPAY]: KakaoPayInactivateBillingKeyParam;
-  [Payment.NAVERPAY]: NaverPayInactivateBillingKeyParam;
+export type InactivateSubscriptionParam = {
+  [Payment.KAKAOPAY]: KakaoPayInactivateSubscriptionParam;
+  [Payment.NAVERPAY]: NaverPayInactivateSubscriptionParam;
   [Payment.TOSSPAY]: {
     billingKey: string;
   };
 };
-export type InactivateBillingKeyResponse = {
-  [Payment.KAKAOPAY]:
-    | KakaoPayInactivateBillingKeyResponse
-    | KakaoPayFailResponse;
+export type InactivateSubscriptionResponse = {
+  [Payment.KAKAOPAY]: KakaoPayInactivateSubscriptionResponse;
   [Payment.NAVERPAY]:
-    | NaverPayInactivateBiilingKeyResponse
+    | NaverPayInactivateSubscriptionResponse
     | NaverPayFailResponse;
   [Payment.TOSSPAY]: {};
 };
-export type BillingKeyCheckParam = {
-  [Payment.KAKAOPAY]: KakaoPayBillingKeyCheckParam;
-  [Payment.NAVERPAY]: NaverPayBillingKeyCheckParam;
-  [Payment.TOSSPAY]: TossPayBillingKeyCheckParam;
+export type InactivateSubscriptionFailResponse = {
+  [Payment.KAKAOPAY]: KakaoPayFailResponse;
+  [Payment.NAVERPAY]:
+    | NaverPayInactivateSubscriptionResponse
+    | NaverPayFailResponse;
+  [Payment.TOSSPAY]: {};
 };
-export type BillingKeyCheckResponse = {
-  [Payment.KAKAOPAY]: KakaoPayBillingKeyCheckResponse | KakaoPayFailResponse;
-  [Payment.NAVERPAY]: NaverPayBillingKeyCheckResponse | NaverPayFailResponse;
-  [Payment.TOSSPAY]: TossPayBillingKeyCheckResponse | TossPayFailResponse;
+export type CheckSubscriptionParam = {
+  [Payment.KAKAOPAY]: KakaoPayCheckSubscriptionParam;
+  [Payment.NAVERPAY]: NaverPayCheckSubscriptionParam;
+  [Payment.TOSSPAY]: TossPayCheckSubscriptionParam;
+};
+export type CheckSubscriptionResponse = {
+  [Payment.KAKAOPAY]: KakaoPayCheckSubscriptionResponse;
+  [Payment.NAVERPAY]: NaverPayCheckSubscriptionResponse;
+  [Payment.TOSSPAY]: TossPayCheckSubscriptionResponse;
+};
+export type CheckSubscriptionFailResponse = {
+  [Payment.KAKAOPAY]: KakaoPayFailResponse;
+  [Payment.NAVERPAY]: NaverPayFailResponse;
+  [Payment.TOSSPAY]: TossPayFailResponse;
 };
 
 export type RegisterSubscriptionParam = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: {};
+  [Payment.KAKAOPAY]: KakaoPayRegisterSubscriptionParam;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
@@ -109,7 +135,15 @@ export type RegisterSubscriptionResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: {};
+  [Payment.KAKAOPAY]: KakaoPayRegisterSubscriptionResponse;
+  [Payment.NAVERPAY]: {};
+  [Payment.TOSSPAY]: {};
+};
+export type RegisterSubscriptionFailResponse = {
+  [Payment.IAMPORT]: {};
+  [Payment.NICEPAY]: {};
+  [Payment.TOSS_PAYMENTS]: {};
+  [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
@@ -117,7 +151,7 @@ export type ExecuteSubscriptionParam = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: {};
+  [Payment.KAKAOPAY]: KakaoPayExecuteSubscriptionParam;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
@@ -125,7 +159,15 @@ export type ExecuteSubscriptionResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: {};
+  [Payment.KAKAOPAY]: KakaoPayExecuteSubscriptionResponse;
+  [Payment.NAVERPAY]: {};
+  [Payment.TOSSPAY]: {};
+};
+export type ExecuteSubscriptionFailResponse = {
+  [Payment.IAMPORT]: {};
+  [Payment.NICEPAY]: {};
+  [Payment.TOSS_PAYMENTS]: {};
+  [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
@@ -133,7 +175,7 @@ export type ExecuteFirstSubscriptionParam = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: {};
+  [Payment.KAKAOPAY]: KakaoPayReadyParam;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
@@ -142,7 +184,7 @@ export type CancelPaymentParam = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: {};
+  [Payment.KAKAOPAY]: KakaoPayCancelParam;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
@@ -150,7 +192,15 @@ export type CancelPaymentResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: {};
+  [Payment.KAKAOPAY]: KakaoPayCancelResponse;
+  [Payment.NAVERPAY]: {};
+  [Payment.TOSSPAY]: {};
+};
+export type CancelPaymentFailResponse = {
+  [Payment.IAMPORT]: {};
+  [Payment.NICEPAY]: {};
+  [Payment.TOSS_PAYMENTS]: {};
+  [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };

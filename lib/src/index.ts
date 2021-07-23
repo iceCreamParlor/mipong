@@ -1,3 +1,5 @@
+import { Mipong } from "./payments";
+
 export { Payment, Mipong } from "./payments";
 export { Iamport } from "./payments/iamport";
 export { KakaoPay } from "./payments/kakaopay";

@@ -4,6 +4,24 @@ import { ExecuteSubscriptionResponse, PaymentResponse } from "../type";
 import { NicePayApproveOnetimeParam } from "./type";
 
 export class NicePay implements PaymentLib<Payment.NICEPAY> {
+  registerSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
+    throw new Error("Method not implemented.");
+  }
+  executeSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
+    throw new Error("Method not implemented.");
+  }
+  cancelPayment(
+    params: {},
+    type?: "onetime" | "subscription"
+  ): Promise<PaymentResponse<{}, {}>> {
+    throw new Error("Method not implemented.");
+  }
+  getPayment(
+    params: {},
+    type?: "onetime" | "subscription"
+  ): Promise<PaymentResponse<{}, {}>> {
+    throw new Error("Method not implemented.");
+  }
   withPaymentResponse(fn: () => Promise<AxiosResponse<any>>): Promise<any> {
     throw new Error("Method not implemented.");
   }
@@ -16,21 +34,5 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
 
   public static get instance(): NicePay {
     return this._instance;
-  }
-
-  registerSubscription(input: {}): Promise<{}> {
-    throw new Error("Method not implemented.");
-  }
-  executeSubscription(input: {}): Promise<ExecuteSubscriptionResponse> {
-    throw new Error("Method not implemented.");
-  }
-  executeFirstSubscription(input: {}): Promise<{}> {
-    throw new Error("Method not implemented.");
-  }
-  cancelPayment(input: {}): Promise<{}> {
-    throw new Error("Method not implemented.");
-  }
-  getPayment(input: {}): Promise<{}> {
-    throw new Error("Method not implemented.");
   }
 }

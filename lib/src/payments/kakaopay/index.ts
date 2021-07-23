@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import {
-  BillingKeyCheckable,
   convertUrlEncodedParam,
   getSecret,
   Inactivable,
@@ -9,26 +8,35 @@ import {
   PaymentAPISignature,
   PaymentLib,
   retry,
+  SubscriptionCheckable,
 } from "..";
-import { ExecuteSubscriptionResponse, PaymentResponse } from "../type";
+import { PaymentResponse } from "../type";
 import {
   KakaoPayAPI,
   KakaoPayApproveParam,
   KakaoPayApproveResponse,
-  KakaoPayBillingKeyCheckParam,
+  KakaoPayCancelParam,
+  KakaoPayCancelResponse,
+  KakaoPayCheckSubscriptionParam,
+  KakaoPayCheckSubscriptionResponse,
+  KakaoPayExecuteSubscriptionParam,
+  KakaoPayExecuteSubscriptionResponse,
   KakaoPayFailResponse,
   KakaoPayGetPaymentParam,
   KakaoPayGetPaymentResponse,
-  KakaoPayInactivateBillingKeyParam,
+  KakaoPayInactivateSubscriptionParam,
+  KakaoPayInactivateSubscriptionResponse,
   KakaoPayReadyParam,
   KakaoPayReadyResponse,
+  KakaoPayRegisterSubscriptionParam,
+  KakaoPayRegisterSubscriptionResponse,
 } from "./type";
 
 export class KakaoPay
   implements
     PaymentLib<Payment.KAKAOPAY>,
     Inactivable<Payment.KAKAOPAY>,
-    BillingKeyCheckable<Payment.KAKAOPAY>
+    SubscriptionCheckable<Payment.KAKAOPAY>
 {
   private static _instance: KakaoPay | undefined = undefined;
   private _baseUrl: string = "https://kapi.kakao.com";
@@ -101,34 +109,69 @@ export class KakaoPay
   }
 
   approveOnetime(
-    input: KakaoPayApproveParam
+    params: KakaoPayApproveParam
   ): Promise<PaymentResponse<KakaoPayApproveResponse, KakaoPayFailResponse>> {
-    throw new Error("Method not implemented.");
+    return this.withPaymentResponse(() =>
+      this.callAPI(KakaoPayAPI.Approve, params, "onetime")
+    );
+  }
+  registerSubscription(
+    params: KakaoPayRegisterSubscriptionParam
+  ): Promise<
+    PaymentResponse<KakaoPayRegisterSubscriptionResponse, KakaoPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(KakaoPayAPI.RegisterSubscription, params, "subscription")
+    );
+  }
+  executeSubscription(
+    params: KakaoPayExecuteSubscriptionParam
+  ): Promise<
+    PaymentResponse<KakaoPayExecuteSubscriptionResponse, KakaoPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(KakaoPayAPI.ExecuteSubscription, params, "subscription")
+    );
   }
 
-  registerSubscription(input: {}): Promise<{}> {
-    throw new Error("Method not implemented.");
+  cancelPayment(
+    params: KakaoPayCancelParam,
+    type: "onetime" | "subscription"
+  ): Promise<PaymentResponse<KakaoPayCancelResponse, KakaoPayFailResponse>> {
+    return this.withPaymentResponse(() =>
+      this.callAPI(KakaoPayAPI.CancelPayment, params, type)
+    );
   }
-  executeSubscription(input: {}): Promise<ExecuteSubscriptionResponse> {
-    throw new Error("Method not implemented.");
-  }
-  executeFirstSubscription(input: {}): Promise<{}> {
-    throw new Error("Method not implemented.");
-  }
-  cancelPayment(input: {}): Promise<{}> {
-    throw new Error("Method not implemented.");
-  }
+
   getPayment(
-    input: KakaoPayGetPaymentParam
-  ): Promise<KakaoPayFailResponse | KakaoPayGetPaymentResponse> {
-    throw new Error("Method not implemented.");
+    params: KakaoPayGetPaymentParam,
+    type: "onetime" | "subscription"
+  ): Promise<
+    PaymentResponse<KakaoPayGetPaymentResponse, KakaoPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(KakaoPayAPI.GetPayment, params, type)
+    );
   }
-  checkBillingKeyStatus(param: KakaoPayBillingKeyCheckParam): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  inactivateSubscription(
+    params: KakaoPayInactivateSubscriptionParam
+  ): Promise<
+    PaymentResponse<
+      KakaoPayInactivateSubscriptionResponse,
+      KakaoPayFailResponse
+    >
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(KakaoPayAPI.InactivateSubscription, params, "subscription")
+    );
   }
-  inactivateBillingKey(
-    param: KakaoPayInactivateBillingKeyParam
-  ): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  checkSubscription(
+    params: KakaoPayCheckSubscriptionParam
+  ): Promise<
+    PaymentResponse<KakaoPayCheckSubscriptionResponse, KakaoPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(KakaoPayAPI.CheckSubscription, params, "subscription")
+    );
   }
 }

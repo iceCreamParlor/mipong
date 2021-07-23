@@ -3,8 +3,20 @@ import { Iamport } from "./iamport";
 import { KakaoPay } from "./kakaopay";
 import {
   KakaoPayAPI,
+  KakaoPayApproveParam,
+  KakaoPayApproveResponse,
+  KakaoPayCancelParam,
+  KakaoPayCancelResponse,
+  KakaoPayCheckSubscriptionParam,
+  KakaoPayCheckSubscriptionResponse,
+  KakaoPayExecuteSubscriptionParam,
+  KakaoPayExecuteSubscriptionResponse,
+  KakaoPayInactivateSubscriptionParam,
+  KakaoPayInactivateSubscriptionResponse,
   KakaoPayReadyParam,
   KakaoPayReadyResponse,
+  KakaoPayRegisterSubscriptionParam,
+  KakaoPayRegisterSubscriptionResponse,
 } from "./kakaopay/type";
 import { NaverPay } from "./naverpay";
 import { NicePay } from "./nicepay";
@@ -14,18 +26,26 @@ import {
   ApproveOnetimeFailResponse,
   ApproveOnetimeParam,
   ApproveOnetimeResponse,
-  BillingKeyCheckParam,
+  CheckSubscriptionParam as CheckSubscriptionParam,
+  CancelPaymentFailResponse,
   CancelPaymentParam,
   CancelPaymentResponse,
   ExecuteFirstSubscriptionParam,
+  ExecuteSubscriptionFailResponse,
   ExecuteSubscriptionParam,
   ExecuteSubscriptionResponse,
+  GetPaymentFailResponse,
   GetPaymentParam,
   GetPaymentResponse,
-  InactivateBillingKeyParam,
+  InactivateSubscriptionParam as InactivateSubscriptionParam,
   PaymentResponse,
+  RegisterSubscriptionFailResponse,
   RegisterSubscriptionParam,
   RegisterSubscriptionResponse,
+  InactivateSubscriptionResponse,
+  InactivateSubscriptionFailResponse,
+  CheckSubscriptionResponse,
+  CheckSubscriptionFailResponse,
 } from "./type";
 
 export type PaymentType = {
@@ -83,23 +103,27 @@ export const PaymentAPI = {
       method: HttpMethod.POST,
       url: "/v1/payment/ready",
     },
+    [KakaoPayAPI.RegisterSubscription]: {
+      method: HttpMethod.POST,
+      url: "/v1/payment/ready",
+    },
     [KakaoPayAPI.Approve]: {
       method: HttpMethod.POST,
       url: "/v1/payment/approve",
     },
-    [KakaoPayAPI.ApproveSubscription]: {
-      method: HttpMethod.POST,
-      url: "/v1/payment/approve",
-    },
+    // [KakaoPayAPI.ApproveSubscription]: {
+    //   method: HttpMethod.POST,
+    //   url: "/v1/payment/approve",
+    // },
     [KakaoPayAPI.InactivateSubscription]: {
       method: HttpMethod.POST,
       url: "/v1/payment/manage/subscription/inactive",
     },
-    [KakaoPayAPI.Cancel]: {
+    [KakaoPayAPI.CancelPayment]: {
       method: HttpMethod.POST,
       url: "/v1/payment/cancel",
     },
-    [KakaoPayAPI.CheckBillingKey]: {
+    [KakaoPayAPI.CheckSubscription]: {
       method: HttpMethod.POST,
       url: "/v1/payment/manage/subscription/status",
     },
@@ -107,22 +131,37 @@ export const PaymentAPI = {
       method: HttpMethod.POST,
       url: "/v1/payment/order",
     },
+    [KakaoPayAPI.ExecuteSubscription]: {
+      method: HttpMethod.POST,
+      url: "/v1/payment/subscription",
+    },
   },
 };
 export type PaymentAPISignature = {
   [Payment.KAKAOPAY]: {
     [KakaoPayAPI.Ready]: [KakaoPayReadyParam, KakaoPayReadyResponse];
-    [KakaoPayAPI.Approve]: [KakaoPayReadyParam, KakaoPayReadyResponse];
-    [KakaoPayAPI.ApproveSubscription]: [
-      KakaoPayReadyParam,
-      KakaoPayReadyResponse
+    [KakaoPayAPI.RegisterSubscription]: [
+      KakaoPayRegisterSubscriptionParam,
+      KakaoPayRegisterSubscriptionResponse
     ];
+    [KakaoPayAPI.Approve]: [KakaoPayApproveParam, KakaoPayApproveResponse];
+    // [KakaoPayAPI.ApproveSubscription]: [
+    //   KakaoPayReadyParam,
+    //   KakaoPayReadyResponse
+    // ];
     [KakaoPayAPI.InactivateSubscription]: [
-      KakaoPayReadyParam,
-      KakaoPayReadyResponse
+      KakaoPayInactivateSubscriptionParam,
+      KakaoPayInactivateSubscriptionResponse
     ];
-    [KakaoPayAPI.Cancel]: [KakaoPayReadyParam, KakaoPayReadyResponse];
-    [KakaoPayAPI.CheckBillingKey]: [KakaoPayReadyParam, KakaoPayReadyResponse];
+    [KakaoPayAPI.CancelPayment]: [KakaoPayCancelParam, KakaoPayCancelResponse];
+    [KakaoPayAPI.ExecuteSubscription]: [
+      KakaoPayExecuteSubscriptionParam,
+      KakaoPayExecuteSubscriptionResponse
+    ];
+    [KakaoPayAPI.CheckSubscription]: [
+      KakaoPayCheckSubscriptionParam,
+      KakaoPayCheckSubscriptionResponse
+    ];
     [KakaoPayAPI.GetPayment]: [any, any];
   };
 };
@@ -132,7 +171,7 @@ export type InactivablePayment =
   | Payment.NAVERPAY
   | Payment.TOSSPAY;
 
-export type BillingKeyCheckablePayment =
+export type SubscriptionCheckablePayment =
   | Payment.KAKAOPAY
   | Payment.NAVERPAY
   | Payment.TOSSPAY;
@@ -145,49 +184,68 @@ export abstract class PaymentLib<T extends Payment> {
 
   // 일반결제 승인
   abstract approveOnetime(
-    input: ApproveOnetimeParam[T]
+    params: ApproveOnetimeParam[T]
   ): Promise<
     PaymentResponse<ApproveOnetimeResponse[T], ApproveOnetimeFailResponse[T]>
   >;
 
   // 정기결제 등록
   abstract registerSubscription(
-    input: RegisterSubscriptionParam[T]
-  ): Promise<RegisterSubscriptionResponse[T]>;
+    params: RegisterSubscriptionParam[T]
+  ): Promise<
+    PaymentResponse<
+      RegisterSubscriptionResponse[T],
+      RegisterSubscriptionFailResponse[T]
+    >
+  >;
 
   // 정기결제 실행
   abstract executeSubscription(
-    input: ExecuteSubscriptionParam[T]
-  ): Promise<ExecuteSubscriptionResponse>;
-
-  // 첫정기결제 실행
-  abstract executeFirstSubscription(
-    input: ExecuteFirstSubscriptionParam[T]
-  ): Promise<ExecuteSubscriptionResponse[T]>;
+    params: ExecuteSubscriptionParam[T]
+  ): Promise<
+    PaymentResponse<
+      ExecuteSubscriptionResponse[T],
+      ExecuteSubscriptionFailResponse[T]
+    >
+  >;
 
   // 결제 취소
   abstract cancelPayment(
-    input: CancelPaymentParam[T]
-  ): Promise<CancelPaymentResponse[T]>;
+    params: CancelPaymentParam[T],
+    type?: "onetime" | "subscription"
+  ): Promise<
+    PaymentResponse<CancelPaymentResponse[T], CancelPaymentFailResponse[T]>
+  >;
 
   // 결제 조회
   abstract getPayment(
-    input: GetPaymentParam[T]
-  ): Promise<GetPaymentResponse[T]>;
+    params: GetPaymentParam[T],
+    type?: "onetime" | "subscription"
+  ): Promise<PaymentResponse<GetPaymentResponse[T], GetPaymentFailResponse[T]>>;
 }
 export abstract class Inactivable<T extends InactivablePayment> {
   // 정기결제키 비활성화
-  abstract inactivateBillingKey(
-    param: InactivateBillingKeyParam[T]
-  ): Promise<boolean>;
+  abstract inactivateSubscription(
+    params: InactivateSubscriptionParam[T]
+  ): Promise<
+    PaymentResponse<
+      InactivateSubscriptionResponse[T],
+      InactivateSubscriptionFailResponse[T]
+    >
+  >;
 }
-export abstract class BillingKeyCheckable<
-  T extends BillingKeyCheckablePayment
+export abstract class SubscriptionCheckable<
+  T extends SubscriptionCheckablePayment
 > {
   // 정기결제키 상태체크
-  abstract checkBillingKeyStatus(
-    param: BillingKeyCheckParam[T]
-  ): Promise<boolean>;
+  abstract checkSubscription(
+    params: CheckSubscriptionParam[T]
+  ): Promise<
+    PaymentResponse<
+      CheckSubscriptionResponse[T],
+      CheckSubscriptionFailResponse[T]
+    >
+  >;
 }
 
 export function die(msg: string): never {

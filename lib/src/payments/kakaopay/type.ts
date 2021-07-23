@@ -1,11 +1,13 @@
 export enum KakaoPayAPI {
-  Ready = "ready",
-  Approve = "approve",
-  ApproveSubscription = "approveSubscription",
-  InactivateSubscription = "inactivateSubscription",
-  Cancel = "cancel",
-  CheckBillingKey = "checkBillingKey",
-  GetPayment = "getPayment",
+  Ready,
+  Approve,
+  RegisterSubscription,
+  // ApproveSubscription,
+  InactivateSubscription,
+  CancelPayment,
+  ExecuteSubscription,
+  CheckSubscription,
+  GetPayment,
 }
 export interface KakaoPayFailResponse {
   code: number;
@@ -65,6 +67,8 @@ export interface KakaoPayReadyResponse {
   // 결제 준비 요청 시간
   created_at: string;
 }
+export type KakaoPayRegisterSubscriptionParam = KakaoPayReadyParam;
+export type KakaoPayRegisterSubscriptionResponse = KakaoPayReadyResponse;
 export interface KakaoPayApproveParam {
   orderCid: string;
   pgToken: string;
@@ -99,6 +103,112 @@ export interface KakaoPayApproveResponse {
   // 결제 승인 시각
   approved_at: string;
   // 결제 승인 요청에 대해 저장한 값, 요청 시 전달된 내용
+  payload: string;
+}
+export interface KakaoPayExecuteSubscriptionParam {
+  // 정기결제 키, 20자. 1회차 정기 결제 시 응답으로 받았던 SID
+  sid: string;
+  // 가맹점 주문번호, 최대 100자
+  partner_order_id: string;
+  // 가맹점 회원 아이디, 최대 100자. SID를 발급 받은 첫 결제의 결제 준비 API 로 전달한 값과 일치해야 함
+  partner_user_id: string;
+  // 상품명, 최대 100자
+  item_name?: string;
+  // 상품코드, 최대 100자
+  item_code?: string;
+  // 상품 수량
+  quantity: number;
+  // 상품 총액
+  total_amount: number;
+  // 상품 비과세 금액
+  tax_free_amount: number;
+  // 상품 부가세 금액 [기본값 : (상품총액 - 상품 비과세 금액)/11 . 소수점 이하 반올림]
+  vat_amount?: number;
+  // 결제 승인 요청에 대해 저장하고 싶은 값, 최대 200자
+  payload?: string;
+}
+export interface KakaoPayExecuteSubscriptionResponse {
+  // Request 고유 번호
+  aid: string;
+  // 결제 고유 번호
+  tid: string;
+  // 가맹점 코드
+  cid: string;
+  // 정기(배치)결제 고유 번호. 20자
+  sid: string;
+  // 가맹점 주문번호
+  partner_order_id: string;
+  // 가맹점 회원 id
+  partner_user_id: string;
+  // 결제 수단, CARD 또는 MONEY 중 하나
+  payment_method_type: string;
+  // 결제 금액 정보
+  amount: Amount;
+  // 결제 상세 정보, 결제수단이 카드일 경우만 포함
+  card_info?: CardInfo;
+  // 상품 이름, 최대 100자
+  item_name: string;
+  // 상품 코드, 최대 100자
+  item_code: string;
+  // 상품 수량
+  quantity: number;
+  // 결제 준비 요청 시각
+  created_at: string;
+  // 결제 승인 시각
+  approved_at: string;
+  // 결제 요청 시 전달했던 값
+  payload: string;
+}
+export interface KakaoPayCancelParam {
+  // 결제 고유번호
+  tid: string;
+  // 취소 금액
+  cancel_amount: number;
+  // 취소 비과세 금액
+  cancel_tax_free_amount: number;
+  // 취소 부과세 금액, 디폴트 : (취소 금액 - 취소 비과세 금액)/11, 소숫점이하 반올림)
+  cancel_vat_amount?: number;
+  // 취소 가능 금액(결제 취소 요청 금액 포함)
+  cancel_available_amount?: number;
+  // 해당 요청에 대해 저장하고 싶은 값, 최대 200자
+  payload?: string;
+}
+export interface KakaoPayCancelResponse {
+  // 요청 고유 번호
+  aid: string;
+  // 결제 고유 번호, 10자
+  tid: string;
+  // 가맹점 코드, 20자
+  cid: string;
+  // 결제 상태
+  status: PaymentStatus;
+  // 가맹점 주문번호, 최대 100자
+  partner_order_id: string;
+  // 가맹점 회원 id, 최대 100자
+  partner_user_id: string;
+  // 결제 수단, CARD 또는 MONEY 중 하나
+  payment_method_type: string;
+  // 결제 금액 정보
+  amount: Amount;
+  // 이번 요청으로 취소된 금액
+  approved_cancel_amount: ApprovedCancelAmount;
+  // 누계 취소 금액
+  canceled_amount: CanceledAmount;
+  // 남은 취소 가능 금액
+  cancel_available_amount: CancelAvailableAmount;
+  // 상품 이름, 최대 100자
+  item_name: string;
+  // 상품 코드, 최대 100자
+  item_code: string;
+  // 상품 수량
+  quantity: number;
+  // 결제 준비 요청 시각
+  created_at: string;
+  // 결제 승인 시각
+  approved_at: string;
+  // 결제 취소 시각
+  canceled_at: string;
+  // 취소 요청 시 전달한 값
   payload: string;
 }
 export interface KakaoPayGetPaymentParam {
@@ -141,10 +251,10 @@ export interface KakaoPayGetPaymentResponse {
   // 결제/취소 상세
   payment_action_details: PaymentActionDetails[];
 }
-export interface KakaoPayInactivateBillingKeyParam {
+export interface KakaoPayInactivateSubscriptionParam {
   sid: string;
 }
-export interface KakaoPayInactivateBillingKeyResponse {
+export interface KakaoPayInactivateSubscriptionResponse {
   // 정기 결제 고유번호, 20자
   sid: string;
   // 정기 결제 상태, ACTIVE(활성) 또는 INACTIVE(비활성) 중 하나
@@ -156,13 +266,13 @@ export interface KakaoPayInactivateBillingKeyResponse {
   // 정기결제 비활성화 시각
   inactivated_at: string;
 }
-export interface KakaoPayBillingKeyCheckParam {
+export interface KakaoPayCheckSubscriptionParam {
   // 가맹점 코드 인증키, 24자, 숫자+영문 소문자 조합
   cid_secret?: string;
   // 정기 결제 고유번호. 20자
   sid: string;
 }
-export interface KakaoPayBillingKeyCheckResponse {
+export interface KakaoPayCheckSubscriptionResponse {
   available: boolean;
   cid: string;
   sid: string;
@@ -293,4 +403,16 @@ interface CardInfo {
   purchase_corp_code?: string;
   // 무이자할부 여부(Y/N)
   interest_free_install?: string;
+}
+interface ApprovedCancelAmount {
+  // 이번 요청으로 취소된 전체 금액
+  total: number;
+  // 이번 요청으로 취소된 비과세 금액
+  tax_free: number;
+  // 이번 요청으로 취소된 부가세 금액
+  vat: number;
+  // 이번 요청으로 취소된 포인트 금액
+  point: number;
+  // 이번 요청으로 취소된 할인 금액
+  discount: number;
 }
