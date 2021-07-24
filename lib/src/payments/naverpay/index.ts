@@ -1,13 +1,26 @@
-import { AxiosResponse } from "axios";
-import { SubscriptionCheckable, Inactivable, Payment, PaymentLib } from "..";
+import axios, { AxiosResponse } from "axios";
+import {
+  SubscriptionCheckable,
+  Inactivable,
+  Payment,
+  PaymentLib,
+  retry,
+  PaymentAPISignature,
+  getSecret,
+  PaymentAPI,
+  convertUrlEncodedParam,
+  handleError,
+} from "..";
 import { ExecuteSubscriptionResponse, PaymentResponse } from "../type";
 import {
   NaverPayApproveOnetimeParam,
-  NaverPayBillingKeyCheckParam,
-  NaverPayBillingKeyCheckResponse,
+  NaverPayCheckSubscriptionParam,
+  NaverPayCheckSubscriptionResponse,
   NaverPayFailResponse,
-  NaverPayInactivateBiilingKeyResponse,
-  NaverPayInactivateBillingKeyParam,
+  NaverPayInactivateSubscriptionResponse,
+  NaverPayInactivateSubscriptionParam,
+  NaverPayResponse,
+  NaverPayAPI,
 } from "./type";
 
 export class NaverPay
@@ -16,19 +29,70 @@ export class NaverPay
     Inactivable<Payment.NAVERPAY>,
     SubscriptionCheckable<Payment.NAVERPAY>
 {
+  private static _instance: NaverPay | undefined = undefined;
+  private _isDev: boolean = getSecret().NAVERPAY_DEV_MODE ?? false;
+  private _baseUrl: string = this._isDev
+    ? "https://apis.naver.com"
+    : "https://dev.apis.naver.com";
+
+  async withPaymentResponse<T extends NaverPayResponse>(
+    fn: () => Promise<AxiosResponse<T>>
+  ): Promise<PaymentResponse<T, NaverPayFailResponse>> {
+    const response = await retry({ fn });
+    if (response.status === 200 && response.data.code === "Success") {
+      return {
+        success: true,
+        statusCode: response.status,
+        data: response.data,
+      };
+    }
+    return {
+      success: false,
+      statusCode: response.status,
+      data: response.data as NaverPayFailResponse,
+    };
+  }
+
+  private async callAPI<T extends NaverPayAPI>(
+    api: T,
+    params: PaymentAPISignature[Payment.NAVERPAY][T][0],
+    type: "onetime" | "subscription"
+  ): Promise<AxiosResponse<PaymentAPISignature[Payment.NAVERPAY][T][1]>> {
+    const chainId =
+      type === "onetime"
+        ? getSecret().NAVERPAY_ONETIME_CHAIN_ID
+        : getSecret().NAVERPAY_SUBSCRIPTION_CHAIN_ID;
+
+    return await axios
+      .post(
+        `${this._baseUrl}/${getSecret().pay.NAVERPAY_PARTNER_ID}${
+          PaymentAPI[Payment.KAKAOPAY][api].url
+        }`,
+        convertUrlEncodedParam(params),
+        {
+          headers: {
+            "X-NaverPay-Chain-Id": chainId,
+            "X-Naver-Client-Id": getSecret().pay.NAVERPAY_CLIENT_ID,
+            "X-Naver-Client-Secret": getSecret().pay.NAVERPAY_CLIENT_SECRET,
+          },
+        }
+      )
+      .catch(handleError);
+  }
+
   checkSubscription(
-    params: NaverPayBillingKeyCheckParam
+    params: NaverPayCheckSubscriptionParam
   ): Promise<
-    PaymentResponse<NaverPayBillingKeyCheckResponse, NaverPayFailResponse>
+    PaymentResponse<NaverPayCheckSubscriptionResponse, NaverPayFailResponse>
   > {
     throw new Error("Method not implemented.");
   }
   inactivateSubscription(
-    params: NaverPayInactivateBillingKeyParam
+    params: NaverPayInactivateSubscriptionParam
   ): Promise<
     PaymentResponse<
-      NaverPayInactivateBiilingKeyResponse | NaverPayFailResponse,
-      NaverPayInactivateBiilingKeyResponse | NaverPayFailResponse
+      NaverPayInactivateSubscriptionResponse | NaverPayFailResponse,
+      NaverPayInactivateSubscriptionResponse | NaverPayFailResponse
     >
   > {
     throw new Error("Method not implemented.");
@@ -51,17 +115,17 @@ export class NaverPay
   ): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
-  withPaymentResponse(fn: () => Promise<AxiosResponse<any>>): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
+
   approveOnetime(
     input: NaverPayApproveOnetimeParam
   ): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
-  private static _instance: NaverPay = new NaverPay();
 
   public static get instance(): NaverPay {
+    if (this._instance === undefined) {
+      this._instance = new NaverPay();
+    }
     return this._instance;
   }
 }

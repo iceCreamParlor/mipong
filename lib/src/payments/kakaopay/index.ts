@@ -42,7 +42,6 @@ export class KakaoPay
   private _baseUrl: string = "https://kapi.kakao.com";
   private _onetimeCid: string = getSecret().KAKAOPAY_ONETIME_CID;
   private _subscriptionCid: string = getSecret().KAKAOPAY_SUBSCRIPTION_CID;
-  private _kakaopayAPI = PaymentAPI[Payment.KAKAOPAY];
 
   public static get instance(): KakaoPay {
     if (this._instance === undefined) {
@@ -54,18 +53,18 @@ export class KakaoPay
   async withPaymentResponse<T>(
     fn: () => Promise<AxiosResponse<T>>
   ): Promise<PaymentResponse<T, KakaoPayFailResponse>> {
-    const result = await retry({ fn });
-    if (result.status === 200) {
+    const response = await retry({ fn });
+    if (response.status === 200) {
       return {
         success: true,
-        statusCode: result.status,
-        data: result.data,
+        statusCode: response.status,
+        data: response.data,
       };
     }
     return {
       success: false,
-      statusCode: result.status,
-      data: result.data as any,
+      statusCode: response.status,
+      data: response.data as any,
     };
   }
 
@@ -83,13 +82,17 @@ export class KakaoPay
     requestParam.append("cid", cid);
 
     return axios
-      .post(`${this._baseUrl}${this._kakaopayAPI[api].url}`, requestParam, {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-          Authorization: `KakaoAK ${getSecret().KAKAOPAY_ADMIN_KEY}`,
-        },
-        timeout: 10 * 1000,
-      })
+      .post(
+        `${this._baseUrl}${PaymentAPI[Payment.KAKAOPAY][api].url}`,
+        requestParam,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+            Authorization: `KakaoAK ${getSecret().KAKAOPAY_ADMIN_KEY}`,
+          },
+          timeout: 10 * 1000,
+        }
+      )
       .catch((err) => {
         if (err.isAxiosError && [200, 400, 500].includes(err.response.status)) {
           console.log(err.response.data);

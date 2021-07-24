@@ -19,6 +19,7 @@ import {
   KakaoPayRegisterSubscriptionResponse,
 } from "./kakaopay/type";
 import { NaverPay } from "./naverpay";
+import { NaverPayAPI } from "./naverpay/type";
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
 import { TossPay } from "./tosspay";
@@ -26,26 +27,25 @@ import {
   ApproveOnetimeFailResponse,
   ApproveOnetimeParam,
   ApproveOnetimeResponse,
-  CheckSubscriptionParam as CheckSubscriptionParam,
   CancelPaymentFailResponse,
   CancelPaymentParam,
   CancelPaymentResponse,
-  ExecuteFirstSubscriptionParam,
+  CheckSubscriptionFailResponse,
+  CheckSubscriptionParam as CheckSubscriptionParam,
+  CheckSubscriptionResponse,
   ExecuteSubscriptionFailResponse,
   ExecuteSubscriptionParam,
   ExecuteSubscriptionResponse,
   GetPaymentFailResponse,
   GetPaymentParam,
   GetPaymentResponse,
+  InactivateSubscriptionFailResponse,
   InactivateSubscriptionParam as InactivateSubscriptionParam,
+  InactivateSubscriptionResponse,
   PaymentResponse,
   RegisterSubscriptionFailResponse,
   RegisterSubscriptionParam,
   RegisterSubscriptionResponse,
-  InactivateSubscriptionResponse,
-  InactivateSubscriptionFailResponse,
-  CheckSubscriptionResponse,
-  CheckSubscriptionFailResponse,
 } from "./type";
 
 export type PaymentType = {
@@ -111,10 +111,6 @@ export const PaymentAPI = {
       method: HttpMethod.POST,
       url: "/v1/payment/approve",
     },
-    // [KakaoPayAPI.ApproveSubscription]: {
-    //   method: HttpMethod.POST,
-    //   url: "/v1/payment/approve",
-    // },
     [KakaoPayAPI.InactivateSubscription]: {
       method: HttpMethod.POST,
       url: "/v1/payment/manage/subscription/inactive",
@@ -134,6 +130,16 @@ export const PaymentAPI = {
     [KakaoPayAPI.ExecuteSubscription]: {
       method: HttpMethod.POST,
       url: "/v1/payment/subscription",
+    },
+  },
+  [Payment.NAVERPAY]: {
+    [NaverPayAPI.Approve]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/v2.2/apply/payment",
+    },
+    [NaverPayAPI.GetPayment]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/v2.2/list/history",
     },
   },
 };
@@ -163,6 +169,10 @@ export type PaymentAPISignature = {
       KakaoPayCheckSubscriptionResponse
     ];
     [KakaoPayAPI.GetPayment]: [any, any];
+  };
+  [Payment.NAVERPAY]: {
+    [NaverPayAPI.Approve]: [{}, {}];
+    [NaverPayAPI.GetPayment]: [{}, {}];
   };
 };
 

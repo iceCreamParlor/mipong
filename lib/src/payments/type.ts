@@ -21,11 +21,11 @@ import {
 } from "./kakaopay/type";
 import {
   NaverPayApproveOnetimeParam,
-  NaverPayBillingKeyCheckParam as NaverPayCheckSubscriptionParam,
-  NaverPayBillingKeyCheckResponse as NaverPayCheckSubscriptionResponse,
+  NaverPayCheckSubscriptionParam as NaverPayCheckSubscriptionParam,
+  NaverPayCheckSubscriptionResponse as NaverPayCheckSubscriptionResponse,
   NaverPayFailResponse,
-  NaverPayInactivateBiilingKeyResponse as NaverPayInactivateSubscriptionResponse,
-  NaverPayInactivateBillingKeyParam as NaverPayInactivateSubscriptionParam,
+  NaverPayInactivateSubscriptionResponse as NaverPayInactivateSubscriptionResponse,
+  NaverPayInactivateSubscriptionParam as NaverPayInactivateSubscriptionParam,
 } from "./naverpay/type";
 import { NicePayApproveOnetimeParam } from "./nicepay/type";
 import { TossPaymentsApproveOnetimeParam } from "./toss-payments/type";
