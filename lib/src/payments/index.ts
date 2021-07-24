@@ -58,8 +58,8 @@ export type PaymentType = {
 };
 
 export class Mipong {
-  public static DEFAULT_RETRY_TIME = 5;
-  public static DEFAULT_RETRY_INTERVAL = 10;
+  public static DEFAULT_RETRY_TIME = 3;
+  public static DEFAULT_RETRY_INTERVAL = 100;
   public static getIamport() {
     return Iamport.instance;
   }

@@ -115,6 +115,14 @@ export class KakaoPay
       this.callAPI(KakaoPayAPI.Approve, params, "onetime")
     );
   }
+  approveSubscription(
+    params: KakaoPayApproveParam
+  ): Promise<PaymentResponse<KakaoPayApproveResponse, KakaoPayFailResponse>> {
+    return this.withPaymentResponse(() =>
+      this.callAPI(KakaoPayAPI.Approve, params, "subscription")
+    );
+  }
+
   registerSubscription(
     params: KakaoPayRegisterSubscriptionParam
   ): Promise<
