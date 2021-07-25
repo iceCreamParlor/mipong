@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { SubscriptionCheckable, Inactivable, Payment, PaymentLib } from "..";
-import { ExecuteSubscriptionResponse, PaymentResponse } from "../type";
+import { ApproveSubscriptionResponse, PaymentResponse } from "../type";
 import {
   TossPayApproveOnetimeParam,
   TossPayBillingKeyCheckParam,
@@ -29,7 +29,7 @@ export class TossPay
   registerSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
-  executeSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
+  approveSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
   cancelPayment(

@@ -7,8 +7,8 @@ import {
   KakaoPayCancelResponse,
   KakaoPayCheckSubscriptionParam,
   KakaoPayCheckSubscriptionResponse,
-  KakaoPayExecuteSubscriptionParam,
-  KakaoPayExecuteSubscriptionResponse,
+  KakaoPayApproveSubscriptionParam,
+  KakaoPayApproveSubscriptionResponse,
   KakaoPayFailResponse,
   KakaoPayGetPaymentParam,
   KakaoPayGetPaymentResponse,
@@ -154,23 +154,23 @@ export type RegisterSubscriptionFailResponse = {
   [Payment.NAVERPAY]: NaverPayFailResponse;
   [Payment.TOSSPAY]: {};
 };
-export type ExecuteSubscriptionParam = {
+export type ApproveSubscriptionParam = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: KakaoPayExecuteSubscriptionParam;
+  [Payment.KAKAOPAY]: KakaoPayApproveSubscriptionParam;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
-export type ExecuteSubscriptionResponse = {
+export type ApproveSubscriptionResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: KakaoPayExecuteSubscriptionResponse;
+  [Payment.KAKAOPAY]: KakaoPayApproveSubscriptionResponse;
   [Payment.NAVERPAY]: {};
   [Payment.TOSSPAY]: {};
 };
-export type ExecuteSubscriptionFailResponse = {
+export type ApproveSubscriptionFailResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};

@@ -21,8 +21,8 @@ import {
   KakaoPayCancelResponse,
   KakaoPayCheckSubscriptionParam,
   KakaoPayCheckSubscriptionResponse,
-  KakaoPayExecuteSubscriptionParam,
-  KakaoPayExecuteSubscriptionResponse,
+  KakaoPayApproveSubscriptionParam,
+  KakaoPayApproveSubscriptionResponse,
   KakaoPayFailResponse,
   KakaoPayGetPaymentParam,
   KakaoPayGetPaymentResponse,
@@ -115,13 +115,6 @@ export class KakaoPay
       this.callAPI(KakaoPayAPI.Approve, params, "onetime")
     );
   }
-  approveSubscription(
-    params: KakaoPayApproveParam
-  ): Promise<PaymentResponse<KakaoPayApproveResponse, KakaoPayFailResponse>> {
-    return this.withPaymentResponse(() =>
-      this.callAPI(KakaoPayAPI.Approve, params, "subscription")
-    );
-  }
 
   registerSubscription(
     params: KakaoPayRegisterSubscriptionParam
@@ -132,13 +125,13 @@ export class KakaoPay
       this.callAPI(KakaoPayAPI.RegisterSubscription, params, "subscription")
     );
   }
-  executeSubscription(
-    params: KakaoPayExecuteSubscriptionParam
+  approveSubscription(
+    params: KakaoPayApproveSubscriptionParam
   ): Promise<
-    PaymentResponse<KakaoPayExecuteSubscriptionResponse, KakaoPayFailResponse>
+    PaymentResponse<KakaoPayApproveSubscriptionResponse, KakaoPayFailResponse>
   > {
     return this.withPaymentResponse(() =>
-      this.callAPI(KakaoPayAPI.ExecuteSubscription, params, "subscription")
+      this.callAPI(KakaoPayAPI.ApproveSubscription, params, "subscription")
     );
   }
 

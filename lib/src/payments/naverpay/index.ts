@@ -147,7 +147,7 @@ export class NaverPay
     throw new Error("Method not implemented.");
   }
 
-  executeSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
+  approveSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
 

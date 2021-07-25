@@ -5,7 +5,7 @@ export enum KakaoPayAPI {
   // ApproveSubscription,
   InactivateSubscription,
   CancelPayment,
-  ExecuteSubscription,
+  ApproveSubscription,
   CheckSubscription,
   GetPayment,
 }
@@ -116,7 +116,7 @@ export interface KakaoPayApproveResponse {
   // 결제 승인 요청에 대해 저장한 값, 요청 시 전달된 내용
   payload: string;
 }
-export interface KakaoPayExecuteSubscriptionParam {
+export interface KakaoPayApproveSubscriptionParam {
   // 정기결제 키, 20자. 1회차 정기 결제 시 응답으로 받았던 SID
   sid: string;
   // 가맹점 주문번호, 최대 100자
@@ -138,7 +138,7 @@ export interface KakaoPayExecuteSubscriptionParam {
   // 결제 승인 요청에 대해 저장하고 싶은 값, 최대 200자
   payload?: string;
 }
-export interface KakaoPayExecuteSubscriptionResponse {
+export interface KakaoPayApproveSubscriptionResponse {
   // Request 고유 번호
   aid: string;
   // 결제 고유 번호

@@ -9,8 +9,8 @@ import {
   KakaoPayCancelResponse,
   KakaoPayCheckSubscriptionParam,
   KakaoPayCheckSubscriptionResponse,
-  KakaoPayExecuteSubscriptionParam,
-  KakaoPayExecuteSubscriptionResponse,
+  KakaoPayApproveSubscriptionParam,
+  KakaoPayApproveSubscriptionResponse,
   KakaoPayInactivateSubscriptionParam,
   KakaoPayInactivateSubscriptionResponse,
   KakaoPayReadyParam,
@@ -43,9 +43,9 @@ import {
   CheckSubscriptionFailResponse,
   CheckSubscriptionParam as CheckSubscriptionParam,
   CheckSubscriptionResponse,
-  ExecuteSubscriptionFailResponse,
-  ExecuteSubscriptionParam,
-  ExecuteSubscriptionResponse,
+  ApproveSubscriptionFailResponse,
+  ApproveSubscriptionParam,
+  ApproveSubscriptionResponse,
   GetPaymentFailResponse,
   GetPaymentParam,
   GetPaymentResponse,
@@ -149,7 +149,7 @@ export const PaymentAPI = {
       url: "/v1/payment/order",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
-    [KakaoPayAPI.ExecuteSubscription]: {
+    [KakaoPayAPI.ApproveSubscription]: {
       method: HttpMethod.POST,
       url: "/v1/payment/subscription",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
@@ -189,6 +189,11 @@ export const PaymentAPI = {
     [NaverPayAPI.ReserveSubscription]: {
       method: HttpMethod.POST,
       url: "/naverpay/payments/recurrent/pay/v3/reserve",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+    },
+    [NaverPayAPI.ApproveSubscription]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/recurrent/pay/v3/approval",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
   },
@@ -256,9 +261,9 @@ export type PaymentAPISignature = {
       KakaoPayInactivateSubscriptionResponse
     ];
     [KakaoPayAPI.CancelPayment]: [KakaoPayCancelParam, KakaoPayCancelResponse];
-    [KakaoPayAPI.ExecuteSubscription]: [
-      KakaoPayExecuteSubscriptionParam,
-      KakaoPayExecuteSubscriptionResponse
+    [KakaoPayAPI.ApproveSubscription]: [
+      KakaoPayApproveSubscriptionParam,
+      KakaoPayApproveSubscriptionResponse
     ];
     [KakaoPayAPI.CheckSubscription]: [
       KakaoPayCheckSubscriptionParam,
@@ -287,6 +292,7 @@ export type PaymentAPISignature = {
     [NaverPayAPI.InactivateSubscription]: [{}, {}];
     [NaverPayAPI.CheckSubscription]: [{}, {}];
     [NaverPayAPI.ReserveSubscription]: [{}, {}];
+    [NaverPayAPI.ApproveSubscription]: [{}, {}];
   };
 };
 
@@ -324,12 +330,12 @@ export abstract class PaymentLib<T extends Payment> {
   >;
 
   // 정기결제 실행
-  abstract executeSubscription(
-    params: ExecuteSubscriptionParam[T]
+  abstract approveSubscription(
+    params: ApproveSubscriptionParam[T]
   ): Promise<
     PaymentResponse<
-      ExecuteSubscriptionResponse[T],
-      ExecuteSubscriptionFailResponse[T]
+      ApproveSubscriptionResponse[T],
+      ApproveSubscriptionFailResponse[T]
     >
   >;
 

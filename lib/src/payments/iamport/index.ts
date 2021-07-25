@@ -1,13 +1,13 @@
 import { AxiosResponse } from "axios";
 import { Payment, PaymentLib } from "..";
-import { PaymentResponse, ExecuteSubscriptionResponse } from "../type";
+import { PaymentResponse, ApproveSubscriptionResponse } from "../type";
 import { IamportApproveOnetimeParam } from "./type";
 
 export class Iamport implements PaymentLib<Payment.IAMPORT> {
   registerSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
-  executeSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
+  approveSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
   cancelPayment(
