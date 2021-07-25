@@ -1,6 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import {
+  ContentType,
   convertUrlEncodedParam,
+  doRequest,
   getSecret,
   Inactivable,
   Payment,
@@ -78,28 +80,23 @@ export class KakaoPay
       throw new Error(`[Kakaopay] ${type} CID is empty.`);
     }
 
-    const requestParam = convertUrlEncodedParam(params);
-    requestParam.append("cid", cid);
-
-    return axios
-      .post(
-        `${this._baseUrl}${PaymentAPI[Payment.KAKAOPAY][api].url}`,
-        requestParam,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-            Authorization: `KakaoAK ${getSecret().KAKAOPAY_ADMIN_KEY}`,
-          },
-          timeout: 10 * 1000,
-        }
-      )
-      .catch((err) => {
-        if (err.isAxiosError && [200, 400, 500].includes(err.response.status)) {
-          console.log(err.response.data);
-          return err.response;
-        }
-        throw err;
-      });
+    return doRequest({
+      baseUrl: this._baseUrl,
+      requestParams: {
+        ...params,
+        cid,
+      },
+      headers: {
+        Authorization: `KakaoAK ${getSecret().KAKAOPAY_ADMIN_KEY}`,
+      },
+      api: PaymentAPI[Payment.KAKAOPAY][api],
+    }).catch((err) => {
+      if (err.isAxiosError && [200, 400, 500].includes(err.response.status)) {
+        console.log(err.response.data);
+        return err.response;
+      }
+      throw err;
+    });
   }
 
   async ready(

@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Iamport } from "./iamport";
 import { KakaoPay } from "./kakaopay";
 import {
@@ -92,6 +92,11 @@ export enum HttpMethod {
   PATCH,
   DELETE,
 }
+export enum ContentType {
+  APPLICATION_JSON = "application/json",
+  X_WWW_FORM_URL_ENCODED_UTF8 = "application/x-www-form-urlencoded;charset=utf-8",
+  X_WWW_FORM_URL_ENCODED = "application/x-www-form-urlencoded",
+}
 export interface API {
   method: HttpMethod;
   url: string;
@@ -102,47 +107,132 @@ export const PaymentAPI = {
     [KakaoPayAPI.Ready]: {
       method: HttpMethod.POST,
       url: "/v1/payment/ready",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
     [KakaoPayAPI.RegisterSubscription]: {
       method: HttpMethod.POST,
       url: "/v1/payment/ready",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
     [KakaoPayAPI.Approve]: {
       method: HttpMethod.POST,
       url: "/v1/payment/approve",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
     [KakaoPayAPI.InactivateSubscription]: {
       method: HttpMethod.POST,
       url: "/v1/payment/manage/subscription/inactive",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
     [KakaoPayAPI.CancelPayment]: {
       method: HttpMethod.POST,
       url: "/v1/payment/cancel",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
     [KakaoPayAPI.CheckSubscription]: {
       method: HttpMethod.POST,
       url: "/v1/payment/manage/subscription/status",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
     [KakaoPayAPI.GetPayment]: {
       method: HttpMethod.POST,
       url: "/v1/payment/order",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
     [KakaoPayAPI.ExecuteSubscription]: {
       method: HttpMethod.POST,
       url: "/v1/payment/subscription",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
   },
   [Payment.NAVERPAY]: {
-    [NaverPayAPI.Approve]: {
+    [NaverPayAPI.ApproveOnetime]: {
       method: HttpMethod.POST,
       url: "/naverpay/payments/v2.2/apply/payment",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
     [NaverPayAPI.GetPayment]: {
       method: HttpMethod.POST,
       url: "/naverpay/payments/v2.2/list/history",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+    [NaverPayAPI.CancelPayment]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/v1/cancel",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+    },
+    [NaverPayAPI.RegisterSubscription]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/recurrent/regist/v1/approval",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+    },
+    [NaverPayAPI.InactivateSubscription]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/recurrent/expire/v1/request",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+    },
+    [NaverPayAPI.CheckSubscription]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/recurrent/v1/list",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+    },
+    [NaverPayAPI.ReserveSubscription]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/recurrent/pay/v3/reserve",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
   },
 };
+export function doRequest(params: {
+  baseUrl: string;
+  requestParams: any;
+  headers?: {
+    [key: string]: string;
+  };
+  api: {
+    method: HttpMethod;
+    url: string;
+    contentType: ContentType;
+  };
+}): Promise<AxiosResponse<any>> {
+  const { baseUrl, requestParams, headers, api } = params;
+  const requestUrl = `${baseUrl}${api.url}`;
+  const timeout = 10 * 1000; // 10 seconds
+
+  if (api.method === HttpMethod.POST) {
+    if (
+      [
+        ContentType.X_WWW_FORM_URL_ENCODED,
+        ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+      ].includes(api.contentType)
+    ) {
+      const body = convertUrlEncodedParam(requestParams);
+      return axios.post(requestUrl, body, {
+        headers: {
+          ...headers,
+          "Content-Type": ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+        },
+        timeout,
+      });
+    }
+    if (ContentType.APPLICATION_JSON === api.contentType) {
+      return axios.post(requestUrl, requestParams, {
+        headers: {
+          ...headers,
+          "Content-Type": ContentType.APPLICATION_JSON,
+        },
+        timeout,
+      });
+    }
+  }
+  if (api.method === HttpMethod.GET) {
+    return axios.get(requestUrl, {
+      headers,
+      params: requestParams,
+    });
+  }
+  die("Unsupported Request Type");
+}
 export type PaymentAPISignature = {
   [Payment.KAKAOPAY]: {
     [KakaoPayAPI.Ready]: [KakaoPayReadyParam, KakaoPayReadyResponse];
@@ -151,10 +241,6 @@ export type PaymentAPISignature = {
       KakaoPayRegisterSubscriptionResponse
     ];
     [KakaoPayAPI.Approve]: [KakaoPayApproveParam, KakaoPayApproveResponse];
-    // [KakaoPayAPI.ApproveSubscription]: [
-    //   KakaoPayReadyParam,
-    //   KakaoPayReadyResponse
-    // ];
     [KakaoPayAPI.InactivateSubscription]: [
       KakaoPayInactivateSubscriptionParam,
       KakaoPayInactivateSubscriptionResponse
@@ -171,8 +257,13 @@ export type PaymentAPISignature = {
     [KakaoPayAPI.GetPayment]: [any, any];
   };
   [Payment.NAVERPAY]: {
-    [NaverPayAPI.Approve]: [{}, {}];
+    [NaverPayAPI.ApproveOnetime]: [{}, {}];
     [NaverPayAPI.GetPayment]: [{}, {}];
+    [NaverPayAPI.CancelPayment]: [{}, {}];
+    [NaverPayAPI.RegisterSubscription]: [{}, {}];
+    [NaverPayAPI.InactivateSubscription]: [{}, {}];
+    [NaverPayAPI.CheckSubscription]: [{}, {}];
+    [NaverPayAPI.ReserveSubscription]: [{}, {}];
   };
 };
 

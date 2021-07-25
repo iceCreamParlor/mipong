@@ -1,6 +1,11 @@
 export enum NaverPayAPI {
-  Approve,
+  ApproveOnetime,
   GetPayment,
+  CancelPayment,
+  RegisterSubscription,
+  InactivateSubscription,
+  CheckSubscription,
+  ReserveSubscription,
 }
 export interface NaverPayFailResponse {
   code: NaverpayFailCode;

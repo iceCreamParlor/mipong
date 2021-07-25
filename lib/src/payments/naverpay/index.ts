@@ -10,6 +10,7 @@ import {
   PaymentAPI,
   convertUrlEncodedParam,
   handleError,
+  doRequest,
 } from "..";
 import { ExecuteSubscriptionResponse, PaymentResponse } from "../type";
 import {
@@ -63,21 +64,23 @@ export class NaverPay
         ? getSecret().NAVERPAY_ONETIME_CHAIN_ID
         : getSecret().NAVERPAY_SUBSCRIPTION_CHAIN_ID;
 
-    return await axios
-      .post(
-        `${this._baseUrl}/${getSecret().pay.NAVERPAY_PARTNER_ID}${
-          PaymentAPI[Payment.KAKAOPAY][api].url
-        }`,
-        convertUrlEncodedParam(params),
-        {
-          headers: {
-            "X-NaverPay-Chain-Id": chainId,
-            "X-Naver-Client-Id": getSecret().pay.NAVERPAY_CLIENT_ID,
-            "X-Naver-Client-Secret": getSecret().pay.NAVERPAY_CLIENT_SECRET,
-          },
-        }
-      )
-      .catch(handleError);
+    const requestBaseUrl = `${this._baseUrl}/${
+      getSecret().pay.NAVERPAY_PARTNER_ID
+    }`;
+
+    return doRequest({
+      baseUrl: requestBaseUrl,
+      requestParams: params,
+      headers: {
+        "X-NaverPay-Chain-Id": chainId,
+        "X-Naver-Client-Id": getSecret().pay.NAVERPAY_CLIENT_ID,
+        "X-Naver-Client-Secret": getSecret().pay.NAVERPAY_CLIENT_SECRET,
+      },
+      api: PaymentAPI[Payment.NAVERPAY][api],
+    }).catch((err) => {
+      console.error(err);
+      throw err;
+    });
   }
 
   checkSubscription(
