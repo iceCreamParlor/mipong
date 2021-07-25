@@ -15,11 +15,17 @@ import {
   NaverPayAPI,
   NaverPayApproveOnetimeParam,
   NaverPayApproveOnetimeResponse,
+  NaverPayCancelPaymentParam,
+  NaverPayCancelPaymentResponse,
   NaverPayCheckSubscriptionParam,
   NaverPayCheckSubscriptionResponse,
   NaverPayFailResponse,
+  NaverPayGetPaymentParam,
+  NaverPayGetPaymentResponse,
   NaverPayInactivateSubscriptionParam,
   NaverPayInactivateSubscriptionResponse,
+  NaverPayRegisterSubscriptionParam,
+  NaverPayRegisterSubscriptionResponse,
   NaverPayResponse,
 } from "./type";
 
@@ -92,6 +98,37 @@ export class NaverPay
     );
   }
 
+  cancelPayment(
+    params: NaverPayCancelPaymentParam,
+    type: "onetime" | "subscription"
+  ): Promise<
+    PaymentResponse<NaverPayCancelPaymentResponse, NaverPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(NaverPayAPI.CancelPayment, params, type)
+    );
+  }
+
+  getPayment(
+    params: NaverPayGetPaymentParam,
+    type: "onetime" | "subscription"
+  ): Promise<
+    PaymentResponse<NaverPayGetPaymentResponse, NaverPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(NaverPayAPI.GetPayment, params, type)
+    );
+  }
+  registerSubscription(
+    params: NaverPayRegisterSubscriptionParam
+  ): Promise<
+    PaymentResponse<NaverPayRegisterSubscriptionResponse, NaverPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(NaverPayAPI.RegisterSubscription, params, "subscription")
+    );
+  }
+
   checkSubscription(
     params: NaverPayCheckSubscriptionParam
   ): Promise<
@@ -109,22 +146,8 @@ export class NaverPay
   > {
     throw new Error("Method not implemented.");
   }
-  registerSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
+
   executeSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
-  cancelPayment(
-    params: {},
-    type?: "onetime" | "subscription"
-  ): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
-  getPayment(
-    params: {},
-    type?: "onetime" | "subscription"
-  ): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
 

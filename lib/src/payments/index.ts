@@ -23,6 +23,12 @@ import {
   NaverPayAPI,
   NaverPayApproveOnetimeParam,
   NaverPayApproveOnetimeResponse,
+  NaverPayCancelPaymentParam,
+  NaverPayCancelPaymentResponse,
+  NaverPayGetPaymentParam,
+  NaverPayGetPaymentResponse,
+  NaverPayRegisterSubscriptionParam,
+  NaverPayRegisterSubscriptionResponse,
 } from "./naverpay/type";
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
@@ -167,7 +173,7 @@ export const PaymentAPI = {
     },
     [NaverPayAPI.RegisterSubscription]: {
       method: HttpMethod.POST,
-      url: "/naverpay/payments/recurrent/regist/v1/approval",
+      url: "/naverpay/payments/recurrent/regist/v1/reserve",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
     [NaverPayAPI.InactivateSubscription]: {
@@ -201,7 +207,7 @@ export function doRequest(params: {
 }): Promise<AxiosResponse<any>> {
   const { baseUrl, requestParams, headers, api } = params;
   const requestUrl = `${baseUrl}${api.url}`;
-  const timeout = 10 * 1000; // 10 seconds
+  const timeout = 60 * 1000; // 네이버페이 권고사항에 따라 60초로 설정
 
   if (api.method === HttpMethod.POST) {
     if (
@@ -265,9 +271,19 @@ export type PaymentAPISignature = {
       NaverPayApproveOnetimeParam,
       NaverPayApproveOnetimeResponse
     ];
-    [NaverPayAPI.GetPayment]: [{}, {}];
-    [NaverPayAPI.CancelPayment]: [{}, {}];
-    [NaverPayAPI.RegisterSubscription]: [{}, {}];
+    [NaverPayAPI.GetPayment]: [
+      NaverPayGetPaymentParam,
+      NaverPayGetPaymentResponse
+    ];
+    [NaverPayAPI.CancelPayment]: [
+      NaverPayCancelPaymentParam,
+      NaverPayCancelPaymentResponse
+    ];
+    // https://developer.pay.naver.com/docs/v2/api#etc-etc_recurrent_reserve
+    [NaverPayAPI.RegisterSubscription]: [
+      NaverPayRegisterSubscriptionParam,
+      NaverPayRegisterSubscriptionResponse
+    ];
     [NaverPayAPI.InactivateSubscription]: [{}, {}];
     [NaverPayAPI.CheckSubscription]: [{}, {}];
     [NaverPayAPI.ReserveSubscription]: [{}, {}];

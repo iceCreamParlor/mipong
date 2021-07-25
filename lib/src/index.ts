@@ -9,14 +9,51 @@ export { TossPayments } from "./payments/toss-payments";
 export { TossPay } from "./payments/tosspay";
 
 const naverpay = Mipong.getNaverPay();
+const paymentId = "20210725NP1003002918";
+// naverpay
+//   .approveOnetime({
+//     paymentId,
+//   })
+//   .then((response) => {
+//     console.log(response.data);
+//   });
+
+// naverpay
+//   .cancelPayment(
+//     {
+//       paymentId,
+//       cancelAmount: 8900,
+//       cancelReason: "고객 요청",
+//       cancelRequester: 1,
+//       taxScopeAmount: 0,
+//       taxExScopeAmount: 8900,
+//       doCompareRest: 1,
+//     },
+//     "onetime"
+//   )
+//   .then((response) => console.log(response));
 
 naverpay
-  .approveOnetime({
-    paymentId: "20210725NP1002997178",
+  .registerSubscription({
+    actionType: "NEW",
+    //actionType값이 "CHANGE"이면 현재 사용하고 있는 정기/반복결제 등록 번호(recurrentId)값을 전달합니다.
+    // actionType값이 "CHANGE"이고 targetRecurrentId값이 등록되어 있는 정기/반복결제 등록 번호이면, 등록 완료 후 새로운 정기/반복결제 등록 번호가 발급되고 targetRecurrentId값에 해당하는 정기/반복결제는 해지됩니다
+    // targetRecurrentId: "",
+    productCode: "12345",
+    productName: "리필면도날",
+    totalPayAmount: 8900,
+    returnUrl: "http://localhost:3000/api/payment/naverpay",
   })
-  .then((response) => {
-    console.log(response.data);
-  });
+  .then((response) => console.log(response.data));
+
+// naverpay
+//   .getPayment(
+//     {
+//       paymentId,
+//     },
+//     "onetime"
+//   )
+//   .then((response) => console.log(JSON.stringify(response)));
 
 // const kakaopay = Mipong.getKakaoPay();
 

@@ -6,6 +6,7 @@ export enum NaverPayAPI {
   InactivateSubscription,
   CheckSubscription,
   ReserveSubscription,
+  ExecuteSubscription,
 }
 export interface NaverPayFailResponse {
   code: NaverpayFailCode;
@@ -106,5 +107,149 @@ export interface NaverPayApproveOnetimeResponse {
       extraDeduction: boolean;
       useCfmYmdt: string;
     };
+  };
+}
+export interface NaverPayCancelPaymentParam {
+  // 네이버페이 결제번호
+  paymentId: string;
+  // 가맹점의 결제 번호
+  merchantPayKey?: string;
+  // 취소 요청 금액
+  cancelAmount: number;
+  // 취소 사유
+  cancelReason: string;
+  // 취소 요청자(1: 구매자, 2: 가맹점 관리자) 구분이 애매한 경우 가맹점 관리자로 입력합니다
+  cancelRequester: 1 | 2;
+  // 과세 대상 금액. 과세 대상 금액 + 면세 대상 금액 = 총 결제 금액
+  taxScopeAmount: number;
+  // 면세 대상 금액. 과세 대상 금액 + 면세 대상 금액 = 총 결제 금액
+  taxExScopeAmount: number;
+  // 가맹점의 남은 금액과 네이버페이의 남은 금액이 일치하는지 체크하는 기능을 수행할지 여부
+  // 1: 수행 0: 미수행
+  doCompareRest?: 0 | 1;
+  /**
+   * 이번 취소가 수행되고 난 후에 남을 가맹점의 예상 금액
+   * 옵션 파라미터인 doCompareRest값이 1일 때에만 동작합니다
+   * Ex)
+   * 결제금액 1000원 중 200원을 취소하고 싶을 때 =>
+   * expectedRestAmount =800원, cancelAmount=200원으로 요청
+   **/
+  expectedRestAmount?: number;
+}
+export interface NaverPayCancelPaymentResponse {
+  code: "Success";
+  message: string;
+  body: {
+    // 네이버페이 결제번호
+    paymentId: string;
+    /* 취소 결제 번호
+     * 결과코드가 CancelNotComplete 인 경우, empty string 이 전달되며
+     * 취소가 완료된 이후에 결제내역조회 API를 통해서 확인 가능합니다.
+     */
+    payHistId: string;
+    // 취소 처리된 주 결제 수단(CARD: 신용카드, BANK: 계좌 이체)
+    primaryPayMeans: string;
+    // 주 결제 수단 취소 금액
+    primaryPayCancelAmount: number;
+    // 추가로 취소 가능한 주 결제 수단 잔여 결제 금액
+    primaryPayRestAmount: number;
+    // 네이버페이 포인트 취소 금액
+    npointCancelAmount: number;
+    // 추가로 취소 가능한 네이버페이 포인트 잔여 결제 금액
+    npointRestAmount: number;
+    // 기프트카드 취소 금액, 간편결제에만 존재
+    giftCardCancelAmount?: number;
+    // 추가로 취소 가능한 기프트카드 잔여 결제 금액, 간편결제에만 존재
+    giftCardRestAmount?: number;
+    // 과세 취소 금액
+    taxScopeAmount: number;
+    // 면세 취소 금액
+    taxExScopeAmount: number;
+    // 추가로 취소 가능한 과세 잔여 결제 금액
+    taxScopeRestAmount: number;
+    // 추가로 취소 가능한 면세 잔여 결제 금액
+    taxExScopeRestAmount: number;
+    /*
+     * 취소 일시(YYYYMMDDHH24MMSS)
+     * 결과코드가 CancelNotComplete 인 경우, 취소실패 일시가 전달되며
+     * 정확한 취소 일시는 취소가 완료된 이후에 결제내역조회 API를 통해서 확인 가능합니다.
+     * */
+    cancelYmdt: string;
+    // 추가로 취소 가능한 전체 잔여 결제 금액(primaryPayRestAmount + npointRestAmount)
+    totalRestAmount: number;
+  };
+}
+export interface NaverPayGetPaymentParam {
+  // 조회하고자 하는 네이버페이 결제번호
+  // 결제번호를 입력값으로 선택하면 startTime, endTime, pageNumber, rowsPerPage 파라미터 값은 무시됩니다
+  paymentId?: string;
+  // 검색 시작 일시(YYYYMMDDHH24MMSS)
+  // 검색 기간(startTime과 endTime 사이의 시간)은 31일 이내여야 합니다
+  startTime?: string;
+  // 검색 종료 일시(YYYYMMDDHH24MMSS)
+  // 검색 기간(startTime과 endTime 사이의 시간)은 31일 이내여야 합니다
+  endTime?: string;
+  // ALL:전체, APPROVAL:승인, CANCEL:취소
+  approvalType?: "ALL" | "APPROVAL" | "CANCEL";
+  // 조회하고자 하는 페이지번호
+  // 값이 없으면 1로 간주합니다
+  pageNumber?: number;
+  // 페이지 당 row 건수
+  // 1~100까지 지정 가능하며, 값이 없으면 20으로 간주합니다
+  rowsPerPage?: number;
+  // 1: 해당 그룹에 속한 모든 가맹점의 결제내역을 조회 할 수 있습니다
+  // 일반 개별 가맹점에서는 사용 할 수 없고, 그룹형 마스터 가맹점만 사용 가능한 옵션입니다
+  collectChainGroup?: number;
+}
+export interface NaverPayGetPaymentResponse {
+  code: "Success";
+  message: string;
+  body: {
+    list: Array<NaverPayPaymentHistory>;
+  };
+}
+interface NaverPayPaymentHistory {
+  paymentId: string;
+  payHisId: string;
+  merchantId: string;
+  merchantName: string;
+  merchantPayKey: string;
+  merchantUserKey: string;
+  admissionTypeCode: string;
+  admissionYmdt: string;
+  tradeConfirmYmdt: string;
+  admissionState: string;
+  totalPayAmount: number;
+  primaryPayAmount: number;
+  npointPayAmount: number;
+  giftCardPayAmount: number;
+  taxScopeAmount: number;
+  taxExScopeAmount: number;
+  primaryPayMeans: string;
+  cardCorpCode: string;
+  cardNo: string;
+  cardAuthNo: string;
+  cardInstCount: number;
+  usedCardPoint: boolean;
+  bankCorpCode: string;
+  bankAccountNo: string;
+  productName: string;
+  extraDeduction: boolean;
+  useCfmYmdt: string;
+  settleInfo: any;
+}
+export interface NaverPayRegisterSubscriptionParam {
+  actionType: "NEW" | "CHANGE";
+  targetRecurrentId?: string;
+  productCode: string;
+  productName: string;
+  totalPayAmount: number;
+  returnUrl: string;
+}
+export interface NaverPayRegisterSubscriptionResponse {
+  code: "Success";
+  message: string;
+  body: {
+    reserveId: string;
   };
 }
