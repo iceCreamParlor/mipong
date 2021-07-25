@@ -2,6 +2,7 @@ export enum NaverPayAPI {
   ApproveOnetime,
   GetPayment,
   CancelPayment,
+  PrepareRegisterSubscription,
   RegisterSubscription,
   InactivateSubscription,
   CheckSubscription,
@@ -12,6 +13,7 @@ export interface NaverPayFailResponse {
   code: NaverpayFailCode;
   message: string;
 }
+
 export interface NaverPayResponse {
   code: NaverPaySuccessCode | NaverpayFailCode;
   message: string;
@@ -27,49 +29,6 @@ type NaverpayFailCode =
   | "AlreadyComplete"
   | "OwnerAuthFail";
 
-export interface NaverPayInactivateSubscriptionParam {
-  // 해지할 정기/반복결제 등록 번호
-  recurrentId: string;
-  // 해지 요청자(1: 구매자, 2: 가맹점 관리자) 구분하기 어려우면 가맹점 관리자로 입력합니다
-  expireRequester: string;
-  expireReason: string;
-}
-export interface NaverPayInactivateSubscriptionResponse {
-  code: "Success";
-  message: string;
-  body: {
-    recurrentId: string;
-  };
-}
-
-export interface NaverPayCheckSubscriptionParam {
-  recurrentId: string;
-  // VALID: 유효, EXPIRED: 만료, ALL: 전체값이 없으면 ALL로 간주합니다
-  state?: "VALID" | "EXPIRED" | "ALL";
-}
-export interface NaverPayCheckSubscriptionResponse {
-  code: "Success";
-  message: string;
-  body: {
-    list: [
-      {
-        recurrentId: string;
-        productCode: string;
-        naverPointUse: string;
-        primaryPayMeans: string;
-        primaryPayMeansCorpCd: string;
-        primaryPayMeansNo: string;
-        recurrentState: string;
-        registYmdt: string;
-        expireYmdt: string;
-      }
-    ];
-    totalCount: number;
-    responseCount: number;
-    totalPageCount: number;
-    currentPageNumber: number;
-  };
-}
 export interface NaverPayApproveOnetimeParam {
   paymentId: string;
 }
@@ -238,7 +197,7 @@ interface NaverPayPaymentHistory {
   useCfmYmdt: string;
   settleInfo: any;
 }
-export interface NaverPayRegisterSubscriptionParam {
+export interface NaverPayPrepareRegisterSubscriptionParam {
   actionType: "NEW" | "CHANGE";
   targetRecurrentId?: string;
   productCode: string;
@@ -246,10 +205,149 @@ export interface NaverPayRegisterSubscriptionParam {
   totalPayAmount: number;
   returnUrl: string;
 }
+export interface NaverPayPrepareRegisterSubscriptionResponse {
+  code: "Success";
+  message: string;
+  body: {
+    reserveId: string;
+  };
+}
+export interface NaverPayRegisterSubscriptionParam {
+  reserveId: string;
+  tempReceiptId: string;
+}
 export interface NaverPayRegisterSubscriptionResponse {
   code: "Success";
   message: string;
   body: {
     reserveId: string;
+    tempReceiptId: string;
+    recurrentId: string;
+    actionType: string;
+    preRecurrentId: string;
+  };
+}
+export interface NaverPayInactivateSubscriptionParam {
+  // 해지할 정기/반복결제 등록 번호
+  recurrentId: string;
+  // 해지 요청자(1: 구매자, 2: 가맹점 관리자)
+  // 구분하기 어려우면 가맹점 관리자로 입력합니다
+  expireRequester: 1 | 2;
+  // 해지 사유
+  expireReason: string;
+}
+export interface NaverPayInactivateSubscriptionResponse {
+  code: "Success";
+  message: string;
+  body: {
+    recurrentId: string;
+  };
+}
+
+export interface NaverPayCheckSubscriptionParam {
+  // 조회하고자 하는 정기/반복결제 등록 번호
+  // 정기/반복결제 등록번호를 입력값으로 선택하면 startTime, endTime, pageNumber, rowsPerPage 파라미터 값은 무시됩니다
+  recurrentId?: string;
+  // 등록 시작 일시(YYYYMMDDHH24MMSS)
+  // 검색 기간(startTime과 endTime 사이의 시간)은 31일 이내여야 합니다
+  startTime?: string;
+  // 등록 종료 일시(YYYYMMDDHH24MMSS)
+  // 검색 기간(startTime과 endTime 사이의 시간)은 31일 이내여야 합니다
+  endTime?: string;
+  // VALID: 유효, EXPIRED: 만료, ALL: 전체값이 없으면 ALL로 간주합니다
+  state?: "VALID" | "EXPIRED" | "ALL";
+  // 조회하고자 하는 페이지번호
+  // 값이 없으면 1로 간주합니다
+  pageNumber?: number;
+  // 페이지 당 row 건수
+  // 1~100까지 지정 가능하며, 값이 없으면 20으로 간주합니다
+  rowsPerPage?: number;
+}
+export interface NaverPayCheckSubscriptionResponse {
+  code: "Success";
+  message: string;
+  body: {
+    list: {
+      recurrentId: string;
+      productCode: string;
+      naverPointUse: string;
+      primaryPayMeans: string;
+      primaryPayMeansCorpCd: string;
+      primaryPayMeansNo: string;
+      recurrentState: string;
+      registYmdt: string;
+      expireYmdt: string;
+    }[];
+    totalCount: number;
+    responseCount: number;
+    totalPageCount: number;
+    currentPageNumber: number;
+  };
+}
+export interface NaverPayReserveSubscriptionParam {
+  // 정기/반복결제 등록 번호
+  recurrentId: string;
+  // 총 결제 금액
+  totalPayAmount: number;
+  // 과제 대상 금액
+  taxScopeAmount: number;
+  // 면세 대상 금액
+  taxExScopeAmount: number;
+  // 상품명
+  productName: string;
+  // 가맹점 주문내역 확인 가능한 가맹점 결제번호 또는 주문번호
+  merchantPayId: string;
+  // 가맹점 주문내역 확인 가능한 가맹점 결제번호 또는 주문번호
+  merchantUserId: string;
+  // 이용완료일(yyyymmdd)
+  useCfmYmdt?: string;
+}
+export interface NaverPayReserveSubscriptionResponse {
+  code: "Success";
+  message: string;
+  body: {
+    recurrentId: string;
+    paymentId: string;
+  };
+}
+export interface NaverPayApproveSubscriptionParam {
+  recurrentId: string;
+  paymentId: string;
+}
+export interface NaverPayApproveSubscriptionResponse {
+  code: "Success";
+  message: string;
+  body: {
+    recurrentId: string;
+    paymentId: string;
+    detail: {
+      productName: string;
+      merchantId: string;
+      merchantName: string;
+      cardNo: string;
+      admissionYmdt: string;
+      payHistId: string;
+      primaryPayAmount: number;
+      npointPayAmount: number;
+      giftCardAmount: number;
+      totalPayAmount: number;
+      primaryPayMeans: string;
+      merchantPayKey: string;
+      merchantUserKey: string;
+      cardCorpCode: string;
+      paymentId: string;
+      admissionTypeCode: string;
+      settleExpectAmount: number;
+      payCommissionAmount: number;
+      admissionState: string;
+      tradeConfirmYmdt: string;
+      cardAuthNo: string;
+      cardInstCount: number;
+      bankCorpCode: string;
+      bankAccountNo: string;
+      settleExpected: boolean;
+      extraDeduction: boolean;
+      useCfmYmdt: string;
+    };
   };
 }

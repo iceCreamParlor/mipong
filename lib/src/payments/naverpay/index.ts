@@ -15,6 +15,8 @@ import {
   NaverPayAPI,
   NaverPayApproveOnetimeParam,
   NaverPayApproveOnetimeResponse,
+  NaverPayApproveSubscriptionParam,
+  NaverPayApproveSubscriptionResponse,
   NaverPayCancelPaymentParam,
   NaverPayCancelPaymentResponse,
   NaverPayCheckSubscriptionParam,
@@ -24,8 +26,12 @@ import {
   NaverPayGetPaymentResponse,
   NaverPayInactivateSubscriptionParam,
   NaverPayInactivateSubscriptionResponse,
+  NaverPayPrepareRegisterSubscriptionParam,
+  NaverPayPrepareRegisterSubscriptionResponse,
   NaverPayRegisterSubscriptionParam,
   NaverPayRegisterSubscriptionResponse,
+  NaverPayReserveSubscriptionParam,
+  NaverPayReserveSubscriptionResponse,
   NaverPayResponse,
 } from "./type";
 
@@ -119,6 +125,22 @@ export class NaverPay
       this.callAPI(NaverPayAPI.GetPayment, params, type)
     );
   }
+  prepareRegisterSubscription(
+    params: NaverPayPrepareRegisterSubscriptionParam
+  ): Promise<
+    PaymentResponse<
+      NaverPayPrepareRegisterSubscriptionResponse,
+      NaverPayFailResponse
+    >
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(
+        NaverPayAPI.PrepareRegisterSubscription,
+        params,
+        "subscription"
+      )
+    );
+  }
   registerSubscription(
     params: NaverPayRegisterSubscriptionParam
   ): Promise<
@@ -134,21 +156,40 @@ export class NaverPay
   ): Promise<
     PaymentResponse<NaverPayCheckSubscriptionResponse, NaverPayFailResponse>
   > {
-    throw new Error("Method not implemented.");
+    return this.withPaymentResponse(() =>
+      this.callAPI(NaverPayAPI.CheckSubscription, params, "subscription")
+    );
   }
   inactivateSubscription(
     params: NaverPayInactivateSubscriptionParam
   ): Promise<
     PaymentResponse<
-      NaverPayInactivateSubscriptionResponse | NaverPayFailResponse,
-      NaverPayInactivateSubscriptionResponse | NaverPayFailResponse
+      NaverPayInactivateSubscriptionResponse,
+      NaverPayFailResponse
     >
   > {
-    throw new Error("Method not implemented.");
+    return this.withPaymentResponse(() =>
+      this.callAPI(NaverPayAPI.InactivateSubscription, params, "subscription")
+    );
+  }
+  reserveSubscription(
+    params: NaverPayReserveSubscriptionParam
+  ): Promise<
+    PaymentResponse<NaverPayReserveSubscriptionResponse, NaverPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(NaverPayAPI.ReserveSubscription, params, "subscription")
+    );
   }
 
-  approveSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
+  approveSubscription(
+    params: NaverPayApproveSubscriptionParam
+  ): Promise<
+    PaymentResponse<NaverPayApproveSubscriptionResponse, NaverPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(NaverPayAPI.ApproveSubscription, params, "subscription")
+    );
   }
 
   public static get instance(): NaverPay {

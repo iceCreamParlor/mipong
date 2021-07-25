@@ -17,18 +17,30 @@ import {
   KakaoPayReadyResponse,
   KakaoPayRegisterSubscriptionParam,
   KakaoPayRegisterSubscriptionResponse,
+  KakaoPayGetPaymentParam,
+  KakaoPayGetPaymentResponse,
 } from "./kakaopay/type";
 import { NaverPay } from "./naverpay";
 import {
   NaverPayAPI,
   NaverPayApproveOnetimeParam,
   NaverPayApproveOnetimeResponse,
+  NaverPayApproveSubscriptionParam,
+  NaverPayApproveSubscriptionResponse,
   NaverPayCancelPaymentParam,
   NaverPayCancelPaymentResponse,
+  NaverPayCheckSubscriptionParam,
+  NaverPayCheckSubscriptionResponse,
   NaverPayGetPaymentParam,
   NaverPayGetPaymentResponse,
+  NaverPayInactivateSubscriptionParam,
+  NaverPayInactivateSubscriptionResponse,
+  NaverPayPrepareRegisterSubscriptionParam,
+  NaverPayPrepareRegisterSubscriptionResponse,
   NaverPayRegisterSubscriptionParam,
   NaverPayRegisterSubscriptionResponse,
+  NaverPayReserveSubscriptionParam,
+  NaverPayReserveSubscriptionResponse,
 } from "./naverpay/type";
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
@@ -171,7 +183,7 @@ export const PaymentAPI = {
       url: "/naverpay/payments/v1/cancel",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
-    [NaverPayAPI.RegisterSubscription]: {
+    [NaverPayAPI.PrepareRegisterSubscription]: {
       method: HttpMethod.POST,
       url: "/naverpay/payments/recurrent/regist/v1/reserve",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
@@ -184,16 +196,26 @@ export const PaymentAPI = {
     [NaverPayAPI.CheckSubscription]: {
       method: HttpMethod.POST,
       url: "/naverpay/payments/recurrent/v1/list",
-      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+      contentType: ContentType.APPLICATION_JSON,
     },
     [NaverPayAPI.ReserveSubscription]: {
       method: HttpMethod.POST,
       url: "/naverpay/payments/recurrent/pay/v3/reserve",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
+    [NaverPayAPI.RegisterSubscription]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/recurrent/regist/v1/approval",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+    },
     [NaverPayAPI.ApproveSubscription]: {
       method: HttpMethod.POST,
       url: "/naverpay/payments/recurrent/pay/v3/approval",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+    },
+    [NaverPayAPI.ReserveSubscription]: {
+      method: HttpMethod.POST,
+      url: "/naverpay/payments/recurrent/pay/v3/reserve",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
   },
@@ -269,7 +291,10 @@ export type PaymentAPISignature = {
       KakaoPayCheckSubscriptionParam,
       KakaoPayCheckSubscriptionResponse
     ];
-    [KakaoPayAPI.GetPayment]: [any, any];
+    [KakaoPayAPI.GetPayment]: [
+      KakaoPayGetPaymentParam,
+      KakaoPayGetPaymentResponse
+    ];
   };
   [Payment.NAVERPAY]: {
     [NaverPayAPI.ApproveOnetime]: [
@@ -285,14 +310,30 @@ export type PaymentAPISignature = {
       NaverPayCancelPaymentResponse
     ];
     // https://developer.pay.naver.com/docs/v2/api#etc-etc_recurrent_reserve
+    [NaverPayAPI.PrepareRegisterSubscription]: [
+      NaverPayPrepareRegisterSubscriptionParam,
+      NaverPayPrepareRegisterSubscriptionResponse
+    ];
     [NaverPayAPI.RegisterSubscription]: [
       NaverPayRegisterSubscriptionParam,
       NaverPayRegisterSubscriptionResponse
     ];
-    [NaverPayAPI.InactivateSubscription]: [{}, {}];
-    [NaverPayAPI.CheckSubscription]: [{}, {}];
-    [NaverPayAPI.ReserveSubscription]: [{}, {}];
-    [NaverPayAPI.ApproveSubscription]: [{}, {}];
+    [NaverPayAPI.InactivateSubscription]: [
+      NaverPayInactivateSubscriptionParam,
+      NaverPayInactivateSubscriptionResponse
+    ];
+    [NaverPayAPI.CheckSubscription]: [
+      NaverPayCheckSubscriptionParam,
+      NaverPayCheckSubscriptionResponse
+    ];
+    [NaverPayAPI.ReserveSubscription]: [
+      NaverPayReserveSubscriptionParam,
+      NaverPayReserveSubscriptionResponse
+    ];
+    [NaverPayAPI.ApproveSubscription]: [
+      NaverPayApproveSubscriptionParam,
+      NaverPayApproveSubscriptionResponse
+    ];
   };
 };
 
