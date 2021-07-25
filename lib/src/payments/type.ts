@@ -26,6 +26,7 @@ import {
   NaverPayFailResponse,
   NaverPayInactivateSubscriptionResponse as NaverPayInactivateSubscriptionResponse,
   NaverPayInactivateSubscriptionParam as NaverPayInactivateSubscriptionParam,
+  NaverPayApproveOnetimeResponse,
 } from "./naverpay/type";
 import { NicePayApproveOnetimeParam } from "./nicepay/type";
 import { TossPaymentsApproveOnetimeParam } from "./toss-payments/type";
@@ -49,7 +50,7 @@ export type ApproveOnetimeResponse = {
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
   [Payment.KAKAOPAY]: KakaoPayApproveResponse;
-  [Payment.NAVERPAY]: {};
+  [Payment.NAVERPAY]: NaverPayApproveOnetimeResponse;
   [Payment.TOSSPAY]: {};
 };
 export type ApproveOnetimeFailResponse = {
@@ -57,7 +58,7 @@ export type ApproveOnetimeFailResponse = {
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
   [Payment.KAKAOPAY]: KakaoPayFailResponse;
-  [Payment.NAVERPAY]: {};
+  [Payment.NAVERPAY]: NaverPayFailResponse;
   [Payment.TOSSPAY]: {};
 };
 

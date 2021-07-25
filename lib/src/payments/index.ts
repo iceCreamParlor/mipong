@@ -19,7 +19,11 @@ import {
   KakaoPayRegisterSubscriptionResponse,
 } from "./kakaopay/type";
 import { NaverPay } from "./naverpay";
-import { NaverPayAPI } from "./naverpay/type";
+import {
+  NaverPayAPI,
+  NaverPayApproveOnetimeParam,
+  NaverPayApproveOnetimeResponse,
+} from "./naverpay/type";
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
 import { TossPay } from "./tosspay";
@@ -257,7 +261,10 @@ export type PaymentAPISignature = {
     [KakaoPayAPI.GetPayment]: [any, any];
   };
   [Payment.NAVERPAY]: {
-    [NaverPayAPI.ApproveOnetime]: [{}, {}];
+    [NaverPayAPI.ApproveOnetime]: [
+      NaverPayApproveOnetimeParam,
+      NaverPayApproveOnetimeResponse
+    ];
     [NaverPayAPI.GetPayment]: [{}, {}];
     [NaverPayAPI.CancelPayment]: [{}, {}];
     [NaverPayAPI.RegisterSubscription]: [{}, {}];

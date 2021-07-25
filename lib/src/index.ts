@@ -8,6 +8,16 @@ export { NicePay } from "./payments/nicepay";
 export { TossPayments } from "./payments/toss-payments";
 export { TossPay } from "./payments/tosspay";
 
+const naverpay = Mipong.getNaverPay();
+
+naverpay
+  .approveOnetime({
+    paymentId: "20210725NP1002997178",
+  })
+  .then((response) => {
+    console.log(response.data);
+  });
+
 // const kakaopay = Mipong.getKakaoPay();
 
 // kakaopay

@@ -72,3 +72,39 @@ export interface NaverPayCheckSubscriptionResponse {
 export interface NaverPayApproveOnetimeParam {
   paymentId: string;
 }
+export interface NaverPayApproveOnetimeResponse {
+  code: "Success";
+  message: string;
+  body: {
+    paymentId: string;
+    detail: {
+      productName: string;
+      merchantId: string;
+      merchantName: string;
+      cardNo: string;
+      admissionYmdt: string;
+      payHistId: string;
+      primaryPayAmount: number;
+      npointPayAmount: number;
+      giftCardAmount: number;
+      totalPayAmount: number;
+      primaryPayMeans: string;
+      merchantPayKey: string;
+      merchantUserKey: string;
+      cardCorpCode: string;
+      paymentId: string;
+      admissionTypeCode: string;
+      settleExpectAmount: number;
+      payCommissionAmount: number;
+      admissionState: string;
+      tradeConfirmYmdt: string;
+      cardAuthNo: string;
+      cardInstCount: number;
+      bankCorpCode: string;
+      bankAccountNo: string;
+      settleExpected: boolean;
+      extraDeduction: boolean;
+      useCfmYmdt: string;
+    };
+  };
+}

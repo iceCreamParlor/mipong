@@ -1,27 +1,26 @@
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import {
-  SubscriptionCheckable,
+  doRequest,
+  getSecret,
   Inactivable,
   Payment,
+  PaymentAPI,
+  PaymentAPISignature,
   PaymentLib,
   retry,
-  PaymentAPISignature,
-  getSecret,
-  PaymentAPI,
-  convertUrlEncodedParam,
-  handleError,
-  doRequest,
+  SubscriptionCheckable,
 } from "..";
-import { ExecuteSubscriptionResponse, PaymentResponse } from "../type";
+import { PaymentResponse } from "../type";
 import {
+  NaverPayAPI,
   NaverPayApproveOnetimeParam,
+  NaverPayApproveOnetimeResponse,
   NaverPayCheckSubscriptionParam,
   NaverPayCheckSubscriptionResponse,
   NaverPayFailResponse,
-  NaverPayInactivateSubscriptionResponse,
   NaverPayInactivateSubscriptionParam,
+  NaverPayInactivateSubscriptionResponse,
   NaverPayResponse,
-  NaverPayAPI,
 } from "./type";
 
 export class NaverPay
@@ -65,7 +64,7 @@ export class NaverPay
         : getSecret().NAVERPAY_SUBSCRIPTION_CHAIN_ID;
 
     const requestBaseUrl = `${this._baseUrl}/${
-      getSecret().pay.NAVERPAY_PARTNER_ID
+      getSecret().NAVERPAY_PARTNER_ID
     }`;
 
     return doRequest({
@@ -73,14 +72,24 @@ export class NaverPay
       requestParams: params,
       headers: {
         "X-NaverPay-Chain-Id": chainId,
-        "X-Naver-Client-Id": getSecret().pay.NAVERPAY_CLIENT_ID,
-        "X-Naver-Client-Secret": getSecret().pay.NAVERPAY_CLIENT_SECRET,
+        "X-Naver-Client-Id": getSecret().NAVERPAY_CLIENT_ID,
+        "X-Naver-Client-Secret": getSecret().NAVERPAY_CLIENT_SECRET,
       },
       api: PaymentAPI[Payment.NAVERPAY][api],
     }).catch((err) => {
       console.error(err);
       throw err;
     });
+  }
+
+  approveOnetime(
+    params: NaverPayApproveOnetimeParam
+  ): Promise<
+    PaymentResponse<NaverPayApproveOnetimeResponse, NaverPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(NaverPayAPI.ApproveOnetime, params, "onetime")
+    );
   }
 
   checkSubscription(
@@ -115,12 +124,6 @@ export class NaverPay
   getPayment(
     params: {},
     type?: "onetime" | "subscription"
-  ): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
-
-  approveOnetime(
-    input: NaverPayApproveOnetimeParam
   ): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
