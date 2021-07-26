@@ -1,3 +1,7 @@
+export enum TossPayAPI {
+  ApproveOnetime,
+}
+
 export type TossPayBillingKeyStatus = "REMOVE" | "ACTIVE";
 export type TossPayPaymentStatus =
   // 결제 대기 중
@@ -18,7 +22,11 @@ export type TossPayPaymentStatus =
   | "SETTLEMENT_COMPLETE"
   // 환불 정산 완료
   | "SETTLEMENT_REFUND_COMPLETE";
+export type TossPayResponse = TossPaySuccessResponse | TossPayFailResponse;
 export type TossPayPayMethod = "TOSS_MONEY" | "CARD";
+export interface TossPaySuccessResponse {
+  code: 0;
+}
 export interface TossPayFailResponse {
   result: number;
   msg: string;
@@ -34,8 +42,7 @@ export interface TossPayBillingKeyCheckParam {
   userId: string;
   displayId: string;
 }
-export interface TossPayBillingKeyCheckResponse {
-  code: 0;
+export interface TossPayBillingKeyCheckResponse extends TossPaySuccessResponse {
   status: TossPayBillingKeyStatus;
   userId: string;
   displayId: string;

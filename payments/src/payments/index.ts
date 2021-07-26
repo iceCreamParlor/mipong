@@ -45,6 +45,7 @@ import {
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
 import { TossPay } from "./tosspay";
+import { TossPayAPI } from "./tosspay/type";
 import {
   ApproveOnetimeFailResponse,
   ApproveOnetimeParam,
@@ -219,6 +220,13 @@ export const PaymentAPI = {
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
     },
   },
+  [Payment.TOSSPAY]: {
+    [TossPayAPI.ApproveOnetime]: {
+      method: HttpMethod.POST,
+      url: "/test",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+  },
 };
 export function doRequest(params: {
   baseUrl: string;
@@ -334,6 +342,9 @@ export type PaymentAPISignature = {
       NaverPayApproveSubscriptionParam,
       NaverPayApproveSubscriptionResponse
     ];
+  };
+  [Payment.TOSSPAY]: {
+    [TossPayAPI.ApproveOnetime]: [{}, {}];
   };
 };
 
