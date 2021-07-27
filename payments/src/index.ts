@@ -8,6 +8,47 @@ export { NicePay } from "./payments/nicepay";
 export { TossPayments } from "./payments/toss-payments";
 export { TossPay } from "./payments/tosspay";
 
+const tosspay = Mipong.getTossPay();
+// tosspay
+//   .cancelPayment({
+//     payToken: "XmodsE4GO1Pujgoxr3jPd1",
+//   })
+//   .then((response) => console.log(response));
+// tosspay
+//   .ready({
+//     orderNo: "1231232112434222211",
+//     amount: 25000,
+//     amountTaxFree: 0,
+//     productDesc: "토스티셔츠",
+//     autoExecute: false,
+//     resultCallback: "https://YOUR-SITE.COM/callback",
+//     retUrl: "http://YOUR-SITE.COM/ORDER-CHECK",
+//     retCancelUrl: "http://YOUR-SITE.COM/close",
+//   })
+//   .then((response) => {
+//     console.log(response.data);
+//     if (response.success) {
+//       console.log(response.data.checkoutPage);
+//     }
+//   });
+// tosspay
+//   .approveOnetime({
+//     payToken: "mPpBTomr4DqTP84ZXgR450",
+//     orderNo: "12312321124342222",
+//   })
+//   .then((response) => {
+//     console.log(response.data);
+//     if (response.success) {
+//       console.log(response.data.approvalTime);
+//     } else {
+//     }
+//   });
+// tosspay
+//   .getPayment({
+//     payToken: "r7maIVMm23BHNDn8zx1J95",
+//   })
+//   .then((response) => console.log(response));
+
 // const naverpay = Mipong.getNaverPay();
 // const paymentId = "20210725NP1003002918";
 // naverpay

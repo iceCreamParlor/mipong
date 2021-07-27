@@ -44,8 +44,19 @@ import {
 } from "./naverpay/type";
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
+import { TossPaymentsApproveOnetimeParam } from "./toss-payments/type";
 import { TossPay } from "./tosspay";
-import { TossPayAPI } from "./tosspay/type";
+import {
+  TossPayAPI,
+  TossPayApproveOnetimeParam,
+  TossPayApproveOnetimeResponse,
+  TossPayCancelParam,
+  TossPayCancelResponse,
+  TossPayGetPaymentParam,
+  TossPayGetPaymentResponse,
+  TossPayReadyParam,
+  TossPayReadyResponse,
+} from "./tosspay/type";
 import {
   ApproveOnetimeFailResponse,
   ApproveOnetimeParam,
@@ -221,9 +232,24 @@ export const PaymentAPI = {
     },
   },
   [Payment.TOSSPAY]: {
+    [TossPayAPI.Ready]: {
+      method: HttpMethod.POST,
+      url: "/api/v2/payments",
+      contentType: ContentType.APPLICATION_JSON,
+    },
     [TossPayAPI.ApproveOnetime]: {
       method: HttpMethod.POST,
-      url: "/test",
+      url: "/api/v2/execute",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+    [TossPayAPI.GetPayment]: {
+      method: HttpMethod.POST,
+      url: "/api/v2/status",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+    [TossPayAPI.CancelPayment]: {
+      method: HttpMethod.POST,
+      url: "/api/v2/refunds",
       contentType: ContentType.APPLICATION_JSON,
     },
   },
@@ -344,7 +370,16 @@ export type PaymentAPISignature = {
     ];
   };
   [Payment.TOSSPAY]: {
-    [TossPayAPI.ApproveOnetime]: [{}, {}];
+    [TossPayAPI.Ready]: [TossPayReadyParam, TossPayReadyResponse];
+    [TossPayAPI.ApproveOnetime]: [
+      TossPayApproveOnetimeParam,
+      TossPayApproveOnetimeResponse
+    ];
+    [TossPayAPI.GetPayment]: [
+      TossPayGetPaymentParam,
+      TossPayGetPaymentResponse
+    ];
+    [TossPayAPI.CancelPayment]: [TossPayCancelParam, TossPayCancelResponse];
   };
 };
 

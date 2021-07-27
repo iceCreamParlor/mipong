@@ -8,14 +8,22 @@ import {
   PaymentAPISignature,
   doRequest,
   PaymentAPI,
+  getSecret,
 } from "..";
 import { ApproveSubscriptionResponse, PaymentResponse } from "../type";
 import {
   TossPayAPI,
   TossPayApproveOnetimeParam,
+  TossPayApproveOnetimeResponse,
   TossPayBillingKeyCheckParam,
   TossPayBillingKeyCheckResponse,
+  TossPayCancelParam,
+  TossPayCancelResponse,
   TossPayFailResponse,
+  TossPayGetPaymentParam,
+  TossPayGetPaymentResponse,
+  TossPayReadyParam,
+  TossPayReadyResponse,
   TossPayResponse,
 } from "./type";
 
@@ -25,7 +33,7 @@ export class TossPay
     Inactivable<Payment.TOSSPAY>,
     SubscriptionCheckable<Payment.TOSSPAY>
 {
-  private _baseUrl: string = "https://pay.toss.im/api";
+  private _baseUrl: string = "https://pay.toss.im";
 
   async withPaymentResponse<T extends TossPayResponse>(
     fn: () => Promise<AxiosResponse<T>>
@@ -47,14 +55,50 @@ export class TossPay
 
   private async callAPI<T extends TossPayAPI>(
     api: T,
-    params: PaymentAPISignature[Payment.TOSSPAY][T][0],
-    type: "onetime" | "subscription"
+    params: PaymentAPISignature[Payment.TOSSPAY][T][0]
   ): Promise<AxiosResponse<PaymentAPISignature[Payment.TOSSPAY][T][1]>> {
     return doRequest({
       baseUrl: this._baseUrl,
-      requestParams: params,
+      requestParams: {
+        ...params,
+        apiKey: getSecret().TOSSPAY_API_KEY,
+      },
       api: PaymentAPI[Payment.TOSSPAY][api],
     });
+  }
+  ready(
+    params: TossPayReadyParam
+  ): Promise<PaymentResponse<TossPayReadyResponse, TossPayFailResponse>> {
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPayAPI.Ready, params)
+    );
+  }
+
+  approveOnetime(
+    params: TossPayApproveOnetimeParam
+  ): Promise<
+    PaymentResponse<TossPayApproveOnetimeResponse, TossPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPayAPI.ApproveOnetime, params)
+    );
+  }
+
+  getPayment(
+    params: TossPayGetPaymentParam,
+    type?: "onetime" | "subscription"
+  ): Promise<PaymentResponse<TossPayGetPaymentResponse, TossPayFailResponse>> {
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPayAPI.GetPayment, params)
+    );
+  }
+
+  cancelPayment(
+    params: TossPayCancelParam
+  ): Promise<PaymentResponse<TossPayCancelResponse, TossPayFailResponse>> {
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPayAPI.CancelPayment, params)
+    );
   }
 
   checkSubscription(
@@ -75,24 +119,7 @@ export class TossPay
   approveSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
     throw new Error("Method not implemented.");
   }
-  cancelPayment(
-    params: {},
-    type?: "onetime" | "subscription"
-  ): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
-  getPayment(
-    params: {},
-    type?: "onetime" | "subscription"
-  ): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
 
-  approveOnetime(
-    input: TossPayApproveOnetimeParam
-  ): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
   private static _instance: TossPay = new TossPay();
 
   public static get instance(): TossPay {
