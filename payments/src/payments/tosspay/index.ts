@@ -1,29 +1,35 @@
 import { AxiosResponse } from "axios";
 import {
-  SubscriptionCheckable,
+  doRequest,
+  getSecret,
   Inactivable,
   Payment,
+  PaymentAPI,
+  PaymentAPISignature,
   PaymentLib,
   retry,
-  PaymentAPISignature,
-  doRequest,
-  PaymentAPI,
-  getSecret,
+  SubscriptionCheckable,
 } from "..";
-import { ApproveSubscriptionResponse, PaymentResponse } from "../type";
+import { PaymentResponse } from "../type";
 import {
   TossPayAPI,
   TossPayApproveOnetimeParam,
   TossPayApproveOnetimeResponse,
-  TossPayBillingKeyCheckParam,
-  TossPayBillingKeyCheckResponse,
+  TossPayApproveSubscriptionParam,
+  TossPayApproveSubscriptionResponse,
   TossPayCancelParam,
   TossPayCancelResponse,
+  TossPayCheckSubscriptionParam,
+  TossPayCheckSubscriptionResponse,
   TossPayFailResponse,
   TossPayGetPaymentParam,
   TossPayGetPaymentResponse,
+  TossPayInactivateSubscriptionParam,
+  TossPayInactivateSubscriptionResponse,
   TossPayReadyParam,
   TossPayReadyResponse,
+  TossPayRegisterSubscriptionParam,
+  TossPayRegisterSubscriptionResponse,
   TossPayResponse,
 } from "./type";
 
@@ -101,23 +107,43 @@ export class TossPay
     );
   }
 
-  checkSubscription(
-    params: TossPayBillingKeyCheckParam
+  registerSubscription(
+    params: TossPayRegisterSubscriptionParam
   ): Promise<
-    PaymentResponse<TossPayBillingKeyCheckResponse, TossPayFailResponse>
+    PaymentResponse<TossPayRegisterSubscriptionResponse, TossPayFailResponse>
   > {
-    throw new Error("Method not implemented.");
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPayAPI.RegisterSubscription, params)
+    );
   }
-  inactivateSubscription(params: {
-    billingKey: string;
-  }): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
+
+  approveSubscription(
+    params: TossPayApproveSubscriptionParam
+  ): Promise<
+    PaymentResponse<TossPayApproveSubscriptionResponse, TossPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPayAPI.ApproveSubscription, params)
+    );
   }
-  registerSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
+
+  checkSubscription(
+    params: TossPayCheckSubscriptionParam
+  ): Promise<
+    PaymentResponse<TossPayCheckSubscriptionResponse, TossPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPayAPI.CheckSubscription, params)
+    );
   }
-  approveSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
+  inactivateSubscription(
+    params: TossPayInactivateSubscriptionParam
+  ): Promise<
+    PaymentResponse<TossPayInactivateSubscriptionResponse, TossPayFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPayAPI.InactivateSubscription, params)
+    );
   }
 
   private static _instance: TossPay = new TossPay();

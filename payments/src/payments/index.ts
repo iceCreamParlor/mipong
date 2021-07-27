@@ -44,18 +44,25 @@ import {
 } from "./naverpay/type";
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
-import { TossPaymentsApproveOnetimeParam } from "./toss-payments/type";
 import { TossPay } from "./tosspay";
 import {
   TossPayAPI,
   TossPayApproveOnetimeParam,
   TossPayApproveOnetimeResponse,
+  TossPayApproveSubscriptionParam,
+  TossPayApproveSubscriptionResponse,
   TossPayCancelParam,
   TossPayCancelResponse,
+  TossPayCheckSubscriptionParam,
+  TossPayCheckSubscriptionResponse,
   TossPayGetPaymentParam,
   TossPayGetPaymentResponse,
+  TossPayInactivateSubscriptionParam,
+  TossPayInactivateSubscriptionResponse,
   TossPayReadyParam,
   TossPayReadyResponse,
+  TossPayRegisterSubscriptionParam,
+  TossPayRegisterSubscriptionResponse,
 } from "./tosspay/type";
 import {
   ApproveOnetimeFailResponse,
@@ -252,6 +259,26 @@ export const PaymentAPI = {
       url: "/api/v2/refunds",
       contentType: ContentType.APPLICATION_JSON,
     },
+    [TossPayAPI.RegisterSubscription]: {
+      method: HttpMethod.POST,
+      url: "/api/v1/billing-key",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+    [TossPayAPI.ApproveSubscription]: {
+      method: HttpMethod.POST,
+      url: "/api/v1/billing-key/bill",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+    [TossPayAPI.CheckSubscription]: {
+      method: HttpMethod.POST,
+      url: "/api/v1/billing-key/status",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+    [TossPayAPI.InactivateSubscription]: {
+      method: HttpMethod.POST,
+      url: "/api/v1/billing-key/remove",
+      contentType: ContentType.APPLICATION_JSON,
+    },
   },
 };
 export function doRequest(params: {
@@ -380,6 +407,22 @@ export type PaymentAPISignature = {
       TossPayGetPaymentResponse
     ];
     [TossPayAPI.CancelPayment]: [TossPayCancelParam, TossPayCancelResponse];
+    [TossPayAPI.RegisterSubscription]: [
+      TossPayRegisterSubscriptionParam,
+      TossPayRegisterSubscriptionResponse
+    ];
+    [TossPayAPI.ApproveSubscription]: [
+      TossPayApproveSubscriptionParam,
+      TossPayApproveSubscriptionResponse
+    ];
+    [TossPayAPI.CheckSubscription]: [
+      TossPayCheckSubscriptionParam,
+      TossPayCheckSubscriptionResponse
+    ];
+    [TossPayAPI.InactivateSubscription]: [
+      TossPayInactivateSubscriptionParam,
+      TossPayInactivateSubscriptionResponse
+    ];
   };
 };
 

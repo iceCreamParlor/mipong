@@ -1,7 +1,5 @@
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import {
-  ContentType,
-  convertUrlEncodedParam,
   doRequest,
   getSecret,
   Inactivable,
@@ -17,12 +15,12 @@ import {
   KakaoPayAPI,
   KakaoPayApproveParam,
   KakaoPayApproveResponse,
+  KakaoPayApproveSubscriptionParam,
+  KakaoPayApproveSubscriptionResponse,
   KakaoPayCancelParam,
   KakaoPayCancelResponse,
   KakaoPayCheckSubscriptionParam,
   KakaoPayCheckSubscriptionResponse,
-  KakaoPayApproveSubscriptionParam,
-  KakaoPayApproveSubscriptionResponse,
   KakaoPayFailResponse,
   KakaoPayGetPaymentParam,
   KakaoPayGetPaymentResponse,

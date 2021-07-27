@@ -25,13 +25,13 @@ import {
   NaverPayApproveSubscriptionResponse,
   NaverPayCancelPaymentParam,
   NaverPayCancelPaymentResponse,
-  NaverPayCheckSubscriptionParam as NaverPayCheckSubscriptionParam,
-  NaverPayCheckSubscriptionResponse as NaverPayCheckSubscriptionResponse,
+  NaverPayCheckSubscriptionParam,
+  NaverPayCheckSubscriptionResponse,
   NaverPayFailResponse,
   NaverPayGetPaymentParam,
   NaverPayGetPaymentResponse,
-  NaverPayInactivateSubscriptionParam as NaverPayInactivateSubscriptionParam,
-  NaverPayInactivateSubscriptionResponse as NaverPayInactivateSubscriptionResponse,
+  NaverPayInactivateSubscriptionParam,
+  NaverPayInactivateSubscriptionResponse,
   NaverPayRegisterSubscriptionParam,
   NaverPayRegisterSubscriptionResponse,
 } from "./naverpay/type";
@@ -40,13 +40,19 @@ import { TossPaymentsApproveOnetimeParam } from "./toss-payments/type";
 import {
   TossPayApproveOnetimeParam,
   TossPayApproveOnetimeResponse,
-  TossPayBillingKeyCheckParam as TossPayCheckSubscriptionParam,
-  TossPayBillingKeyCheckResponse as TossPayCheckSubscriptionResponse,
+  TossPayApproveSubscriptionParam,
+  TossPayApproveSubscriptionResponse,
   TossPayCancelParam,
   TossPayCancelResponse,
+  TossPayCheckSubscriptionParam,
+  TossPayCheckSubscriptionResponse,
   TossPayFailResponse,
   TossPayGetPaymentParam,
   TossPayGetPaymentResponse,
+  TossPayInactivateSubscriptionParam,
+  TossPayInactivateSubscriptionResponse,
+  TossPayRegisterSubscriptionParam,
+  TossPayRegisterSubscriptionResponse,
 } from "./tosspay/type";
 
 export type ApproveOnetimeParam = {
@@ -102,19 +108,17 @@ export type GetPaymentFailResponse = {
 export type InactivateSubscriptionParam = {
   [Payment.KAKAOPAY]: KakaoPayInactivateSubscriptionParam;
   [Payment.NAVERPAY]: NaverPayInactivateSubscriptionParam;
-  [Payment.TOSSPAY]: {
-    billingKey: string;
-  };
+  [Payment.TOSSPAY]: TossPayInactivateSubscriptionParam;
 };
 export type InactivateSubscriptionResponse = {
   [Payment.KAKAOPAY]: KakaoPayInactivateSubscriptionResponse;
   [Payment.NAVERPAY]: NaverPayInactivateSubscriptionResponse;
-  [Payment.TOSSPAY]: {};
+  [Payment.TOSSPAY]: TossPayInactivateSubscriptionResponse;
 };
 export type InactivateSubscriptionFailResponse = {
   [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: NaverPayFailResponse;
-  [Payment.TOSSPAY]: {};
+  [Payment.TOSSPAY]: TossPayFailResponse;
 };
 export type CheckSubscriptionParam = {
   [Payment.KAKAOPAY]: KakaoPayCheckSubscriptionParam;
@@ -138,7 +142,7 @@ export type RegisterSubscriptionParam = {
   [Payment.TOSS_PAYMENTS]: {};
   [Payment.KAKAOPAY]: KakaoPayRegisterSubscriptionParam;
   [Payment.NAVERPAY]: NaverPayRegisterSubscriptionParam;
-  [Payment.TOSSPAY]: {};
+  [Payment.TOSSPAY]: TossPayRegisterSubscriptionParam;
 };
 export type RegisterSubscriptionResponse = {
   [Payment.IAMPORT]: {};
@@ -146,7 +150,7 @@ export type RegisterSubscriptionResponse = {
   [Payment.TOSS_PAYMENTS]: {};
   [Payment.KAKAOPAY]: KakaoPayRegisterSubscriptionResponse;
   [Payment.NAVERPAY]: NaverPayRegisterSubscriptionResponse;
-  [Payment.TOSSPAY]: {};
+  [Payment.TOSSPAY]: TossPayRegisterSubscriptionResponse;
 };
 export type RegisterSubscriptionFailResponse = {
   [Payment.IAMPORT]: {};
@@ -154,7 +158,7 @@ export type RegisterSubscriptionFailResponse = {
   [Payment.TOSS_PAYMENTS]: {};
   [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: NaverPayFailResponse;
-  [Payment.TOSSPAY]: {};
+  [Payment.TOSSPAY]: TossPayFailResponse;
 };
 export type ApproveSubscriptionParam = {
   [Payment.IAMPORT]: {};
@@ -162,7 +166,7 @@ export type ApproveSubscriptionParam = {
   [Payment.TOSS_PAYMENTS]: {};
   [Payment.KAKAOPAY]: KakaoPayApproveSubscriptionParam;
   [Payment.NAVERPAY]: NaverPayApproveSubscriptionParam;
-  [Payment.TOSSPAY]: {};
+  [Payment.TOSSPAY]: TossPayApproveSubscriptionParam;
 };
 export type ApproveSubscriptionResponse = {
   [Payment.IAMPORT]: {};
@@ -170,15 +174,15 @@ export type ApproveSubscriptionResponse = {
   [Payment.TOSS_PAYMENTS]: {};
   [Payment.KAKAOPAY]: KakaoPayApproveSubscriptionResponse;
   [Payment.NAVERPAY]: NaverPayApproveSubscriptionResponse;
-  [Payment.TOSSPAY]: {};
+  [Payment.TOSSPAY]: TossPayApproveSubscriptionResponse;
 };
 export type ApproveSubscriptionFailResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: {};
   [Payment.KAKAOPAY]: KakaoPayFailResponse;
-  [Payment.NAVERPAY]: {};
-  [Payment.TOSSPAY]: {};
+  [Payment.NAVERPAY]: NaverPayFailResponse;
+  [Payment.TOSSPAY]: TossPayFailResponse;
 };
 export type ExecuteFirstSubscriptionParam = {
   [Payment.IAMPORT]: {};

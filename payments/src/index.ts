@@ -9,6 +9,31 @@ export { TossPayments } from "./payments/toss-payments";
 export { TossPay } from "./payments/tosspay";
 
 const tosspay = Mipong.getTossPay();
+tosspay
+  .registerSubscription({
+    productDesc: "12 ",
+    userId: "TOSS-TEST-11243asd122323",
+    //"displayId" : "TEST_SERVICE_1",
+    resultCallback: "https://n-api-dev.wiselycompany.com/docs",
+    // retAppScheme: "testshop://",
+    returnSuccessUrl: "https://n-api-dev.wiselycompany.com/docs",
+    returnFailureUrl: "https://n-api-dev.wiselycompany.com/docs",
+  })
+  .then((response) => console.log(response));
+
+tosspay;
+// .approveSubscription({
+//   billingKey: "xDVqi1EoN3wT2JwNL2wo37",
+//   orderNo: "TEST_billing_1asdf",
+//   productDesc: " ",
+//   amount: 10000,
+//   amountTaxFree: 0,
+//   spreadOut: "7",
+//   cashReceipt: true,
+//   sendFailPush: true,
+// })
+// .then((response) => console.log(response));
+
 // tosspay
 //   .cancelPayment({
 //     payToken: "XmodsE4GO1Pujgoxr3jPd1",
