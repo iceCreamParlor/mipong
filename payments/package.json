@@ -1,6 +1,6 @@
 {
   "name": "@mipong/payments",
-  "version": "1.0.4-rc.12",
+  "version": "1.0.4-rc.15",
   "main": "dist/index.js",
   "dependencies": {
     "axios": "^0.21.1"

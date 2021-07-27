@@ -8,20 +8,20 @@ export { NicePay } from "./payments/nicepay";
 export { TossPayments } from "./payments/toss-payments";
 export { TossPay } from "./payments/tosspay";
 
-const tosspay = Mipong.getTossPay();
-tosspay
-  .registerSubscription({
-    productDesc: "12 ",
-    userId: "TOSS-TEST-11243asd122323",
-    //"displayId" : "TEST_SERVICE_1",
-    resultCallback: "https://n-api-dev.wiselycompany.com/docs",
-    // retAppScheme: "testshop://",
-    returnSuccessUrl: "https://n-api-dev.wiselycompany.com/docs",
-    returnFailureUrl: "https://n-api-dev.wiselycompany.com/docs",
-  })
-  .then((response) => console.log(response));
+// const tosspay = Mipong.getTossPay();
+// tosspay
+//   .registerSubscription({
+//     productDesc: "12 ",
+//     userId: "TOSS-TEST-11243asd122323",
+//     //"displayId" : "TEST_SERVICE_1",
+//     resultCallback: "https://n-api-dev.wiselycompany.com/docs",
+//     // retAppScheme: "testshop://",
+//     returnSuccessUrl: "https://n-api-dev.wiselycompany.com/docs",
+//     returnFailureUrl: "https://n-api-dev.wiselycompany.com/docs",
+//   })
+//   .then((response) => console.log(response));
 
-tosspay;
+// tosspay;
 // .approveSubscription({
 //   billingKey: "xDVqi1EoN3wT2JwNL2wo37",
 //   orderNo: "TEST_billing_1asdf",
@@ -99,7 +99,7 @@ tosspay;
 //   )
 //   .then((response) => console.log(response));
 
-// naverpay
+// Mipong.getNaverPay()
 //   .prepareRegisterSubscription({
 //     actionType: "NEW",
 //     //actionType값이 "CHANGE"이면 현재 사용하고 있는 정기/반복결제 등록 번호(recurrentId)값을 전달합니다.
@@ -193,7 +193,7 @@ tosspay;
 
 // const kakaopay = Mipong.getKakaoPay();
 
-// kakaopay
+// Mipong.getKakaoPay()
 //   .ready(
 //     {
 //       // 가맹점 주문번호, 최대 100자

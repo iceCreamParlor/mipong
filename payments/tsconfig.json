@@ -15,7 +15,8 @@
     "declaration": true,
     "sourceMap": true,
     "isolatedModules": true,
-    "noEmit": false
+    "noEmit": false,
+    "removeComments": false
   },
   "include": ["src/**/*.ts"],
   "exclude": ["**/*.spec.ts"]

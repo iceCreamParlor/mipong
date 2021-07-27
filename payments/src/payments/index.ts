@@ -295,7 +295,8 @@ export function doRequest(params: {
 }): Promise<AxiosResponse<any>> {
   const { baseUrl, requestParams, headers, api } = params;
   const requestUrl = `${baseUrl}${api.url}`;
-  const timeout = 60 * 1000; // 네이버페이 권고사항에 따라 60초로 설정
+  /*! 네이버페이 권고사항에 따라 60초로 설정 */
+  const timeout = 60 * 1000;
 
   if (api.method === HttpMethod.POST) {
     if (
@@ -370,7 +371,7 @@ export type PaymentAPISignature = {
       NaverPayCancelPaymentParam,
       NaverPayCancelPaymentResponse
     ];
-    // https://developer.pay.naver.com/docs/v2/api#etc-etc_recurrent_reserve
+    /*! https://developer.pay.naver.com/docs/v2/api#etc-etc_recurrent_reserve */
     [NaverPayAPI.PrepareRegisterSubscription]: [
       NaverPayPrepareRegisterSubscriptionParam,
       NaverPayPrepareRegisterSubscriptionResponse
@@ -442,14 +443,14 @@ export abstract class PaymentLib<T extends Payment> {
     fn: () => Promise<AxiosResponse<any>>
   ): Promise<any>;
 
-  // 일반결제 승인
+  /*! 일반결제 승인 */
   abstract approveOnetime(
     params: ApproveOnetimeParam[T]
   ): Promise<
     PaymentResponse<ApproveOnetimeResponse[T], ApproveOnetimeFailResponse[T]>
   >;
 
-  // 정기결제 등록
+  /*! 정기결제 등록 */
   abstract registerSubscription(
     params: RegisterSubscriptionParam[T]
   ): Promise<
@@ -459,7 +460,7 @@ export abstract class PaymentLib<T extends Payment> {
     >
   >;
 
-  // 정기결제 실행
+  /*! 정기결제 실행 */
   abstract approveSubscription(
     params: ApproveSubscriptionParam[T]
   ): Promise<
@@ -469,7 +470,7 @@ export abstract class PaymentLib<T extends Payment> {
     >
   >;
 
-  // 결제 취소
+  /*! 결제 취소 */
   abstract cancelPayment(
     params: CancelPaymentParam[T],
     type?: "onetime" | "subscription"
@@ -477,14 +478,14 @@ export abstract class PaymentLib<T extends Payment> {
     PaymentResponse<CancelPaymentResponse[T], CancelPaymentFailResponse[T]>
   >;
 
-  // 결제 조회
+  /*! 결제 조회 */
   abstract getPayment(
     params: GetPaymentParam[T],
     type?: "onetime" | "subscription"
   ): Promise<PaymentResponse<GetPaymentResponse[T], GetPaymentFailResponse[T]>>;
 }
 export abstract class Inactivable<T extends InactivablePayment> {
-  // 정기결제키 비활성화
+  /*! 정기결제키 비활성화 */
   abstract inactivateSubscription(
     params: InactivateSubscriptionParam[T]
   ): Promise<
@@ -497,7 +498,7 @@ export abstract class Inactivable<T extends InactivablePayment> {
 export abstract class SubscriptionCheckable<
   T extends SubscriptionCheckablePayment
 > {
-  // 정기결제키 상태체크
+  /*! 정기결제키 상태체크 */
   abstract checkSubscription(
     params: CheckSubscriptionParam[T]
   ): Promise<
