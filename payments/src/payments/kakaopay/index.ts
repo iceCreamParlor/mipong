@@ -51,20 +51,20 @@ export class KakaoPay
   }
 
   async withPaymentResponse<T>(
-    fn: () => Promise<AxiosResponse<T>>
+    fn: () => Promise<AxiosResponse<T | KakaoPayFailResponse>>
   ): Promise<PaymentResponse<T, KakaoPayFailResponse>> {
     const response = await retry({ fn });
     if (response.status === 200) {
       return {
         success: true,
         statusCode: response.status,
-        data: response.data,
+        data: response.data as T,
       };
     }
     return {
       success: false,
       statusCode: response.status,
-      data: response.data as any,
+      data: response.data as KakaoPayFailResponse,
     };
   }
 

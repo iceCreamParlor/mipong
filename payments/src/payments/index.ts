@@ -44,6 +44,7 @@ import {
 } from "./naverpay/type";
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
+import { TossPaymentsAPI } from "./toss-payments/type";
 import { TossPay } from "./tosspay";
 import {
   TossPayAPI,
@@ -102,7 +103,7 @@ export class Mipong {
   public static DEFAULT_RETRY_TIME = 3;
   public static DEFAULT_RETRY_INTERVAL = 100;
   public static getIamport() {
-    return Iamport.instance;
+    return die("아임포트는 지원하지 않습니다.");
   }
   public static getKakaoPay() {
     return KakaoPay.instance;
@@ -280,6 +281,13 @@ export const PaymentAPI = {
       contentType: ContentType.APPLICATION_JSON,
     },
   },
+  [Payment.TOSS_PAYMENTS]: {
+    [TossPaymentsAPI.ApproveOnetime]: {
+      method: HttpMethod.POST,
+      url: "/v1/payments/#{replace}",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+  },
 };
 export function doRequest(params: {
   baseUrl: string;
@@ -424,6 +432,9 @@ export type PaymentAPISignature = {
       TossPayInactivateSubscriptionParam,
       TossPayInactivateSubscriptionResponse
     ];
+  };
+  [Payment.TOSS_PAYMENTS]: {
+    [TossPaymentsAPI.ApproveOnetime]: [{}, {}];
   };
 };
 
