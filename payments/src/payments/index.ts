@@ -48,6 +48,14 @@ import {
   TossPaymentsAPI,
   TossPaymentsApproveParam,
   TossPaymentsApproveResponse,
+  TossPaymentsApproveSubscriptionParam,
+  TossPaymentsApproveSubscriptionResponse,
+  TossPaymentsCancelPaymentParam,
+  TossPaymentsCancelPaymentResponse,
+  TossPaymentsGetPaymentParam,
+  TossPaymentsGetPaymentResponse,
+  TossPaymentsRegisterSubscriptionParam,
+  TossPaymentsRegisterSubscriptionResponse,
 } from "./toss-payments/type";
 import { TossPay } from "./tosspay";
 import {
@@ -142,6 +150,7 @@ export enum ContentType {
   APPLICATION_JSON = "application/json",
   X_WWW_FORM_URL_ENCODED_UTF8 = "application/x-www-form-urlencoded;charset=utf-8",
   X_WWW_FORM_URL_ENCODED = "application/x-www-form-urlencoded",
+  NULL = "",
 }
 export interface API {
   method: HttpMethod;
@@ -289,6 +298,26 @@ export const PaymentAPI = {
     [TossPaymentsAPI.ApproveOnetime]: {
       method: HttpMethod.POST,
       url: "/v1/payments/#{paymentKey}",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+    [TossPaymentsAPI.CancelPayment]: {
+      method: HttpMethod.POST,
+      url: "/v1/payments/#{paymentKey}/cancel",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+    [TossPaymentsAPI.GetPayment]: {
+      method: HttpMethod.GET,
+      url: "/v1/payments/orders/#{paymentKey}",
+      contentType: ContentType.NULL,
+    },
+    [TossPaymentsAPI.RegisterSubscription]: {
+      method: HttpMethod.POST,
+      url: "/v1/billing/authorizations/#{authKey}",
+      contentType: ContentType.APPLICATION_JSON,
+    },
+    [TossPaymentsAPI.ApproveSubscription]: {
+      method: HttpMethod.POST,
+      url: "/v1/billing/#{billingKey}",
       contentType: ContentType.APPLICATION_JSON,
     },
   },
@@ -450,6 +479,22 @@ export type PaymentAPISignature = {
     [TossPaymentsAPI.ApproveOnetime]: [
       TossPaymentsApproveParam,
       TossPaymentsApproveResponse
+    ];
+    [TossPaymentsAPI.CancelPayment]: [
+      TossPaymentsCancelPaymentParam,
+      TossPaymentsCancelPaymentResponse
+    ];
+    [TossPaymentsAPI.GetPayment]: [
+      TossPaymentsGetPaymentParam,
+      TossPaymentsGetPaymentResponse
+    ];
+    [TossPaymentsAPI.RegisterSubscription]: [
+      TossPaymentsRegisterSubscriptionParam,
+      TossPaymentsRegisterSubscriptionResponse
+    ];
+    [TossPaymentsAPI.ApproveSubscription]: [
+      TossPaymentsApproveSubscriptionParam,
+      TossPaymentsApproveSubscriptionResponse
     ];
   };
 };

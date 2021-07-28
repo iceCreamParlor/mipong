@@ -18,7 +18,15 @@ import {
   TossPaymentsAPI,
   TossPaymentsApproveParam,
   TossPaymentsApproveResponse,
+  TossPaymentsApproveSubscriptionParam,
+  TossPaymentsApproveSubscriptionResponse,
+  TossPaymentsCancelPaymentParam,
+  TossPaymentsCancelPaymentResponse,
   TossPaymentsFailResponse,
+  TossPaymentsGetPaymentParam,
+  TossPaymentsGetPaymentResponse,
+  TossPaymentsRegisterSubscriptionParam,
+  TossPaymentsRegisterSubscriptionResponse,
 } from "./type";
 
 export class TossPayments implements PaymentLib<Payment.TOSS_PAYMENTS> {
@@ -47,7 +55,7 @@ export class TossPayments implements PaymentLib<Payment.TOSS_PAYMENTS> {
     api: T,
     params: Omit<
       PaymentAPISignature[Payment.TOSS_PAYMENTS][T][0],
-      "paymentKey"
+      omittableKey
     >,
     replace?: { [key: string]: string }
   ): Promise<AxiosResponse<PaymentAPISignature[Payment.TOSS_PAYMENTS][T][1]>> {
@@ -89,23 +97,65 @@ export class TossPayments implements PaymentLib<Payment.TOSS_PAYMENTS> {
     );
   }
 
-  registerSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
-  approveSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
   cancelPayment(
-    params: {},
-    type?: "onetime" | "subscription"
-  ): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
+    params: TossPaymentsCancelPaymentParam
+  ): Promise<
+    PaymentResponse<TossPaymentsCancelPaymentResponse, TossPaymentsFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPaymentsAPI.CancelPayment, this.omitPaymentKey(params), {
+        paymentKey: params.paymentKey,
+      })
+    );
   }
+
   getPayment(
-    params: {},
-    type?: "onetime" | "subscription"
-  ): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
+    params: TossPaymentsGetPaymentParam
+  ): Promise<
+    PaymentResponse<TossPaymentsGetPaymentResponse, TossPaymentsFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(TossPaymentsAPI.GetPayment, this.omitPaymentKey(params), {
+        paymentKey: params.paymentKey,
+      })
+    );
+  }
+
+  registerSubscription(
+    params: TossPaymentsRegisterSubscriptionParam
+  ): Promise<
+    PaymentResponse<
+      TossPaymentsRegisterSubscriptionResponse,
+      TossPaymentsFailResponse
+    >
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(
+        TossPaymentsAPI.RegisterSubscription,
+        this.omitAuthKey(params),
+        {
+          authKey: params.authKey,
+        }
+      )
+    );
+  }
+  approveSubscription(
+    params: TossPaymentsApproveSubscriptionParam
+  ): Promise<
+    PaymentResponse<
+      TossPaymentsApproveSubscriptionResponse,
+      TossPaymentsFailResponse
+    >
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(
+        TossPaymentsAPI.ApproveSubscription,
+        this.omitBillingKey(params),
+        {
+          billingKey: params.billingKey,
+        }
+      )
+    );
   }
 
   public static get instance(): TossPayments {
@@ -117,4 +167,11 @@ export class TossPayments implements PaymentLib<Payment.TOSS_PAYMENTS> {
   private omitPaymentKey<T>(params: T): Omit<T, "paymentKey"> {
     return omit(params, "paymentKey");
   }
+  private omitAuthKey<T>(params: T): Omit<T, "authKey"> {
+    return omit(params, "authKey");
+  }
+  private omitBillingKey<T>(params: T): Omit<T, "billingKey"> {
+    return omit(params, "billingKey");
+  }
 }
+type omittableKey = "paymentKey" | "authKey" | "billingKey";
