@@ -36,7 +36,11 @@ import {
   NaverPayRegisterSubscriptionResponse,
 } from "./naverpay/type";
 import { NicePayApproveOnetimeParam } from "./nicepay/type";
-import { TossPaymentsApproveOnetimeParam } from "./toss-payments/type";
+import {
+  TossPaymentsApproveParam,
+  TossPaymentsApproveResponse,
+  TossPaymentsFailResponse,
+} from "./toss-payments/type";
 import {
   TossPayApproveOnetimeParam,
   TossPayApproveOnetimeResponse,
@@ -58,7 +62,7 @@ import {
 export type ApproveOnetimeParam = {
   [Payment.IAMPORT]: IamportApproveOnetimeParam;
   [Payment.NICEPAY]: NicePayApproveOnetimeParam;
-  [Payment.TOSS_PAYMENTS]: TossPaymentsApproveOnetimeParam;
+  [Payment.TOSS_PAYMENTS]: TossPaymentsApproveParam;
   [Payment.KAKAOPAY]: KakaoPayApproveParam;
   [Payment.NAVERPAY]: NaverPayApproveOnetimeParam;
   [Payment.TOSSPAY]: TossPayApproveOnetimeParam;
@@ -66,7 +70,7 @@ export type ApproveOnetimeParam = {
 export type ApproveOnetimeResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
-  [Payment.TOSS_PAYMENTS]: {};
+  [Payment.TOSS_PAYMENTS]: TossPaymentsApproveResponse;
   [Payment.KAKAOPAY]: KakaoPayApproveResponse;
   [Payment.NAVERPAY]: NaverPayApproveOnetimeResponse;
   [Payment.TOSSPAY]: TossPayApproveOnetimeResponse;
@@ -74,7 +78,7 @@ export type ApproveOnetimeResponse = {
 export type ApproveOnetimeFailResponse = {
   [Payment.IAMPORT]: {};
   [Payment.NICEPAY]: {};
-  [Payment.TOSS_PAYMENTS]: {};
+  [Payment.TOSS_PAYMENTS]: TossPaymentsFailResponse;
   [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: NaverPayFailResponse;
   [Payment.TOSSPAY]: TossPayFailResponse;

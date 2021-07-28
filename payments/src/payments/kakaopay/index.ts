@@ -89,7 +89,10 @@ export class KakaoPay
       },
       api: PaymentAPI[Payment.KAKAOPAY][api],
     }).catch((err) => {
-      if (err.isAxiosError && [200, 400, 500].includes(err.response.status)) {
+      if (
+        err.isAxiosError &&
+        [200, 400, 403, 500].includes(err.response.status)
+      ) {
         console.log(err.response.data);
         return err.response;
       }

@@ -9,11 +9,15 @@ import {
   getSecret,
   PaymentAPI,
   retry,
+  convert2Base64,
+  omit,
 } from "..";
+import { TossPayAPI } from "../tosspay/type";
 import { ApproveSubscriptionResponse, PaymentResponse } from "../type";
 import {
   TossPaymentsAPI,
-  TossPaymentsApproveOnetimeParam,
+  TossPaymentsApproveParam,
+  TossPaymentsApproveResponse,
   TossPaymentsFailResponse,
 } from "./type";
 
@@ -41,16 +45,48 @@ export class TossPayments implements PaymentLib<Payment.TOSS_PAYMENTS> {
 
   private async callAPI<T extends TossPaymentsAPI>(
     api: T,
-    params: PaymentAPISignature[Payment.TOSS_PAYMENTS][T][0]
+    params: Omit<
+      PaymentAPISignature[Payment.TOSS_PAYMENTS][T][0],
+      "paymentKey"
+    >,
+    replace?: { [key: string]: string }
   ): Promise<AxiosResponse<PaymentAPISignature[Payment.TOSS_PAYMENTS][T][1]>> {
     return doRequest({
       baseUrl: this._baseUrl,
-      requestParams: {
-        ...params,
-        apiKey: getSecret().TOSSPAY_API_KEY,
+      headers: {
+        Authorization: `Basic ${convert2Base64(
+          `${getSecret().TOSS_SECRET_KEY}:`
+        )}`,
       },
+      requestParams: params,
       api: PaymentAPI[Payment.TOSS_PAYMENTS][api],
+      replace,
+    }).catch((err) => {
+      if (
+        err.isAxiosError &&
+        [200, 400, 403, 500].includes(err.response.status)
+      ) {
+        console.log(err.response.data);
+        return err.response;
+      }
+      throw err;
     });
+  }
+
+  approveOnetime(
+    params: TossPaymentsApproveParam
+  ): Promise<
+    PaymentResponse<TossPaymentsApproveResponse, TossPaymentsFailResponse>
+  > {
+    return this.withPaymentResponse(() =>
+      this.callAPI(
+        TossPaymentsAPI.ApproveOnetime,
+        this.omitPaymentKey(params),
+        {
+          paymentKey: params.paymentKey,
+        }
+      )
+    );
   }
 
   registerSubscription(params: {}): Promise<PaymentResponse<{}, {}>> {
@@ -72,16 +108,13 @@ export class TossPayments implements PaymentLib<Payment.TOSS_PAYMENTS> {
     throw new Error("Method not implemented.");
   }
 
-  approveOnetime(
-    input: TossPaymentsApproveOnetimeParam
-  ): Promise<PaymentResponse<{}, {}>> {
-    throw new Error("Method not implemented.");
-  }
-
   public static get instance(): TossPayments {
     if (this._instance === undefined) {
       this._instance = new TossPayments();
     }
     return this._instance;
+  }
+  private omitPaymentKey<T>(params: T): Omit<T, "paymentKey"> {
+    return omit(params, "paymentKey");
   }
 }

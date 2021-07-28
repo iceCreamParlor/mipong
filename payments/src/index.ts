@@ -8,6 +8,14 @@ export { NicePay } from "./payments/nicepay";
 export { TossPayments } from "./payments/toss-payments";
 export { TossPay } from "./payments/tosspay";
 
+// Mipong.getTossPayments()
+//   .approveOnetime({
+//     paymentKey: "ly05n91dEvLex6BJGQOVD0O9XbDoXVW4w2zNbgaYRMPoqmDX",
+//     orderId: "WS20210721180349917844C30D1B498E111",
+//     amount: 8900,
+//   })
+//   .then((response) => console.log(response));
+
 // const tosspay = Mipong.getTossPay();
 // tosspay
 //   .registerSubscription({

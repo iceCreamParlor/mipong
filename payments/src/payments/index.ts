@@ -44,7 +44,11 @@ import {
 } from "./naverpay/type";
 import { NicePay } from "./nicepay";
 import { TossPayments } from "./toss-payments";
-import { TossPaymentsAPI } from "./toss-payments/type";
+import {
+  TossPaymentsAPI,
+  TossPaymentsApproveParam,
+  TossPaymentsApproveResponse,
+} from "./toss-payments/type";
 import { TossPay } from "./tosspay";
 import {
   TossPayAPI,
@@ -284,7 +288,7 @@ export const PaymentAPI = {
   [Payment.TOSS_PAYMENTS]: {
     [TossPaymentsAPI.ApproveOnetime]: {
       method: HttpMethod.POST,
-      url: "/v1/payments/#{replace}",
+      url: "/v1/payments/#{paymentKey}",
       contentType: ContentType.APPLICATION_JSON,
     },
   },
@@ -300,9 +304,18 @@ export function doRequest(params: {
     url: string;
     contentType: ContentType;
   };
+  replace?: { [key: string]: string };
 }): Promise<AxiosResponse<any>> {
-  const { baseUrl, requestParams, headers, api } = params;
-  const requestUrl = `${baseUrl}${api.url}`;
+  const { baseUrl, requestParams, headers, api, replace } = params;
+  let requestUrl = `${baseUrl}${api.url}`;
+  if (replace) {
+    Object.keys(replace).forEach(
+      (key) => (requestUrl = requestUrl.replace(`#{${key}}`, replace[key]))
+    );
+  }
+
+  console.log(requestUrl);
+
   /*! 네이버페이 권고사항에 따라 60초로 설정 */
   const timeout = 60 * 1000;
 
@@ -434,7 +447,10 @@ export type PaymentAPISignature = {
     ];
   };
   [Payment.TOSS_PAYMENTS]: {
-    [TossPaymentsAPI.ApproveOnetime]: [{}, {}];
+    [TossPaymentsAPI.ApproveOnetime]: [
+      TossPaymentsApproveParam,
+      TossPaymentsApproveResponse
+    ];
   };
 };
 
@@ -526,12 +542,28 @@ export function die(msg: string): never {
 export function getSecret(): any {
   return process.env;
 }
+/**
+ * 문자열을 Base64 로 인코딩
+ * @param str
+ */
+export function convert2Base64(str: string): string {
+  return Buffer.from(str).toString("base64");
+}
 export function convertUrlEncodedParam(param: object): URLSearchParams {
   const params = new URLSearchParams();
   Object.keys(param).forEach((p) => {
     params.append(p, (param as any)[p]);
   });
   return params;
+}
+export function omit(obj: { [k: string]: any }, key: string) {
+  const result: any = {};
+  Object.keys(obj).forEach((k) => {
+    if (k !== key) {
+      result[k] = obj[k];
+    }
+  });
+  return result;
 }
 export function handleError(err: Error) {
   console.error(err.message);
