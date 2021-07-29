@@ -43,6 +43,17 @@ import {
   NaverPayReserveSubscriptionResponse,
 } from "./naverpay/type";
 import { NicePay } from "./nicepay";
+import {
+  NicePayAPI,
+  NicePayApproveSubscriptionParam,
+  NicePayApproveSubscriptionResponse,
+  NicePayCancelPaymentParam,
+  NicePayCancelPaymentResponse,
+  NicePayInactivateSubscriptionParam,
+  NicePayInactivateSubscriptionResponse,
+  NicePayRegisterSubscriptionParam,
+  NicePayRegisterSubscriptionResponse,
+} from "./nicepay/type";
 import { TossPayments } from "./toss-payments";
 import {
   TossPaymentsAPI,
@@ -148,8 +159,9 @@ export enum HttpMethod {
 }
 export enum ContentType {
   APPLICATION_JSON = "application/json",
-  X_WWW_FORM_URL_ENCODED_UTF8 = "application/x-www-form-urlencoded;charset=utf-8",
   X_WWW_FORM_URL_ENCODED = "application/x-www-form-urlencoded",
+  X_WWW_FORM_URL_ENCODED_UTF8 = "application/x-www-form-urlencoded;charset=utf-8",
+  X_WWW_FORM_URL_ENCODED_EUC_KR = "application/x-www-form-urlencoded; charset=euc-kr",
   NULL = "",
 }
 export interface API {
@@ -321,6 +333,28 @@ export const PaymentAPI = {
       contentType: ContentType.APPLICATION_JSON,
     },
   },
+  [Payment.NICEPAY]: {
+    [NicePayAPI.RegisterSubscription]: {
+      method: HttpMethod.POST,
+      url: "",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_EUC_KR,
+    },
+    [NicePayAPI.ApproveSubscription]: {
+      method: HttpMethod.POST,
+      url: "",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_EUC_KR,
+    },
+    [NicePayAPI.CancelPayment]: {
+      method: HttpMethod.POST,
+      url: "",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_EUC_KR,
+    },
+    [NicePayAPI.InactivateSubscription]: {
+      method: HttpMethod.POST,
+      url: "",
+      contentType: ContentType.X_WWW_FORM_URL_ENCODED_EUC_KR,
+    },
+  },
 };
 export function doRequest(params: {
   baseUrl: string;
@@ -343,18 +377,11 @@ export function doRequest(params: {
     );
   }
 
-  console.log(requestUrl);
-
   /*! 네이버페이 권고사항에 따라 60초로 설정 */
   const timeout = 60 * 1000;
 
   if (api.method === HttpMethod.POST) {
-    if (
-      [
-        ContentType.X_WWW_FORM_URL_ENCODED,
-        ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
-      ].includes(api.contentType)
-    ) {
+    if (api.contentType.includes(ContentType.X_WWW_FORM_URL_ENCODED)) {
       const body = convertUrlEncodedParam(requestParams);
       return axios.post(requestUrl, body, {
         headers: {
@@ -497,6 +524,24 @@ export type PaymentAPISignature = {
       TossPaymentsApproveSubscriptionResponse
     ];
   };
+  [Payment.NICEPAY]: {
+    [NicePayAPI.RegisterSubscription]: [
+      NicePayRegisterSubscriptionParam,
+      NicePayRegisterSubscriptionResponse
+    ];
+    [NicePayAPI.ApproveSubscription]: [
+      NicePayApproveSubscriptionParam,
+      NicePayApproveSubscriptionResponse
+    ];
+    [NicePayAPI.InactivateSubscription]: [
+      NicePayInactivateSubscriptionParam,
+      NicePayInactivateSubscriptionResponse
+    ];
+    [NicePayAPI.CancelPayment]: [
+      NicePayCancelPaymentParam,
+      NicePayCancelPaymentResponse
+    ];
+  };
 };
 
 export type InactivablePayment =
@@ -512,7 +557,8 @@ export type SubscriptionCheckablePayment =
 export abstract class PaymentLib<T extends Payment> {
   constructor() {}
   abstract withPaymentResponse(
-    fn: () => Promise<AxiosResponse<any>>
+    fn: () => Promise<AxiosResponse<any>>,
+    api?: any
   ): Promise<any>;
 
   /*! 일반결제 승인 */

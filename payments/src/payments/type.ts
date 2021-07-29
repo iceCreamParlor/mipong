@@ -35,7 +35,16 @@ import {
   NaverPayRegisterSubscriptionParam,
   NaverPayRegisterSubscriptionResponse,
 } from "./naverpay/type";
-import { NicePayApproveOnetimeParam } from "./nicepay/type";
+import {
+  NicePayApproveOnetimeParam,
+  NicePayApproveSubscriptionParam,
+  NicePayApproveSubscriptionResponse,
+  NicePayCancelPaymentParam,
+  NicePayCancelPaymentResponse,
+  NicePayRegisterSubscriptionParam,
+  NicePayRegisterSubscriptionResponse,
+  NicePayResponse,
+} from "./nicepay/type";
 import {
   TossPaymentsApproveParam,
   TossPaymentsApproveResponse,
@@ -149,7 +158,7 @@ export type CheckSubscriptionFailResponse = {
 
 export type RegisterSubscriptionParam = {
   [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
+  [Payment.NICEPAY]: NicePayRegisterSubscriptionParam;
   [Payment.TOSS_PAYMENTS]: TossPaymentsRegisterSubscriptionParam;
   [Payment.KAKAOPAY]: KakaoPayRegisterSubscriptionParam;
   [Payment.NAVERPAY]: NaverPayRegisterSubscriptionParam;
@@ -157,7 +166,7 @@ export type RegisterSubscriptionParam = {
 };
 export type RegisterSubscriptionResponse = {
   [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
+  [Payment.NICEPAY]: NicePayRegisterSubscriptionResponse;
   [Payment.TOSS_PAYMENTS]: TossPaymentsRegisterSubscriptionResponse;
   [Payment.KAKAOPAY]: KakaoPayRegisterSubscriptionResponse;
   [Payment.NAVERPAY]: NaverPayRegisterSubscriptionResponse;
@@ -165,7 +174,7 @@ export type RegisterSubscriptionResponse = {
 };
 export type RegisterSubscriptionFailResponse = {
   [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
+  [Payment.NICEPAY]: NicePayResponse;
   [Payment.TOSS_PAYMENTS]: TossPaymentsFailResponse;
   [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: NaverPayFailResponse;
@@ -173,7 +182,7 @@ export type RegisterSubscriptionFailResponse = {
 };
 export type ApproveSubscriptionParam = {
   [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
+  [Payment.NICEPAY]: NicePayApproveSubscriptionParam;
   [Payment.TOSS_PAYMENTS]: TossPaymentsApproveSubscriptionParam;
   [Payment.KAKAOPAY]: KakaoPayApproveSubscriptionParam;
   [Payment.NAVERPAY]: NaverPayApproveSubscriptionParam;
@@ -181,7 +190,7 @@ export type ApproveSubscriptionParam = {
 };
 export type ApproveSubscriptionResponse = {
   [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
+  [Payment.NICEPAY]: NicePayApproveSubscriptionResponse;
   [Payment.TOSS_PAYMENTS]: TossPaymentsApproveResponse;
   [Payment.KAKAOPAY]: KakaoPayApproveSubscriptionResponse;
   [Payment.NAVERPAY]: NaverPayApproveSubscriptionResponse;
@@ -189,24 +198,16 @@ export type ApproveSubscriptionResponse = {
 };
 export type ApproveSubscriptionFailResponse = {
   [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
+  [Payment.NICEPAY]: NicePayResponse;
   [Payment.TOSS_PAYMENTS]: TossPaymentsFailResponse;
   [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: NaverPayFailResponse;
   [Payment.TOSSPAY]: TossPayFailResponse;
 };
-export type ExecuteFirstSubscriptionParam = {
-  [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
-  [Payment.TOSS_PAYMENTS]: {};
-  [Payment.KAKAOPAY]: KakaoPayReadyParam;
-  [Payment.NAVERPAY]: {};
-  [Payment.TOSSPAY]: {};
-};
 
 export type CancelPaymentParam = {
   [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
+  [Payment.NICEPAY]: NicePayCancelPaymentParam;
   [Payment.TOSS_PAYMENTS]: TossPaymentsCancelPaymentParam;
   [Payment.KAKAOPAY]: KakaoPayCancelParam;
   [Payment.NAVERPAY]: NaverPayCancelPaymentParam;
@@ -214,7 +215,7 @@ export type CancelPaymentParam = {
 };
 export type CancelPaymentResponse = {
   [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
+  [Payment.NICEPAY]: NicePayCancelPaymentResponse;
   [Payment.TOSS_PAYMENTS]: TossPaymentsCancelPaymentResponse;
   [Payment.KAKAOPAY]: KakaoPayCancelResponse;
   [Payment.NAVERPAY]: NaverPayCancelPaymentResponse;
@@ -222,7 +223,7 @@ export type CancelPaymentResponse = {
 };
 export type CancelPaymentFailResponse = {
   [Payment.IAMPORT]: {};
-  [Payment.NICEPAY]: {};
+  [Payment.NICEPAY]: NicePayResponse;
   [Payment.TOSS_PAYMENTS]: TossPaymentsFailResponse;
   [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: NaverPayFailResponse;
