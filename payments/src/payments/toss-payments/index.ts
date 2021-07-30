@@ -165,13 +165,13 @@ export class TossPayments implements PaymentLib<Payment.TOSS_PAYMENTS> {
     return this._instance;
   }
   private omitPaymentKey<T>(params: T): Omit<T, "paymentKey"> {
-    return omit(params, "paymentKey");
+    return omit(params, ["paymentKey"]);
   }
   private omitAuthKey<T>(params: T): Omit<T, "authKey"> {
-    return omit(params, "authKey");
+    return omit(params, ["authKey"]);
   }
   private omitBillingKey<T>(params: T): Omit<T, "billingKey"> {
-    return omit(params, "billingKey");
+    return omit(params, ["billingKey"]);
   }
 }
 type omittableKey = "paymentKey" | "authKey" | "billingKey";

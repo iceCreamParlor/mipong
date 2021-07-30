@@ -36,7 +36,6 @@ import {
   NaverPayRegisterSubscriptionResponse,
 } from "./naverpay/type";
 import {
-  NicePayApproveOnetimeParam,
   NicePayApproveSubscriptionParam,
   NicePayApproveSubscriptionResponse,
   NicePayCancelPaymentParam,
@@ -77,7 +76,7 @@ import {
 
 export type ApproveOnetimeParam = {
   [Payment.IAMPORT]: IamportApproveOnetimeParam;
-  [Payment.NICEPAY]: NicePayApproveOnetimeParam;
+  [Payment.NICEPAY]: {};
   [Payment.TOSS_PAYMENTS]: TossPaymentsApproveParam;
   [Payment.KAKAOPAY]: KakaoPayApproveParam;
   [Payment.NAVERPAY]: NaverPayApproveOnetimeParam;

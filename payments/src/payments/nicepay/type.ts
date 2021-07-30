@@ -16,15 +16,20 @@ export interface NicePayResponse {
 }
 
 export interface NicePayRegisterSubscriptionParam {
-  MID?: string;
-  EdiDate: string;
-  Moid: string;
-  EncData: string;
-  SignData?: string;
   BuyerName: string;
   BuyerEmail: string;
   BuyerTel: string;
-  CharSet: string;
+  CharSet?: string;
+  CardNo: string;
+  ExpYear: string;
+  ExpMonth: string;
+  IDNo: string;
+  CardPw: string;
+  MID?: string;
+  EdiDate?: string;
+  Moid?: string;
+  EncData?: string;
+  SignData?: string;
   /*! 응답전문 유형 (default(미설정): JSON / KV(설정): Key=Value형식 응답) */
   EdiType?: string;
 }
@@ -53,8 +58,8 @@ export interface NicePayApproveSubscriptionParam {
   BID: string;
   /*! 상점 ID */
   MID?: string;
-  TID: string;
-  EdiDate: string;
+  TID?: string;
+  EdiDate?: string;
   /*! 상점에서 부여한 주문번호 OrderCID */
   Moid: string;
   Amt: string;
@@ -81,7 +86,7 @@ export interface NicePayApproveSubscriptionParam {
   /*! 별도면세금액설정시사용 */
   TaxFreeAmt?: string;
   /*! 응답파라미터 인코딩 방식 (utf-8 / euc-kr(default)) */
-  CharSet: string;
+  CharSet?: string;
   /*! 응답전문 유형 (default(미설정): JSON / KV(설정): Key=Value형식 응답) */
   EdiType?: string;
   /*! 상점 정보 전달용 여분필드 (Nicepay 가공없음) */
@@ -126,7 +131,7 @@ export interface NicePayCancelPaymentParam {
   /*! 0:전체 취소, 1:부분 취소 */
   PartialCancelCode: string;
   /*! 요청 시간 (YYYYMMDDHHMMSS) */
-  EdiDate: string;
+  EdiDate?: string;
   /*! hex(sha256(MID + CancelAmt + EdiDate + MerchantKey)) */
   SignData?: string;
   SupplyAmt?: string;
@@ -134,7 +139,7 @@ export interface NicePayCancelPaymentParam {
   ServiceAmt?: string;
   TaxFreeAmt?: string;
   /*! 인증 응답 인코딩 (euc-kr / utf-8) */
-  CharSet: string;
+  CharSet?: string;
   /*! 장바구니 결제 유형 (장바구니 결제:1/ 그 외:0) */
   CartType: string;
   /*! 응답전문 유형 (JSON / KV) *KV:Key=value */
@@ -164,7 +169,7 @@ export interface NicePayInactivateSubscriptionParam {
   EdiDate: string;
   Moid: string;
   SignData?: string;
-  CharSet: string;
+  CharSet?: string;
 }
 
 export interface NicePayInactivateSubscriptionResponse {

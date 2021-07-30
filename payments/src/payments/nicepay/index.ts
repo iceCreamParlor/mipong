@@ -1,16 +1,20 @@
+import axios, { AxiosResponse } from "axios";
 import * as crypto from "crypto";
-import { AxiosResponse } from "axios";
+import * as iconv from "iconv-lite";
+import { randomBytes } from "crypto";
 import {
   doRequest,
+  filterTruthy,
   getSecret,
   handleError,
+  omit,
   Payment,
   PaymentAPI,
   PaymentAPISignature,
   PaymentLib,
   retry,
 } from "..";
-import { ApproveSubscriptionResponse, PaymentResponse } from "../type";
+import { PaymentResponse } from "../type";
 import {
   NicePayAPI,
   NicePayApproveSubscriptionParam,
@@ -22,9 +26,11 @@ import {
   NicePayResponse,
   NicePaySuccessCode,
 } from "./type";
+import { request } from "http";
 
 export class NicePay implements PaymentLib<Payment.NICEPAY> {
   private _baseUrl: string = "https://webapi.nicepay.co.kr/webapi";
+  private _encoding: string = "euc-kr";
 
   async withPaymentResponse<T extends NicePayResponse>(
     fn: () => Promise<AxiosResponse<T>>,
@@ -50,17 +56,33 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
     params: PaymentAPISignature[Payment.NICEPAY][T][0],
     type: "onetime" | "subscription"
   ): Promise<AxiosResponse<PaymentAPISignature[Payment.NICEPAY][T][1]>> {
-    const requestParams = {
-      ...params,
-      ...{ MID: params.MID ?? getSecret().NICEPAY_MERCHANT_ID },
-    };
-    return doRequest({
-      baseUrl: this._baseUrl,
-      requestParams,
-      api: PaymentAPI[Payment.NICEPAY][api],
-    }).catch((err) => {
-      throw err;
-    });
+    console.log(JSON.stringify(params));
+
+    const isEucKr = params.CharSet === "euc-kr";
+
+    return axios
+      .post(
+        `${this._baseUrl}${PaymentAPI[Payment.NICEPAY][api].url}`,
+        iconv.encode(this.convertUrlEncodedParam(params), this._encoding),
+        {
+          headers: {
+            "Content-Type": PaymentAPI[Payment.NICEPAY][api].contentType,
+          },
+          timeout: 60 * 1000,
+          ...(isEucKr ? { responseType: "arraybuffer" } : {}),
+        }
+      )
+      .then((response) => {
+        if (!isEucKr) {
+          return response;
+        }
+        const decodedResponse = iconv.decode(response.data, this._encoding);
+        return {
+          ...response,
+          data: JSON.parse(decodedResponse),
+        };
+      })
+      .catch(handleError);
   }
 
   getPayment(
@@ -78,19 +100,93 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
   ): Promise<
     PaymentResponse<NicePayRegisterSubscriptionResponse, NicePayResponse>
   > {
-    throw new Error("Method not implemented.");
+    const mid = this.getMid();
+    const mkey = this.getMerchantKey();
+    const ediDate = this.yyyymmddhhmiss();
+    const moid = randomBytes(20).toString("hex");
+
+    const { CardNo, ExpYear, ExpMonth, IDNo, CardPw } = params;
+
+    const requestParams = filterTruthy(
+      omit(params, ["CardNo", "ExpYear", "ExpMonth", "IDNo", "CardPw"])
+    );
+
+    console.log(JSON.stringify(requestParams));
+    console.log(mid);
+
+    return this.withPaymentResponse(
+      () =>
+        this.callAPI(
+          NicePayAPI.RegisterSubscription,
+          {
+            MID: mid,
+            EdiDate: ediDate,
+            Moid: moid,
+            EncData: this.getEncData(
+              `CardNo=${CardNo}&ExpYear=${ExpYear}&ExpMonth=${ExpMonth}&IDNo=${IDNo}&CardPw=${CardPw}`,
+              mkey
+            ),
+            SignData: this.getSignData(`${mid}${ediDate}${moid}${mkey}`),
+            ...requestParams,
+            BuyerTel: requestParams.BuyerTel.replace(/-/g, ""),
+          },
+          "subscription"
+        ),
+      NicePayAPI.RegisterSubscription
+    );
   }
   approveSubscription(
     params: NicePayApproveSubscriptionParam
   ): Promise<
     PaymentResponse<NicePayApproveSubscriptionResponse, NicePayResponse>
   > {
-    throw new Error("Method not implemented.");
+    const mid = this.getMid();
+    const mkey = this.getMerchantKey();
+    const ediDate = this.yyyymmddhhmiss();
+
+    return this.withPaymentResponse(
+      () =>
+        this.callAPI(
+          NicePayAPI.ApproveSubscription,
+          {
+            MID: mid,
+            TID: this.createTid(mid),
+            EdiDate: ediDate,
+            SignData: this.getSignData(
+              `${mid}${ediDate}${params.Moid}${params.Amt}${params.BID}${mkey}`
+            ),
+            ...params,
+            BuyerTel: params.BuyerTel.replace(/-/g, ""),
+          },
+          "subscription"
+        ),
+      NicePayAPI.ApproveSubscription
+    );
   }
   cancelPayment(
-    params: NicePayCancelPaymentParam
+    params: NicePayCancelPaymentParam,
+    type: "onetime" | "subscription"
   ): Promise<PaymentResponse<NicePayCancelPaymentResponse, NicePayResponse>> {
-    throw new Error("Method not implemented.");
+    const mid = this.getMid();
+    const merchantKey = this.getMerchantKey();
+    const ediDate = this.yyyymmddhhmiss();
+
+    return this.withPaymentResponse(
+      () =>
+        this.callAPI(
+          NicePayAPI.CancelPayment,
+          {
+            MID: mid,
+            EdiDate: ediDate,
+            SignData: this.getSignData(
+              `${mid}${params.CancelAmt}${ediDate}${merchantKey}`
+            ),
+            ...params,
+          },
+          type
+        ),
+      NicePayAPI.CancelPayment
+    );
   }
 
   private static _instance: NicePay = new NicePay();
@@ -98,9 +194,61 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
   public static get instance(): NicePay {
     return this._instance;
   }
+  // 현재시간 YYYYMMDDHHMISS 포맷
+  private yyyymmddhhmiss(): string {
+    return new Date().toISOString().slice(0, 19).replace(/[-:T]/g, "");
+  }
+
+  /*!
+   * 모든 결제건은 규칙에 따라 유니크한 TID 를 생성합니다.
+   * 따라서, 빌키 승인 요청 시 가맹점에서 생성하는 TID도 다른 모든 TID에 대하여 유니크해야 하며,
+   * 동일한 TID 로 결제 요청 시 실패로 처리됩니다.
+   *
+   * TID(30) = MID(10) + 지불수단(2) + 매체구분(2) + 시간정보(12) + 랜덤숫자(4)
+   *
+   * 상세 내용은 상단 링크에 있는 개발문서 참고바랍니다.
+   */
+  private createTid(mid: string): string {
+    /*! 지불수단: 신용카드 */
+    const payMethod = "01";
+    /*! 매체구분: 빌링 */
+    const mediaType = "16";
+    const timeInfo = new Date()
+      .toISOString()
+      .slice(2, 19)
+      .replace(/[-:T]/g, "");
+    const random = Math.floor(Math.random() * 10000);
+
+    return mid + payMethod + mediaType + timeInfo + random;
+  }
+
+  private getEncData(plainText: string, merchantKey: string): string {
+    const encKey = merchantKey.slice(0, 16);
+
+    const cipher = crypto.createCipheriv(
+      "aes-128-ecb",
+      encKey,
+      Buffer.alloc(0)
+    );
+    return Buffer.concat([
+      cipher.update(plainText, "utf8"),
+      cipher.final(),
+    ]).toString("hex");
+  }
+  private getMerchantKey(): string {
+    return getSecret().NICEPAY_MERCHANT_KEY;
+  }
+  private getMid(): string {
+    return getSecret().NICEPAY_MERCHANT_ID;
+  }
   private getSignData(str: string): string {
     const shasum = crypto.createHash("sha256");
     shasum.update(str);
     return shasum.digest("hex");
+  }
+  private convertUrlEncodedParam(param: { [key: string]: any }) {
+    return Object.keys(param)
+      .map((key) => `${key}=${param[key]}`)
+      .join("&");
   }
 }

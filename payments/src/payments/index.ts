@@ -140,6 +140,9 @@ export class Mipong {
   public static getTossPay() {
     return TossPay.instance;
   }
+  public static getNicePay() {
+    return NicePay.instance;
+  }
 }
 
 export enum Payment {
@@ -336,22 +339,22 @@ export const PaymentAPI = {
   [Payment.NICEPAY]: {
     [NicePayAPI.RegisterSubscription]: {
       method: HttpMethod.POST,
-      url: "",
+      url: "/billing/billing_regist.jsp",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_EUC_KR,
     },
     [NicePayAPI.ApproveSubscription]: {
       method: HttpMethod.POST,
-      url: "",
+      url: "/billing/billing_approve.jsp",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_EUC_KR,
     },
     [NicePayAPI.CancelPayment]: {
       method: HttpMethod.POST,
-      url: "",
+      url: "/cancel_process.jsp",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_EUC_KR,
     },
     [NicePayAPI.InactivateSubscription]: {
       method: HttpMethod.POST,
-      url: "",
+      url: "billing/billkey_remove.jsp",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_EUC_KR,
     },
   },
@@ -367,15 +370,17 @@ export function doRequest(params: {
     url: string;
     contentType: ContentType;
   };
+  option?: { [key: string]: string };
   replace?: { [key: string]: string };
 }): Promise<AxiosResponse<any>> {
-  const { baseUrl, requestParams, headers, api, replace } = params;
+  const { baseUrl, requestParams, headers, api, replace, option } = params;
   let requestUrl = `${baseUrl}${api.url}`;
   if (replace) {
     Object.keys(replace).forEach(
       (key) => (requestUrl = requestUrl.replace(`#{${key}}`, replace[key]))
     );
   }
+  console.log(requestUrl);
 
   /*! 네이버페이 권고사항에 따라 60초로 설정 */
   const timeout = 60 * 1000;
@@ -389,6 +394,7 @@ export function doRequest(params: {
           "Content-Type": ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
         },
         timeout,
+        ...(option ?? {}),
       });
     }
     if (ContentType.APPLICATION_JSON === api.contentType) {
@@ -647,10 +653,21 @@ export function convertUrlEncodedParam(param: object): URLSearchParams {
   });
   return params;
 }
-export function omit(obj: { [k: string]: any }, key: string) {
+export function omit(obj: { [k: string]: any }, omitList: string[]) {
   const result: any = {};
   Object.keys(obj).forEach((k) => {
-    if (k !== key) {
+    omitList.forEach((key) => {
+      if (k !== key) {
+        result[k] = obj[k];
+      }
+    });
+  });
+  return result;
+}
+export function filterTruthy(obj: { [k: string]: any }) {
+  const result: any = {};
+  Object.keys(obj).forEach((k) => {
+    if (!!k) {
       result[k] = obj[k];
     }
   });
