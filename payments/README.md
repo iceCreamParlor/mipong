@@ -85,12 +85,28 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >   - 결제 요청 [v]
 >   <pre>
 >     <code>
->       Mipong.getKakaoPay().approveOnetime({
->         tid,
->         partner_order_id: "...",
->         partner_user_id: "...",
->         pg_token,
->       })
+>         Mipong.getKakaoPay().ready(
+>           {
+>             // 가맹점 주문번호, 최대 100자
+>             partner_order_id: "...",
+>             // 가맹점 회원id, 최대 100자
+>             partner_user_id: "...",
+>             // 상품명, 최대 100자
+>             item_name: "...",
+>             // 상품 수량
+>             quantity: 1,
+>             // 상품 총액
+>             total_amount: 10000,
+>             // 상품 비과세 금액
+>             tax_free_amount: 0,
+>             approval_url: "...",
+>             // 결제 취소 시 redirect url, 최대 255자
+>             cancel_url: "...",
+>             // 결제 실패 시 redirect url, 최대 255자
+>             fail_url: "...",
+>           },
+>           "onetime"
+>         )
 >       .then((response) => {
 >         if(response.success) {
 >           return ...
@@ -102,17 +118,137 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >     </code>
 >   </pre>
 >   - 결제 승인 [v]
+>   <pre>
+>     <code>
+>       Mipong.getKakaoPay().approveOnetime({
+>         tid,
+>         partner_order_id: "...",
+>         partner_user_id: "...",
+>         pg_token: "...",
+>       })
+>       .then((response) => {
+>         if(response.success) {
+>           return ...
+>         }
+>         if(!response.success) {
+>           return ...
+>         }
+>       });
+>     </code>
+>   </pre>
 > - 정기 결제
 >   - 정기 결제 고유번호 발급 [v]
->   - 정기 결제 시작 [v]
+>   <pre>
+>     <code>
+>         Mipong.getKakaoPay().registerSubscription(
+>           {
+>             // 가맹점 주문번호, 최대 100자
+>             partner_order_id: "...",
+>             // 가맹점 회원id, 최대 100자
+>             partner_user_id: "...",
+>             // 상품명, 최대 100자
+>             item_name: "...",
+>             // 상품 수량
+>             quantity: 1,
+>             // 상품 총액
+>             total_amount: 10000,
+>             // 상품 비과세 금액
+>             tax_free_amount: 0,
+>             approval_url: "...",
+>             // 결제 취소 시 redirect url, 최대 255자
+>             cancel_url: "...",
+>             // 결제 실패 시 redirect url, 최대 255자
+>             fail_url: "...",
+>           },
+>           "subscription"
+>         )
+>       .then((response) => {
+>         if(response.success) {
+>           return ...
+>         }
+>         if(!response.success) {
+>           return ...
+>         }
+>       });
+>     </code>
+>   </pre>
 >   - 정기 결제 요청 [v]
+>   <pre>
+>     <code>
+>       const response = await Mipong.getKakaoPay().approveSubscription({
+>         tid,
+>         partner_order_id: "...",
+>         partner_user_id: "...",
+>         pg_token: "...",
+>       })
+>       if(response.success) {
+>         ...
+>       }
+>     </code>
+>   </pre>
 >   - 정기 결제 비활성화 [v]
+>   <pre>
+>     <code>
+>       const response = await Mipong.getKakaoPay().inactivateSubscription({
+>         sid: "...",
+>       })
+>       if(response.success) {
+>         ...
+>       }
+>     </code>
+>   </pre>
 >   - 정기 결제 상태 조회 [v]
->   - 결제 수단 변경 [x]
-> - 주문 조회 [v]
-> - 결제 취소 [v]
+>   <pre>
+>     <code>
+>       const response = await Mipong.getKakaoPay().checkSubscription({
+>         sid: "...",
+>       })
+>       if(response.success) {
+>         ...
+>       }
+>     </code>
+>   </pre>
+> - 주문 조회
+>   <pre>
+>     <code>
+>       const response = await Mipong.getKakaoPay().getPayment({
+>           tid: "...",
+>         },
+>         // 단건결제 : "onetime" | 정기결제 : "subscription"
+>         "onetime"
+>       )
+>       if(response.success) {
+>         ...
+>       }
+>     </code>
+>   </pre>
+> - 결제 취소
+>     <pre>
+>       <code>
+>         const response = await Mipong.getKakaoPay().cancelPayment({
+>             /*! 결제 고유번호 */
+>             tid: string;
+>             /*! 취소 금액 */
+>             cancel_amount: number;
+>             /*! 취소 비과세 금액 */
+>             cancel_tax_free_amount: number;
+>             /*! 취소 부과세 금액, 디폴트 : (취소 금액 - 취소 비과세 금액)/11, 소숫점이하 반올림) */
+>             cancel_vat_amount?: number;
+>             /*! 취소 가능 금액(결제 취소 요청 금액 포함) */
+>             cancel_available_amount?: number;
+>             /*! 해당 요청에 대해 저장하고 싶은 값, 최대 200자 */
+>             payload?: string;
+>           },
+>           // 단건결제 : "onetime" | 정기결제 : "subscription"
+>           "onetime"
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+>   <br/>
 
-<br/>
 ### 네이버페이
 
 https://developer.pay.naver.com/docs/v2/api#common-common_certi
