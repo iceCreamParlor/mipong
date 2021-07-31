@@ -1,106 +1,27 @@
 import axios, { AxiosResponse } from "axios";
-import { Iamport } from "./iamport";
-import { KakaoPay } from "./kakaopay";
-import {
-  KakaoPayAPI,
-  KakaoPayApproveParam,
-  KakaoPayApproveResponse,
-  KakaoPayCancelParam,
-  KakaoPayCancelResponse,
-  KakaoPayCheckSubscriptionParam,
-  KakaoPayCheckSubscriptionResponse,
-  KakaoPayApproveSubscriptionParam,
-  KakaoPayApproveSubscriptionResponse,
-  KakaoPayInactivateSubscriptionParam,
-  KakaoPayInactivateSubscriptionResponse,
-  KakaoPayReadyParam,
-  KakaoPayReadyResponse,
-  KakaoPayRegisterSubscriptionParam,
-  KakaoPayRegisterSubscriptionResponse,
-  KakaoPayGetPaymentParam,
-  KakaoPayGetPaymentResponse,
-} from "./kakaopay/type";
-import { NaverPay } from "./naverpay";
-import {
-  NaverPayAPI,
-  NaverPayApproveOnetimeParam,
-  NaverPayApproveOnetimeResponse,
-  NaverPayApproveSubscriptionParam,
-  NaverPayApproveSubscriptionResponse,
-  NaverPayCancelPaymentParam,
-  NaverPayCancelPaymentResponse,
-  NaverPayCheckSubscriptionParam,
-  NaverPayCheckSubscriptionResponse,
-  NaverPayGetPaymentParam,
-  NaverPayGetPaymentResponse,
-  NaverPayInactivateSubscriptionParam,
-  NaverPayInactivateSubscriptionResponse,
-  NaverPayPrepareRegisterSubscriptionParam,
-  NaverPayPrepareRegisterSubscriptionResponse,
-  NaverPayRegisterSubscriptionParam,
-  NaverPayRegisterSubscriptionResponse,
-  NaverPayReserveSubscriptionParam,
-  NaverPayReserveSubscriptionResponse,
-} from "./naverpay/type";
-import { NicePay } from "./nicepay";
-import {
-  NicePayAPI,
-  NicePayApproveSubscriptionParam,
-  NicePayApproveSubscriptionResponse,
-  NicePayCancelPaymentParam,
-  NicePayCancelPaymentResponse,
-  NicePayInactivateSubscriptionParam,
-  NicePayInactivateSubscriptionResponse,
-  NicePayRegisterSubscriptionParam,
-  NicePayRegisterSubscriptionResponse,
-} from "./nicepay/type";
-import { TossPayments } from "./toss-payments";
-import {
-  TossPaymentsAPI,
-  TossPaymentsApproveParam,
-  TossPaymentsApproveResponse,
-  TossPaymentsApproveSubscriptionParam,
-  TossPaymentsApproveSubscriptionResponse,
-  TossPaymentsCancelPaymentParam,
-  TossPaymentsCancelPaymentResponse,
-  TossPaymentsGetPaymentParam,
-  TossPaymentsGetPaymentResponse,
-  TossPaymentsRegisterSubscriptionParam,
-  TossPaymentsRegisterSubscriptionResponse,
-} from "./toss-payments/type";
-import { TossPay } from "./tosspay";
-import {
-  TossPayAPI,
-  TossPayApproveOnetimeParam,
-  TossPayApproveOnetimeResponse,
-  TossPayApproveSubscriptionParam,
-  TossPayApproveSubscriptionResponse,
-  TossPayCancelParam,
-  TossPayCancelResponse,
-  TossPayCheckSubscriptionParam,
-  TossPayCheckSubscriptionResponse,
-  TossPayGetPaymentParam,
-  TossPayGetPaymentResponse,
-  TossPayInactivateSubscriptionParam,
-  TossPayInactivateSubscriptionResponse,
-  TossPayReadyParam,
-  TossPayReadyResponse,
-  TossPayRegisterSubscriptionParam,
-  TossPayRegisterSubscriptionResponse,
-} from "./tosspay/type";
+import { KakaoPay, KakaoPaySecret } from "./kakaopay";
+import { KakaoPayAPI } from "./kakaopay/type";
+import { NaverPay, NaverPaySecret } from "./naverpay";
+import { NaverPayAPI } from "./naverpay/type";
+import { NicePay, NicePaySecret } from "./nicepay";
+import { NicePayAPI } from "./nicepay/type";
+import { TossPayments, TossPaymentsSecret } from "./toss-payments";
+import { TossPaymentsAPI } from "./toss-payments/type";
+import { TossPay, TossPaySecret } from "./tosspay";
+import { TossPayAPI } from "./tosspay/type";
 import {
   ApproveOnetimeFailResponse,
   ApproveOnetimeParam,
   ApproveOnetimeResponse,
+  ApproveSubscriptionFailResponse,
+  ApproveSubscriptionParam,
+  ApproveSubscriptionResponse,
   CancelPaymentFailResponse,
   CancelPaymentParam,
   CancelPaymentResponse,
   CheckSubscriptionFailResponse,
   CheckSubscriptionParam as CheckSubscriptionParam,
   CheckSubscriptionResponse,
-  ApproveSubscriptionFailResponse,
-  ApproveSubscriptionParam,
-  ApproveSubscriptionResponse,
   GetPaymentFailResponse,
   GetPaymentParam,
   GetPaymentResponse,
@@ -113,35 +34,32 @@ import {
   RegisterSubscriptionResponse,
 } from "./type";
 
-export type PaymentType = {
-  [Payment.IAMPORT]: Iamport;
-  [Payment.KAKAOPAY]: KakaoPay;
-  [Payment.NAVERPAY]: NaverPay;
-  [Payment.NICEPAY]: NicePay;
-  [Payment.TOSS_PAYMENTS]: TossPayments;
-  [Payment.TOSSPAY]: TossPay;
-};
-
 export class Mipong {
   public static DEFAULT_RETRY_TIME = 3;
   public static DEFAULT_RETRY_INTERVAL = 100;
-  public static getIamport() {
-    return die("아임포트는 지원하지 않습니다.");
+  // public static getIamport() {
+  //   return die("아임포트는 지원하지 않습니다.");
+  // }
+  public static getKakaoPay(params?: KakaoPaySecret) {
+    return KakaoPay.getInstance(params);
   }
-  public static getKakaoPay() {
-    return KakaoPay.instance;
+  public static getNaverPay(params?: NaverPaySecret) {
+    return NaverPay.getInstance(params);
   }
-  public static getNaverPay() {
-    return NaverPay.instance;
+  public static getTossPayments(params?: TossPaymentsSecret) {
+    return TossPayments.getInstance(params);
   }
-  public static getTossPayments() {
-    return TossPayments.instance;
+  public static getTossPay(params?: TossPaySecret) {
+    return TossPay.getInstance(params);
   }
-  public static getTossPay() {
-    return TossPay.instance;
+  public static getNicePay(params?: NicePaySecret) {
+    return NicePay.getInstance(params);
   }
-  public static getNicePay() {
-    return NicePay.instance;
+  public static setRetryTime(value: number) {
+    this.DEFAULT_RETRY_TIME = value;
+  }
+  public static setRetryInterval(value: number) {
+    this.DEFAULT_RETRY_INTERVAL = value;
   }
 }
 
@@ -153,6 +71,15 @@ export enum Payment {
   TOSSPAY,
   IAMPORT,
 }
+export type InactivablePayment =
+  | Payment.KAKAOPAY
+  | Payment.NAVERPAY
+  | Payment.TOSSPAY;
+
+export type SubscriptionCheckablePayment =
+  | Payment.KAKAOPAY
+  | Payment.NAVERPAY
+  | Payment.TOSSPAY;
 export enum HttpMethod {
   GET,
   POST,
@@ -359,206 +286,6 @@ export const PaymentAPI = {
     },
   },
 };
-export function doRequest(params: {
-  baseUrl: string;
-  requestParams: any;
-  headers?: {
-    [key: string]: string;
-  };
-  api: {
-    method: HttpMethod;
-    url: string;
-    contentType: ContentType;
-  };
-  option?: { [key: string]: string };
-  replace?: { [key: string]: string };
-}): Promise<AxiosResponse<any>> {
-  const { baseUrl, requestParams, headers, api, replace, option } = params;
-  let requestUrl = `${baseUrl}${api.url}`;
-  if (replace) {
-    Object.keys(replace).forEach(
-      (key) => (requestUrl = requestUrl.replace(`#{${key}}`, replace[key]))
-    );
-  }
-  console.log(requestUrl);
-
-  /*! 네이버페이 권고사항에 따라 60초로 설정 */
-  const timeout = 60 * 1000;
-
-  if (api.method === HttpMethod.POST) {
-    if (api.contentType.includes(ContentType.X_WWW_FORM_URL_ENCODED)) {
-      const body = convertUrlEncodedParam(requestParams);
-      return axios.post(requestUrl, body, {
-        headers: {
-          ...headers,
-          "Content-Type": ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
-        },
-        timeout,
-        ...(option ?? {}),
-      });
-    }
-    if (ContentType.APPLICATION_JSON === api.contentType) {
-      return axios.post(requestUrl, requestParams, {
-        headers: {
-          ...headers,
-          "Content-Type": ContentType.APPLICATION_JSON,
-        },
-        timeout,
-      });
-    }
-  }
-  if (api.method === HttpMethod.GET) {
-    return axios.get(requestUrl, {
-      headers,
-      params: requestParams,
-    });
-  }
-  die("Unsupported Request Type");
-}
-export type PaymentAPISignature = {
-  [Payment.KAKAOPAY]: {
-    [KakaoPayAPI.Ready]: [KakaoPayReadyParam, KakaoPayReadyResponse];
-    [KakaoPayAPI.RegisterSubscription]: [
-      KakaoPayRegisterSubscriptionParam,
-      KakaoPayRegisterSubscriptionResponse
-    ];
-    [KakaoPayAPI.Approve]: [KakaoPayApproveParam, KakaoPayApproveResponse];
-    [KakaoPayAPI.InactivateSubscription]: [
-      KakaoPayInactivateSubscriptionParam,
-      KakaoPayInactivateSubscriptionResponse
-    ];
-    [KakaoPayAPI.CancelPayment]: [KakaoPayCancelParam, KakaoPayCancelResponse];
-    [KakaoPayAPI.ApproveSubscription]: [
-      KakaoPayApproveSubscriptionParam,
-      KakaoPayApproveSubscriptionResponse
-    ];
-    [KakaoPayAPI.CheckSubscription]: [
-      KakaoPayCheckSubscriptionParam,
-      KakaoPayCheckSubscriptionResponse
-    ];
-    [KakaoPayAPI.GetPayment]: [
-      KakaoPayGetPaymentParam,
-      KakaoPayGetPaymentResponse
-    ];
-  };
-  [Payment.NAVERPAY]: {
-    [NaverPayAPI.ApproveOnetime]: [
-      NaverPayApproveOnetimeParam,
-      NaverPayApproveOnetimeResponse
-    ];
-    [NaverPayAPI.GetPayment]: [
-      NaverPayGetPaymentParam,
-      NaverPayGetPaymentResponse
-    ];
-    [NaverPayAPI.CancelPayment]: [
-      NaverPayCancelPaymentParam,
-      NaverPayCancelPaymentResponse
-    ];
-    /*! https://developer.pay.naver.com/docs/v2/api#etc-etc_recurrent_reserve */
-    [NaverPayAPI.PrepareRegisterSubscription]: [
-      NaverPayPrepareRegisterSubscriptionParam,
-      NaverPayPrepareRegisterSubscriptionResponse
-    ];
-    [NaverPayAPI.RegisterSubscription]: [
-      NaverPayRegisterSubscriptionParam,
-      NaverPayRegisterSubscriptionResponse
-    ];
-    [NaverPayAPI.InactivateSubscription]: [
-      NaverPayInactivateSubscriptionParam,
-      NaverPayInactivateSubscriptionResponse
-    ];
-    [NaverPayAPI.CheckSubscription]: [
-      NaverPayCheckSubscriptionParam,
-      NaverPayCheckSubscriptionResponse
-    ];
-    [NaverPayAPI.ReserveSubscription]: [
-      NaverPayReserveSubscriptionParam,
-      NaverPayReserveSubscriptionResponse
-    ];
-    [NaverPayAPI.ApproveSubscription]: [
-      NaverPayApproveSubscriptionParam,
-      NaverPayApproveSubscriptionResponse
-    ];
-  };
-  [Payment.TOSSPAY]: {
-    [TossPayAPI.Ready]: [TossPayReadyParam, TossPayReadyResponse];
-    [TossPayAPI.ApproveOnetime]: [
-      TossPayApproveOnetimeParam,
-      TossPayApproveOnetimeResponse
-    ];
-    [TossPayAPI.GetPayment]: [
-      TossPayGetPaymentParam,
-      TossPayGetPaymentResponse
-    ];
-    [TossPayAPI.CancelPayment]: [TossPayCancelParam, TossPayCancelResponse];
-    [TossPayAPI.RegisterSubscription]: [
-      TossPayRegisterSubscriptionParam,
-      TossPayRegisterSubscriptionResponse
-    ];
-    [TossPayAPI.ApproveSubscription]: [
-      TossPayApproveSubscriptionParam,
-      TossPayApproveSubscriptionResponse
-    ];
-    [TossPayAPI.CheckSubscription]: [
-      TossPayCheckSubscriptionParam,
-      TossPayCheckSubscriptionResponse
-    ];
-    [TossPayAPI.InactivateSubscription]: [
-      TossPayInactivateSubscriptionParam,
-      TossPayInactivateSubscriptionResponse
-    ];
-  };
-  [Payment.TOSS_PAYMENTS]: {
-    [TossPaymentsAPI.ApproveOnetime]: [
-      TossPaymentsApproveParam,
-      TossPaymentsApproveResponse
-    ];
-    [TossPaymentsAPI.CancelPayment]: [
-      TossPaymentsCancelPaymentParam,
-      TossPaymentsCancelPaymentResponse
-    ];
-    [TossPaymentsAPI.GetPayment]: [
-      TossPaymentsGetPaymentParam,
-      TossPaymentsGetPaymentResponse
-    ];
-    [TossPaymentsAPI.RegisterSubscription]: [
-      TossPaymentsRegisterSubscriptionParam,
-      TossPaymentsRegisterSubscriptionResponse
-    ];
-    [TossPaymentsAPI.ApproveSubscription]: [
-      TossPaymentsApproveSubscriptionParam,
-      TossPaymentsApproveSubscriptionResponse
-    ];
-  };
-  [Payment.NICEPAY]: {
-    [NicePayAPI.RegisterSubscription]: [
-      NicePayRegisterSubscriptionParam,
-      NicePayRegisterSubscriptionResponse
-    ];
-    [NicePayAPI.ApproveSubscription]: [
-      NicePayApproveSubscriptionParam,
-      NicePayApproveSubscriptionResponse
-    ];
-    [NicePayAPI.InactivateSubscription]: [
-      NicePayInactivateSubscriptionParam,
-      NicePayInactivateSubscriptionResponse
-    ];
-    [NicePayAPI.CancelPayment]: [
-      NicePayCancelPaymentParam,
-      NicePayCancelPaymentResponse
-    ];
-  };
-};
-
-export type InactivablePayment =
-  | Payment.KAKAOPAY
-  | Payment.NAVERPAY
-  | Payment.TOSSPAY;
-
-export type SubscriptionCheckablePayment =
-  | Payment.KAKAOPAY
-  | Payment.NAVERPAY
-  | Payment.TOSSPAY;
 
 export abstract class PaymentLib<T extends Payment> {
   constructor() {}
@@ -636,9 +363,6 @@ export abstract class SubscriptionCheckable<
 export function die(msg: string): never {
   throw new Error(msg);
 }
-export function getSecret(): any {
-  return process.env;
-}
 /**
  * 문자열을 Base64 로 인코딩
  * @param str
@@ -701,4 +425,59 @@ export async function retry<T>({
       await new Promise((resolve) => setTimeout(resolve, interval));
     }
   }
+}
+
+export function doRequest(params: {
+  baseUrl: string;
+  requestParams: any;
+  headers?: {
+    [key: string]: string;
+  };
+  api: {
+    method: HttpMethod;
+    url: string;
+    contentType: ContentType;
+  };
+  option?: { [key: string]: string };
+  replace?: { [key: string]: string };
+}): Promise<AxiosResponse<any>> {
+  const { baseUrl, requestParams, headers, api, replace, option } = params;
+  let requestUrl = `${baseUrl}${api.url}`;
+  if (replace) {
+    Object.keys(replace).forEach(
+      (key) => (requestUrl = requestUrl.replace(`#{${key}}`, replace[key]))
+    );
+  }
+  /*! 네이버페이 권고사항에 따라 60초로 설정 */
+  const timeout = 60 * 1000;
+
+  if (api.method === HttpMethod.POST) {
+    if (api.contentType.includes(ContentType.X_WWW_FORM_URL_ENCODED)) {
+      const body = convertUrlEncodedParam(requestParams);
+      return axios.post(requestUrl, body, {
+        headers: {
+          ...headers,
+          "Content-Type": ContentType.X_WWW_FORM_URL_ENCODED_UTF8,
+        },
+        timeout,
+        ...(option ?? {}),
+      });
+    }
+    if (ContentType.APPLICATION_JSON === api.contentType) {
+      return axios.post(requestUrl, requestParams, {
+        headers: {
+          ...headers,
+          "Content-Type": ContentType.APPLICATION_JSON,
+        },
+        timeout,
+      });
+    }
+  }
+  if (api.method === HttpMethod.GET) {
+    return axios.get(requestUrl, {
+      headers,
+      params: requestParams,
+    });
+  }
+  die("Unsupported Request Type");
 }

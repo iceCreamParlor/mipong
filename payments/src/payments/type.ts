@@ -1,6 +1,9 @@
 import { Payment } from ".";
+import { Iamport } from "./iamport";
 import { IamportApproveOnetimeParam } from "./iamport/type";
+import { KakaoPay } from "./kakaopay";
 import {
+  KakaoPayAPI,
   KakaoPayApproveParam,
   KakaoPayApproveResponse,
   KakaoPayApproveSubscriptionParam,
@@ -15,10 +18,13 @@ import {
   KakaoPayInactivateSubscriptionParam,
   KakaoPayInactivateSubscriptionResponse,
   KakaoPayReadyParam,
+  KakaoPayReadyResponse,
   KakaoPayRegisterSubscriptionParam,
   KakaoPayRegisterSubscriptionResponse,
 } from "./kakaopay/type";
+import { NaverPay } from "./naverpay";
 import {
+  NaverPayAPI,
   NaverPayApproveOnetimeParam,
   NaverPayApproveOnetimeResponse,
   NaverPayApproveSubscriptionParam,
@@ -32,22 +38,33 @@ import {
   NaverPayGetPaymentResponse,
   NaverPayInactivateSubscriptionParam,
   NaverPayInactivateSubscriptionResponse,
+  NaverPayPrepareRegisterSubscriptionParam,
+  NaverPayPrepareRegisterSubscriptionResponse,
   NaverPayRegisterSubscriptionParam,
   NaverPayRegisterSubscriptionResponse,
+  NaverPayReserveSubscriptionParam,
+  NaverPayReserveSubscriptionResponse,
 } from "./naverpay/type";
+import { NicePay } from "./nicepay";
 import {
+  NicePayAPI,
   NicePayApproveSubscriptionParam,
   NicePayApproveSubscriptionResponse,
   NicePayCancelPaymentParam,
   NicePayCancelPaymentResponse,
+  NicePayInactivateSubscriptionParam,
+  NicePayInactivateSubscriptionResponse,
   NicePayRegisterSubscriptionParam,
   NicePayRegisterSubscriptionResponse,
   NicePayResponse,
 } from "./nicepay/type";
+import { TossPayments } from "./toss-payments";
 import {
+  TossPaymentsAPI,
   TossPaymentsApproveParam,
   TossPaymentsApproveResponse,
   TossPaymentsApproveSubscriptionParam,
+  TossPaymentsApproveSubscriptionResponse,
   TossPaymentsCancelPaymentParam,
   TossPaymentsCancelPaymentResponse,
   TossPaymentsFailResponse,
@@ -56,7 +73,9 @@ import {
   TossPaymentsRegisterSubscriptionParam,
   TossPaymentsRegisterSubscriptionResponse,
 } from "./toss-payments/type";
+import { TossPay } from "./tosspay";
 import {
+  TossPayAPI,
   TossPayApproveOnetimeParam,
   TossPayApproveOnetimeResponse,
   TossPayApproveSubscriptionParam,
@@ -70,9 +89,155 @@ import {
   TossPayGetPaymentResponse,
   TossPayInactivateSubscriptionParam,
   TossPayInactivateSubscriptionResponse,
+  TossPayReadyParam,
+  TossPayReadyResponse,
   TossPayRegisterSubscriptionParam,
   TossPayRegisterSubscriptionResponse,
 } from "./tosspay/type";
+
+export type PaymentAPISignature = {
+  [Payment.KAKAOPAY]: {
+    [KakaoPayAPI.Ready]: [KakaoPayReadyParam, KakaoPayReadyResponse];
+    [KakaoPayAPI.RegisterSubscription]: [
+      KakaoPayRegisterSubscriptionParam,
+      KakaoPayRegisterSubscriptionResponse
+    ];
+    [KakaoPayAPI.Approve]: [KakaoPayApproveParam, KakaoPayApproveResponse];
+    [KakaoPayAPI.InactivateSubscription]: [
+      KakaoPayInactivateSubscriptionParam,
+      KakaoPayInactivateSubscriptionResponse
+    ];
+    [KakaoPayAPI.CancelPayment]: [KakaoPayCancelParam, KakaoPayCancelResponse];
+    [KakaoPayAPI.ApproveSubscription]: [
+      KakaoPayApproveSubscriptionParam,
+      KakaoPayApproveSubscriptionResponse
+    ];
+    [KakaoPayAPI.CheckSubscription]: [
+      KakaoPayCheckSubscriptionParam,
+      KakaoPayCheckSubscriptionResponse
+    ];
+    [KakaoPayAPI.GetPayment]: [
+      KakaoPayGetPaymentParam,
+      KakaoPayGetPaymentResponse
+    ];
+  };
+  [Payment.NAVERPAY]: {
+    [NaverPayAPI.ApproveOnetime]: [
+      NaverPayApproveOnetimeParam,
+      NaverPayApproveOnetimeResponse
+    ];
+    [NaverPayAPI.GetPayment]: [
+      NaverPayGetPaymentParam,
+      NaverPayGetPaymentResponse
+    ];
+    [NaverPayAPI.CancelPayment]: [
+      NaverPayCancelPaymentParam,
+      NaverPayCancelPaymentResponse
+    ];
+    /*! https://developer.pay.naver.com/docs/v2/api#etc-etc_recurrent_reserve */
+    [NaverPayAPI.PrepareRegisterSubscription]: [
+      NaverPayPrepareRegisterSubscriptionParam,
+      NaverPayPrepareRegisterSubscriptionResponse
+    ];
+    [NaverPayAPI.RegisterSubscription]: [
+      NaverPayRegisterSubscriptionParam,
+      NaverPayRegisterSubscriptionResponse
+    ];
+    [NaverPayAPI.InactivateSubscription]: [
+      NaverPayInactivateSubscriptionParam,
+      NaverPayInactivateSubscriptionResponse
+    ];
+    [NaverPayAPI.CheckSubscription]: [
+      NaverPayCheckSubscriptionParam,
+      NaverPayCheckSubscriptionResponse
+    ];
+    [NaverPayAPI.ReserveSubscription]: [
+      NaverPayReserveSubscriptionParam,
+      NaverPayReserveSubscriptionResponse
+    ];
+    [NaverPayAPI.ApproveSubscription]: [
+      NaverPayApproveSubscriptionParam,
+      NaverPayApproveSubscriptionResponse
+    ];
+  };
+  [Payment.TOSSPAY]: {
+    [TossPayAPI.Ready]: [TossPayReadyParam, TossPayReadyResponse];
+    [TossPayAPI.ApproveOnetime]: [
+      TossPayApproveOnetimeParam,
+      TossPayApproveOnetimeResponse
+    ];
+    [TossPayAPI.GetPayment]: [
+      TossPayGetPaymentParam,
+      TossPayGetPaymentResponse
+    ];
+    [TossPayAPI.CancelPayment]: [TossPayCancelParam, TossPayCancelResponse];
+    [TossPayAPI.RegisterSubscription]: [
+      TossPayRegisterSubscriptionParam,
+      TossPayRegisterSubscriptionResponse
+    ];
+    [TossPayAPI.ApproveSubscription]: [
+      TossPayApproveSubscriptionParam,
+      TossPayApproveSubscriptionResponse
+    ];
+    [TossPayAPI.CheckSubscription]: [
+      TossPayCheckSubscriptionParam,
+      TossPayCheckSubscriptionResponse
+    ];
+    [TossPayAPI.InactivateSubscription]: [
+      TossPayInactivateSubscriptionParam,
+      TossPayInactivateSubscriptionResponse
+    ];
+  };
+  [Payment.TOSS_PAYMENTS]: {
+    [TossPaymentsAPI.ApproveOnetime]: [
+      TossPaymentsApproveParam,
+      TossPaymentsApproveResponse
+    ];
+    [TossPaymentsAPI.CancelPayment]: [
+      TossPaymentsCancelPaymentParam,
+      TossPaymentsCancelPaymentResponse
+    ];
+    [TossPaymentsAPI.GetPayment]: [
+      TossPaymentsGetPaymentParam,
+      TossPaymentsGetPaymentResponse
+    ];
+    [TossPaymentsAPI.RegisterSubscription]: [
+      TossPaymentsRegisterSubscriptionParam,
+      TossPaymentsRegisterSubscriptionResponse
+    ];
+    [TossPaymentsAPI.ApproveSubscription]: [
+      TossPaymentsApproveSubscriptionParam,
+      TossPaymentsApproveSubscriptionResponse
+    ];
+  };
+  [Payment.NICEPAY]: {
+    [NicePayAPI.RegisterSubscription]: [
+      NicePayRegisterSubscriptionParam,
+      NicePayRegisterSubscriptionResponse
+    ];
+    [NicePayAPI.ApproveSubscription]: [
+      NicePayApproveSubscriptionParam,
+      NicePayApproveSubscriptionResponse
+    ];
+    [NicePayAPI.InactivateSubscription]: [
+      NicePayInactivateSubscriptionParam,
+      NicePayInactivateSubscriptionResponse
+    ];
+    [NicePayAPI.CancelPayment]: [
+      NicePayCancelPaymentParam,
+      NicePayCancelPaymentResponse
+    ];
+  };
+};
+
+export type PaymentType = {
+  [Payment.IAMPORT]: Iamport;
+  [Payment.KAKAOPAY]: KakaoPay;
+  [Payment.NAVERPAY]: NaverPay;
+  [Payment.NICEPAY]: NicePay;
+  [Payment.TOSS_PAYMENTS]: TossPayments;
+  [Payment.TOSSPAY]: TossPay;
+};
 
 export type ApproveOnetimeParam = {
   [Payment.IAMPORT]: IamportApproveOnetimeParam;

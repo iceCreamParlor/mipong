@@ -1,20 +1,17 @@
 import axios, { AxiosResponse } from "axios";
 import * as crypto from "crypto";
-import * as iconv from "iconv-lite";
 import { randomBytes } from "crypto";
+import * as iconv from "iconv-lite";
 import {
-  doRequest,
   filterTruthy,
-  getSecret,
   handleError,
   omit,
   Payment,
   PaymentAPI,
-  PaymentAPISignature,
   PaymentLib,
   retry,
 } from "..";
-import { PaymentResponse } from "../type";
+import { PaymentAPISignature, PaymentResponse } from "../type";
 import {
   NicePayAPI,
   NicePayApproveSubscriptionParam,
@@ -26,11 +23,27 @@ import {
   NicePayResponse,
   NicePaySuccessCode,
 } from "./type";
-import { request } from "http";
 
 export class NicePay implements PaymentLib<Payment.NICEPAY> {
+  private readonly _secret: NicePaySecret;
+  private static _instance: NicePay;
   private _baseUrl: string = "https://webapi.nicepay.co.kr/webapi";
   private _encoding: string = "euc-kr";
+
+  public static getInstance(param?: NicePaySecret): NicePay {
+    if (this._instance === undefined) {
+      this._instance = new NicePay(param);
+    }
+    return this._instance;
+  }
+
+  private constructor(param?: NicePaySecret) {
+    this._secret = param ?? {
+      NICEPAY_MERCHANT_ID: process.env.NICEPAY_MERCHANT_ID ?? "",
+      NICEPAY_CANCEL_PASSWORD: process.env.NICEPAY_CANCEL_PASSWORD ?? "",
+      NICEPAY_MERCHANT_KEY: process.env.NICEPAY_MERCHANT_KEY ?? "",
+    };
+  }
 
   async withPaymentResponse<T extends NicePayResponse>(
     fn: () => Promise<AxiosResponse<T>>,
@@ -56,9 +69,7 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
     params: PaymentAPISignature[Payment.NICEPAY][T][0],
     type: "onetime" | "subscription"
   ): Promise<AxiosResponse<PaymentAPISignature[Payment.NICEPAY][T][1]>> {
-    console.log(JSON.stringify(params));
-
-    const isEucKr = params.CharSet === "euc-kr";
+    const isEucKr = !params.CharSet || params.CharSet === "euc-kr";
 
     return axios
       .post(
@@ -110,9 +121,6 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
     const requestParams = filterTruthy(
       omit(params, ["CardNo", "ExpYear", "ExpMonth", "IDNo", "CardPw"])
     );
-
-    console.log(JSON.stringify(requestParams));
-    console.log(mid);
 
     return this.withPaymentResponse(
       () =>
@@ -189,11 +197,6 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
     );
   }
 
-  private static _instance: NicePay = new NicePay();
-
-  public static get instance(): NicePay {
-    return this._instance;
-  }
   // 현재시간 YYYYMMDDHHMISS 포맷
   private yyyymmddhhmiss(): string {
     return new Date().toISOString().slice(0, 19).replace(/[-:T]/g, "");
@@ -236,10 +239,10 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
     ]).toString("hex");
   }
   private getMerchantKey(): string {
-    return getSecret().NICEPAY_MERCHANT_KEY;
+    return this.secret.NICEPAY_MERCHANT_KEY;
   }
   private getMid(): string {
-    return getSecret().NICEPAY_MERCHANT_ID;
+    return this.secret.NICEPAY_MERCHANT_ID;
   }
   private getSignData(str: string): string {
     const shasum = crypto.createHash("sha256");
@@ -251,4 +254,12 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
       .map((key) => `${key}=${param[key]}`)
       .join("&");
   }
+  private get secret() {
+    return this._secret;
+  }
+}
+export interface NicePaySecret {
+  readonly NICEPAY_MERCHANT_ID: string;
+  readonly NICEPAY_MERCHANT_KEY: string;
+  readonly NICEPAY_CANCEL_PASSWORD: string;
 }

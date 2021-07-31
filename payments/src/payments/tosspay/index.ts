@@ -1,16 +1,14 @@
 import { AxiosResponse } from "axios";
 import {
   doRequest,
-  getSecret,
   Inactivable,
   Payment,
   PaymentAPI,
-  PaymentAPISignature,
   PaymentLib,
   retry,
   SubscriptionCheckable,
 } from "..";
-import { PaymentResponse } from "../type";
+import { PaymentAPISignature, PaymentResponse } from "../type";
 import {
   TossPayAPI,
   TossPayApproveOnetimeParam,
@@ -39,7 +37,22 @@ export class TossPay
     Inactivable<Payment.TOSSPAY>,
     SubscriptionCheckable<Payment.TOSSPAY>
 {
+  private _secret: TossPaySecret;
   private _baseUrl: string = "https://pay.toss.im";
+  private static _instance: TossPay | undefined;
+
+  public static getInstance(params?: TossPaySecret): TossPay {
+    if (this._instance === undefined) {
+      this._instance = new TossPay(params);
+    }
+    return this._instance;
+  }
+
+  private constructor(params?: TossPaySecret) {
+    this._secret = params ?? {
+      TOSSPAY_API_KEY: process.env.TOSSPAY_API_KEY ?? "",
+    };
+  }
 
   async withPaymentResponse<T extends TossPayResponse>(
     fn: () => Promise<AxiosResponse<T>>
@@ -67,7 +80,7 @@ export class TossPay
       baseUrl: this._baseUrl,
       requestParams: {
         ...params,
-        apiKey: getSecret().TOSSPAY_API_KEY,
+        apiKey: this._secret.TOSSPAY_API_KEY,
       },
       api: PaymentAPI[Payment.TOSSPAY][api],
     });
@@ -145,10 +158,10 @@ export class TossPay
       this.callAPI(TossPayAPI.InactivateSubscription, params)
     );
   }
-
-  private static _instance: TossPay = new TossPay();
-
-  public static get instance(): TossPay {
-    return this._instance;
+  private get sercret() {
+    return this._secret;
   }
+}
+export interface TossPaySecret {
+  readonly TOSSPAY_API_KEY: string;
 }

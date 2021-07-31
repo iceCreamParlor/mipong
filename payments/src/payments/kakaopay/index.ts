@@ -1,16 +1,14 @@
 import { AxiosResponse } from "axios";
 import {
   doRequest,
-  getSecret,
   Inactivable,
   Payment,
   PaymentAPI,
-  PaymentAPISignature,
   PaymentLib,
   retry,
   SubscriptionCheckable,
 } from "..";
-import { PaymentResponse } from "../type";
+import { PaymentAPISignature, PaymentResponse } from "../type";
 import {
   KakaoPayAPI,
   KakaoPayApproveParam,
@@ -39,15 +37,23 @@ export class KakaoPay
     SubscriptionCheckable<Payment.KAKAOPAY>
 {
   private static _instance: KakaoPay | undefined = undefined;
+  private readonly _secret: KakaoPaySecret;
   private _baseUrl: string = "https://kapi.kakao.com";
-  private _onetimeCid: string = getSecret().KAKAOPAY_ONETIME_CID;
-  private _subscriptionCid: string = getSecret().KAKAOPAY_SUBSCRIPTION_CID;
 
-  public static get instance(): KakaoPay {
+  public static getInstance(params?: KakaoPaySecret): KakaoPay {
     if (this._instance === undefined) {
-      this._instance = new KakaoPay();
+      this._instance = new KakaoPay(params);
     }
+
     return this._instance;
+  }
+
+  private constructor(params?: KakaoPaySecret) {
+    this._secret = params ?? {
+      KAKAOPAY_ONETIME_CID: process.env.KAKAOPAY_ONETIME_CID ?? "",
+      KAKAOPAY_SUBSCRIPTION_CID: process.env.KAKAOPAY_SUBSCRIPTION_CID ?? "",
+      KAKAOPAY_ADMIN_KEY: process.env.KAKAOPAY_ADMIN_KEY ?? "",
+    };
   }
 
   async withPaymentResponse<T>(
@@ -73,7 +79,10 @@ export class KakaoPay
     params: PaymentAPISignature[Payment.KAKAOPAY][T][0],
     type: "onetime" | "subscription"
   ): Promise<AxiosResponse<PaymentAPISignature[Payment.KAKAOPAY][T][1]>> {
-    const cid = type === "onetime" ? this._onetimeCid : this._subscriptionCid;
+    const cid =
+      type === "onetime"
+        ? this.secret.KAKAOPAY_ONETIME_CID
+        : this.secret.KAKAOPAY_SUBSCRIPTION_CID;
     if (!cid) {
       throw new Error(`[Kakaopay] ${type} CID is empty.`);
     }
@@ -85,7 +94,7 @@ export class KakaoPay
         cid,
       },
       headers: {
-        Authorization: `KakaoAK ${getSecret().KAKAOPAY_ADMIN_KEY}`,
+        Authorization: `KakaoAK ${this.secret.KAKAOPAY_ADMIN_KEY}`,
       },
       api: PaymentAPI[Payment.KAKAOPAY][api],
     }).catch((err) => {
@@ -176,4 +185,13 @@ export class KakaoPay
       this.callAPI(KakaoPayAPI.CheckSubscription, params, "subscription")
     );
   }
+
+  private get secret(): KakaoPaySecret {
+    return this._secret;
+  }
+}
+export interface KakaoPaySecret {
+  readonly KAKAOPAY_ADMIN_KEY: string;
+  readonly KAKAOPAY_ONETIME_CID: string;
+  readonly KAKAOPAY_SUBSCRIPTION_CID: string;
 }

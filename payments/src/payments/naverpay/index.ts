@@ -1,16 +1,14 @@
 import { AxiosResponse } from "axios";
 import {
   doRequest,
-  getSecret,
   Inactivable,
   Payment,
   PaymentAPI,
-  PaymentAPISignature,
   PaymentLib,
   retry,
   SubscriptionCheckable,
 } from "..";
-import { PaymentResponse } from "../type";
+import { PaymentAPISignature, PaymentResponse } from "../type";
 import {
   NaverPayAPI,
   NaverPayApproveOnetimeParam,
@@ -41,11 +39,31 @@ export class NaverPay
     Inactivable<Payment.NAVERPAY>,
     SubscriptionCheckable<Payment.NAVERPAY>
 {
+  private readonly _secret: NaverPaySecret;
   private static _instance: NaverPay | undefined = undefined;
-  private _isDev: boolean = getSecret().NAVERPAY_DEV_MODE ?? false;
-  private _baseUrl: string = this._isDev
-    ? "https://apis.naver.com"
-    : "https://dev.apis.naver.com";
+  private _baseUrl: string;
+
+  public static getInstance(param?: NaverPaySecret): NaverPay {
+    if (this._instance === undefined) {
+      this._instance = new NaverPay(param);
+    }
+    return this._instance;
+  }
+
+  private constructor(param?: NaverPaySecret) {
+    this._secret = param ?? {
+      NAVERPAY_CLIENT_ID: process.env.NAVERPAY_CLIENT_ID ?? "",
+      NAVERPAY_CLIENT_SECRET: process.env.NAVERPAY_CLIENT_SECRET ?? "",
+      NAVERPAY_ONETIME_CHAIN_ID: process.env.NAVERPAY_ONETIME_CHAIN_ID ?? "",
+      NAVERPAY_SUBSCRIPTION_CHAIN_ID:
+        process.env.NAVERPAY_SUBSCRIPTION_CHAIN_ID ?? "",
+      NAVERPAY_PARTNER_ID: process.env.NAVERPAY_PARTNER_ID ?? "",
+      NAVERPAY_DEV_MODE: process.env.NAVERPAY_DEV_MODE === "true" ?? false,
+    };
+    this._baseUrl = this._secret.NAVERPAY_DEV_MODE
+      ? "https://apis.naver.com"
+      : "https://dev.apis.naver.com";
+  }
 
   async withPaymentResponse<T extends NaverPayResponse>(
     fn: () => Promise<AxiosResponse<T>>
@@ -72,20 +90,18 @@ export class NaverPay
   ): Promise<AxiosResponse<PaymentAPISignature[Payment.NAVERPAY][T][1]>> {
     const chainId =
       type === "onetime"
-        ? getSecret().NAVERPAY_ONETIME_CHAIN_ID
-        : getSecret().NAVERPAY_SUBSCRIPTION_CHAIN_ID;
+        ? this.secret.NAVERPAY_ONETIME_CHAIN_ID
+        : this.secret.NAVERPAY_SUBSCRIPTION_CHAIN_ID;
 
-    const requestBaseUrl = `${this._baseUrl}/${
-      getSecret().NAVERPAY_PARTNER_ID
-    }`;
+    const requestBaseUrl = `${this._baseUrl}/${this.secret.NAVERPAY_PARTNER_ID}`;
 
     return doRequest({
       baseUrl: requestBaseUrl,
       requestParams: params,
       headers: {
         "X-NaverPay-Chain-Id": chainId,
-        "X-Naver-Client-Id": getSecret().NAVERPAY_CLIENT_ID,
-        "X-Naver-Client-Secret": getSecret().NAVERPAY_CLIENT_SECRET,
+        "X-Naver-Client-Id": this.secret.NAVERPAY_CLIENT_ID,
+        "X-Naver-Client-Secret": this.secret.NAVERPAY_CLIENT_SECRET,
       },
       api: PaymentAPI[Payment.NAVERPAY][api],
     }).catch((err) => {
@@ -191,11 +207,15 @@ export class NaverPay
       this.callAPI(NaverPayAPI.ApproveSubscription, params, "subscription")
     );
   }
-
-  public static get instance(): NaverPay {
-    if (this._instance === undefined) {
-      this._instance = new NaverPay();
-    }
-    return this._instance;
+  private get secret(): NaverPaySecret {
+    return this._secret;
   }
+}
+export interface NaverPaySecret {
+  readonly NAVERPAY_PARTNER_ID: string;
+  readonly NAVERPAY_CLIENT_ID: string;
+  readonly NAVERPAY_CLIENT_SECRET: string;
+  readonly NAVERPAY_ONETIME_CHAIN_ID: string;
+  readonly NAVERPAY_SUBSCRIPTION_CHAIN_ID: string;
+  readonly NAVERPAY_DEV_MODE: boolean;
 }
