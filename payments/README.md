@@ -272,17 +272,17 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 https://developer.pay.naver.com/docs/v2/api#common-common_certi
 
 > - 간편결제 플랫폼
->   - 결제 승인 [v]
->   - 결제 취소 [v]
->   - 결제내역조회 [v]
->   - 거래완료 [x]
+>   - 결제 승인
+>   - 결제 취소
 > - 정기/반복결제 플랫폼
->   - 등록 완료 [v]
->   - 등록 해지 [v]
->   - 등록 내역 조회 [v]
->   - 결제 예약 [v]
->   - 결제 승인 [v]
->   - 결제내역조회 [v]
+>   - 등록 완료
+>   - 등록 해지
+>   - 등록 내역 조회
+>   - 결제 예약
+>   - 결제 승인
+> - 공통
+>   - 결제 취소
+>   - 결제 내역 조회
 
 <br/>
 
@@ -293,21 +293,117 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >     <pre>
 >     <code>
 >     const response = await Mipong.getNaverPay().approveOnetime({
->     paymentId: string,
+>       paymentId: string,
 >     },
 >     )
+>     if(response.success) {
+>       ...
+>     }
+>     </code>
+>     </pre>
+>     <br/>
+> - 정기/반복결제 플랫폼
+>   - 등록 완료
+>     <pre>
+>     <code>
+>     const response = await Mipong.getNaverPay().registerSubscription({
+>          actionType: "NEW" | "CHANGE";
+>          targetRecurrentId?: string;
+>          productCode: string;
+>          productName: string;
+>          totalPayAmount: number;
+>          returnUrl: string;
+>      })
 >     if(response.success) {
 >     ...
 >     }
 >     </code>
->     </pre> > <br/>
-> - 정기/반복결제 플랫폼
->   - 등록 완료 [v]
->   - 등록 해지 [v]
->   - 등록 내역 조회 [v]
->   - 결제 예약 [v]
->   - 결제 승인 [v]
->   - 결제내역조회 [v]
+>     </pre>
+>     <br/>
+>   - 등록 해지
+>     <pre>
+>     <code>
+>     const response = await Mipong.getNaverPay().inactivateSubscription({
+>          /*! 해지할 정기/반복결제 등록 번호 */
+>          recurrentId: string;
+>          /*! 해지 요청자(1: 구매자, 2: 가맹점 관리자) */
+>          /*! 구분하기 어려우면 가맹점 관리자로 입력합니다 */
+>          expireRequester: 1 | 2;
+>          /*! 해지 사유 */
+>          expireReason: string;
+>      })
+>     if(response.success) {
+>     ...
+>     }
+>     </code>
+>     </pre>
+>     <br/>
+>   - 등록 내역 조회
+>     <pre>
+>     <code>
+>     const response = await Mipong.getNaverPay().checkSubscription({
+>          /*! 조회하고자 하는 정기/반복결제 등록 번호 */
+>          /*! 정기/반복결제 등록번호를 입력값으로 선택하면 startTime, endTime, pageNumber, rowsPerPage 파라미터       값은 무시됩니다 */
+>          recurrentId?: string;
+>          /*! 등록 시작 일시(YYYYMMDDHH24MMSS) */
+>          /*! 검색 기간(startTime과 endTime 사이의 시간)은 31일 이내여야 합니다 */
+>          startTime?: string;
+>          /*! 등록 종료 일시(YYYYMMDDHH24MMSS) */
+>          /*! 검색 기간(startTime과 endTime 사이의 시간)은 31일 이내여야 합니다 */
+>          endTime?: string;
+>          /*! VALID: 유효, EXPIRED: 만료, ALL: 전체값이 없으면 ALL로 간주합니다 */
+>          state?: "VALID" | "EXPIRED" | "ALL";
+>          /*! 조회하고자 하는 페이지번호 */
+>          /*! 값이 없으면 1로 간주합니다 */
+>          pageNumber?: number;
+>          /*! 페이지 당 row 건수 */
+>          /*! 1~100까지 지정 가능하며, 값이 없으면 20으로 간주합니다 */
+>          rowsPerPage?: number;
+>      })
+>     if(response.success) {
+>     ...
+>     }
+>     </code>
+>     </pre>
+>     <br/>
+>   - 결제 예약
+>     <pre>
+>     <code>
+>     const response = await Mipong.getNaverPay().reserveSubscription({
+>        /*! 정기/반복결제 등록 번호 */
+>        recurrentId: string;
+>        /*! 총 결제 금액 */
+>        totalPayAmount: number;
+>        /*! 과제 대상 금액 */
+>        taxScopeAmount: number;
+>        /*! 면세 대상 금액 */
+>        taxExScopeAmount: number;
+>        /*! 상품명 */
+>        productName: string;
+>        /*! 가맹점 주문내역 확인 가능한 가맹점 결제번호 또는 주문번호 */
+>        merchantPayId: string;
+>        /*! 가맹점 주문내역 확인 가능한 가맹점 결제번호 또는 주문번호 */
+>        merchantUserId: string;
+>        /*! 이용완료일(yyyymmdd) */
+>        useCfmYmdt?: string;
+>      })
+>     if(response.success) {
+>     ...
+>     }
+>     </code>
+>     </pre>
+>     <br/>
+>   - 결제 승인
+>     const response = await Mipong.getNaverPay().approveSubscription({
+>     recurrentId: string;
+>     paymentId: string;
+>     })
+>     if(response.success) {
+>     ...
+>     }
+>     </code>
+>     </pre>
+>     <br/>
 > - 공통
 >   - 결제 취소
 >     <pre>
