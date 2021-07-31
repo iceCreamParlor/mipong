@@ -6,7 +6,37 @@ Typescript 를 위한 결제 라이브러리.
 
 <br/>
 
-### 기본 사용법
+### 시작하기
+
+#### 1. 환경 변수 주입 (가맹점 키, 시크릿 키)
+
+<pre>
+  <code>
+    // process.env 에 다음과 같은 값을 주입시킵니다. 
+    // (사용하지 않는 PG 는 제외)
+      
+    // 카카오페이 
+    KAKAOPAY_ADMIN_KEY="..."
+    KAKAOPAY_SUBSCRIPTION_CID="..."
+
+    // 네이버페이 
+    NAVERPAY_PARTNER_ID="..."
+    NAVERPAY_CLIENT_SECRET="..."
+    NAVERPAY_SUBSCRIPTION_CHAIN_ID="..."
+
+    // 토스페이먼츠 (PG)
+    TOSS_SECRET_KEY="..."
+
+    // 토스페이
+    TOSSPAY_API_KEY="..."
+
+    // 나이스페이먼츠
+    NICEPAY_MERCHANT_ID="..."
+    NICEPAY_MERCHANT_KEY="..."
+  </code>
+</pre>
+
+#### 2. 결제사에 맞는 코드 구현
 
 <pre>
   <code>
@@ -49,37 +79,25 @@ Typescript 를 위한 결제 라이브러리.
 </pre>
 <br/>
 
-### 환경 변수 주입 (가맹점 키, 시크릿 키)
-
-<pre>
-  <code>
-    // process.env 에 다음과 같은 값을 주입시킵니다. 
-    // (사용하지 않는 PG 는 제외)
-      
-    // 카카오페이 
-    KAKAOPAY_ADMIN_KEY="..."
-    KAKAOPAY_SUBSCRIPTION_CID="..."
-
-    // 네이버페이 
-    NAVERPAY_PARTNER_ID="..."
-    NAVERPAY_CLIENT_SECRET="..."
-    NAVERPAY_SUBSCRIPTION_CHAIN_ID="..."
-
-    // 토스페이먼츠 (PG)
-    TOSS_SECRET_KEY="..."
-
-    // 토스페이
-    TOSSPAY_API_KEY="..."
-
-    // 나이스페이먼츠
-    NICEPAY_MERCHANT_ID="..."
-    NICEPAY_MERCHANT_KEY="..."
-  </code>
-</pre>
-
 ### 카카오페이
 
 https://developers.kakao.com/docs/latest/ko/kakaopay/common
+
+- 단건 결제
+  - 결제 요청
+  - 결제 승인
+- 정기 결제
+  - 정기 결제 고유번호 발급
+  - 정기 결제 시작
+  - 정기 결제 요청
+  - 정기 결제 비활성화
+  - 정기 결제 상태 조회
+- 주문 조회
+- 결제 취소
+
+<br/>
+
+### 카카오페이 코드 예시
 
 > - 단건 결제
 >   - 결제 요청 [v]
@@ -258,19 +276,108 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >   - 결제 취소 [v]
 >   - 결제내역조회 [v]
 >   - 거래완료 [x]
->   - 포인트 적립 요청 [x]
->   - 현금영수증 발행대상 금액조회 [x]
 > - 정기/반복결제 플랫폼
 >   - 등록 완료 [v]
 >   - 등록 해지 [v]
 >   - 등록 내역 조회 [v]
 >   - 결제 예약 [v]
 >   - 결제 승인 [v]
->   - 결제 취소 [x]
 >   - 결제내역조회 [v]
->   - 거래완료 [x]
->   - 포인트 적립 요청 [x]
->   - 현금영수증 발행대상 금액조회 [x]
+
+<br/>
+
+#### 코드 예시
+
+> - 간편결제 플랫폼
+>   - 결제 승인
+>     <pre>
+>     <code>
+>     const response = await Mipong.getNaverPay().approveOnetime({
+>     paymentId: string,
+>     },
+>     )
+>     if(response.success) {
+>     ...
+>     }
+>     </code>
+>     </pre> > <br/>
+> - 정기/반복결제 플랫폼
+>   - 등록 완료 [v]
+>   - 등록 해지 [v]
+>   - 등록 내역 조회 [v]
+>   - 결제 예약 [v]
+>   - 결제 승인 [v]
+>   - 결제내역조회 [v]
+> - 공통
+>   - 결제 취소
+>     <pre>
+>       <code>
+>         const response = await Mipong.getNaverPay().cancelPayment({
+>              /*! 네이버페이 결제번호 */
+>              paymentId: string;
+>              /*! 가맹점의 결제 번호 */
+>              merchantPayKey?: string;
+>              /*! 취소 요청 금액 */
+>              cancelAmount: number;
+>              /*! 취소 사유 */
+>              cancelReason: string;
+>              /*! 취소 요청자(1: 구매자, 2: 가맹점 관리자) 구분이 애매한 경우 가맹점 관리자로 입력합니다 */
+>              cancelRequester: 1 | 2;
+>              /*! 과세 대상 금액. 과세 대상 금액 + 면세 대상 금액 = 총 결제 금액 */
+>              taxScopeAmount: number;
+>              /*! 면세 대상 금액. 과세 대상 금액 + 면세 대상 금액 = 총 결제 금액 */
+>              taxExScopeAmount: number;
+>              /*! 가맹점의 남은 금액과 네이버페이의 남은 금액이 일치하는지 체크하는 기능을 수행할지 여부 */
+>              /*! 1: 수행 0: 미수행 */
+>              doCompareRest?: 0 | 1;
+>              /*!
+>              * 이번 취소가 수행되고 난 후에 남을 가맹점의 예상 금액
+>              * 옵션 파라미터인 doCompareRest값이 1일 때에만 동작합니다
+>              * Ex)
+>              * 결제금액 1000원 중 200원을 취소하고 싶을 때 =>
+>              * expectedRestAmount =800원, cancelAmount=200원으로 요청
+>              **/
+>              expectedRestAmount?: number;
+>           },
+>           type: "onetime" | "subscription"
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+>   - 결제내역조회
+>     <pre>
+>       <code>
+>         const response = await Mipong.getNaverPay().getPayment({
+>                /*! 조회하고자 하는 네이버페이 결제번호 */
+>                /*! 결제번호를 입력값으로 선택하면 startTime, endTime, pageNumber, rowsPerPage 파라미터 >값은 무시됩니다 */
+>                paymentId?: string;
+>                /*! 검색 시작 일시(YYYYMMDDHH24MMSS) */
+>                /*! 검색 기간(startTime과 endTime 사이의 시간)은 31일 이내여야 합니다 */
+>                startTime?: string;
+>                /*! 검색 종료 일시(YYYYMMDDHH24MMSS) */
+>                /*! 검색 기간(startTime과 endTime 사이의 시간)은 31일 이내여야 합니다 */
+>                endTime?: string;
+>                /*! ALL:전체, APPROVAL:승인, CANCEL:취소 */
+>                approvalType?: "ALL" | "APPROVAL" | "CANCEL";
+>                /*! 조회하고자 하는 페이지번호 */
+>                /*! 값이 없으면 1로 간주합니다 */
+>                pageNumber?: number;
+>                /*! 페이지 당 row 건수 */
+>                /*! 1~100까지 지정 가능하며, 값이 없으면 20으로 간주합니다 */
+>                rowsPerPage?: number;
+>                /*! 1: 해당 그룹에 속한 모든 가맹점의 결제내역을 조회 할 수 있습니다 */
+>                /*! 일반 개별 가맹점에서는 사용 할 수 없고, 그룹형 마스터 가맹점만 사용 가능한 옵션입니다 */
+>                collectChainGroup?: number;
+>            },
+>            type: "onetime" | "subscription"
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
 
 ### 토스페이먼츠 (PG)
 
