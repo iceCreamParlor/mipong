@@ -1,3 +1,2 @@
-- 결제 라이브러리 (npm) @mipong/payments
-
-  https://www.npmjs.com/package/@mipong/payments
+- [@mipong/payments](./payments/README.md)
+  - https://www.npmjs.com/package/@mipong/payments
