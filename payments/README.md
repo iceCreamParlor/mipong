@@ -12,7 +12,7 @@ Typescript 를 위한 결제 라이브러리.
 
 <br/>
 
-[목차]
+## 목차
 
 - [시작하기](#시작하기)
   - [카카오페이](#카카오페이)
@@ -126,7 +126,7 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 ### 카카오페이 코드 예시
 
 > - 단건 결제
->   - ### 결제 요청 <span id="kakaopay-ready-onetime"></span>
+>   - 결제 요청 <span id="kakaopay-ready-onetime"></span>
 >   <pre>
 >     <code>
 >         Mipong.getKakaoPay().ready(
@@ -318,6 +318,8 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 <br/>
 
 ---
+
+<br/>
 
 #### 코드 예시
 
@@ -529,6 +531,12 @@ https://docs.tosspayments.com/guides/card
 >   - [주문 조회](#tosspayments-get-payment)
 >   - [결제 취소](#tosspayments-cancel-payment)
 
+<br/>
+
+---
+
+<br/>
+
 ### 코드 예시
 
 > - 일반 결제
@@ -631,6 +639,12 @@ https://tossdev.github.io/api.html
 > - 공통
 >   - [결제 환불](#tosspay-cancel-payment)
 >   - [결제 상태 확인](#tosspay-get-payment)
+
+<br/>
+
+---
+
+<br/>
 
 ### 코드 예시
 
@@ -840,13 +854,150 @@ https://tossdev.github.io/api.html
 >       </code>
 >     </pre>
 > - 결제 상태 확인 <span id="tosspay-get-payment"></span>
+>   <pre>
+>   <code>
+>   const response = await Mipong.getTossPay().getPayment({
+>   /_! 토스 결제 토큰 _/
+>   payToken: string;
+>   },
+>   )
+>   if(response.success) {
+>   ...
+>   }
+>   </code>
+>   </pre>
+>   <br/>
+
+---
+
+<br/>
+
+### 나이스페이먼츠 (현재 카드빌링 기능만 구현)
+
+https://developers.nicepay.co.kr
+
+> - 카드빌링(자동결제)
+>   - [빌링키 발급하기](#nicepay-register-subscription)
+>   - [빌링키로 결제 요청하기](#nicepay-approve-subscription)
+> - 공통
+>   - [결제 환불](#nicepay-cancel-payment)
+
+<br/>
+
+---
+
+<br/>
+
+### 코드 예시
+
+> - 카드빌링(자동결제)
+>   - 빌링키 발급하기 <span id="nicepay-register-subscription"></span>
 >     <pre>
 >       <code>
->         const response = await Mipong.getTossPay().getPayment({
->              /*! 토스 결제 토큰 */
->              payToken: string;
+>         const response = await Mipong.getNicePay().registerSubscription({
+>              BuyerName: string;
+>              BuyerEmail: string;
+>              BuyerTel: string;
+>              CharSet?: string;
+>              CardNo: string;
+>              ExpYear: string;
+>              ExpMonth: string;
+>              IDNo: string;
+>              CardPw: string;
+>              MID?: string;
+>              EdiDate?: string;
+>              Moid?: string;
+>              EncData?: string;
+>              SignData?: string;
+>              /*! 응답전문 유형 (default(미설정): JSON / KV(설정): Key=Value형식 응답) */
+>              EdiType?: string;
 >            },
 >         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+>   - 빌링키로 결제 요청하기 <span id="nicepay-approve-subscription"></span>
+>     <pre>
+>       <code>
+>         const response = await Mipong.getNicePay().approveSubscription({
+>            /*! 빌링키 */
+>            BID: string;
+>            /*! 상점 ID */
+>            MID?: string;
+>            TID?: string;
+>            EdiDate?: string;
+>            /*! 상점에서 부여한 주문번호 OrderCID */
+>            Moid: string;
+>            Amt: string;
+>            /*! 상품명 "|"(파이프라인) 특수기호는 당사 응답전문의 구분값으로 사용을 금지하며 이외 특수기호 사용 시 >영업담당자 협의 필요 */
+>            GoodsName: string;
+>            /*! 위변조 검증 Data, Hex(SHA256(MID + EdiDate + Moid + Amt + BID + 상점키)) */
+>            SignData?: string;
+>            /*! 가맹점 분담 무이자 사용 여부 (0: 사용안함_이자 / 1: 사용_무이자) */
+>            CardInterest: string;
+>            /*! 할부개월 (00: 일시불 /02:2개월 /03:3개월 ...) */
+>            CardQuota: string;
+>            /*! 카드사 포인트 사용 여부 (0(default): 미사용 / 1: 사용) */
+>            CardPoint?: string;
+>            BuyerName: string;
+>            BuyerEmail: string;
+>            /*! 구매자 전화번호, ‘-‘ 없이 숫자만 입력 */
+>            BuyerTel: string;
+>            /*! 별도공급가액설정시사용 */
+>            SupplyAmt?: string;
+>            /*! 별도부가세설정시사용 */
+>            GoodsVat?: string;
+>            /*! 별도봉사료설정시사용 */
+>            ServiceAmt?: string;
+>            /*! 별도면세금액설정시사용 */
+>            TaxFreeAmt?: string;
+>            /*! 응답파라미터 인코딩 방식 (utf-8 / euc-kr(default)) */
+>            CharSet?: string;
+>            /*! 응답전문 유형 (default(미설정): JSON / KV(설정): Key=Value형식 응답) */
+>            EdiType?: string;
+>            /*! 상점 정보 전달용 여분필드 (Nicepay 가공없음) */
+>            MallReserved?: string;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+> - 공통
+>   - [결제 환불] <span id="nicepay-cancel-payment"></span>
+>     <pre>
+>       <code>
+>         const response = await Mipong.getNicePay().cancelPayment({
+>            /*! 거래 ID */
+>            TID: string;
+>            /*! 상점 ID */
+>            MID?: string;
+>            /*! 주문번호 (부분 취소 시 중복취소 방지를 위해 설정) */
+>            Moid: string;
+>            CancelAmt: string;
+>            /*! 취소사유 (euc-kr) */
+>            CancelMsg: string;
+>            /*! 0:전체 취소, 1:부분 취소 */
+>            PartialCancelCode: string;
+>            /*! 요청 시간 (YYYYMMDDHHMMSS) */
+>            EdiDate?: string;
+>            /*! hex(sha256(MID + CancelAmt + EdiDate + MerchantKey)) */
+>            SignData?: string;
+>            SupplyAmt?: string;
+>            GoodsVat?: string;
+>            ServiceAmt?: string;
+>            TaxFreeAmt?: string;
+>            /*! 인증 응답 인코딩 (euc-kr / utf-8) */
+>            CharSet?: string;
+>            /*! 장바구니 결제 유형 (장바구니 결제:1/ 그 외:0) */
+>            CartType: string;
+>            /*! 응답전문 유형 (JSON / KV) *KV:Key=value */
+>            EdiType?: string;
+>            MallReserved?: string;
+>         }, "onetime" | "subscription")
 >         if(response.success) {
 >           ...
 >         }
