@@ -1,12 +1,32 @@
 ## @mipong/payments
 
+<br/>
+
 Typescript 를 위한 결제 라이브러리.
 
-많은 기업들에서 결제 기능을 Javascript 기반으로 개발하는 것을 기피합니다. Javascript 의 Type 불안정성이 가장 큰 이유입니다. 런타임에서 가지는 불안정성도 존재하지만, Javascript 의 Type 불안정성으로 인해 개발자가 내는 에러도 상당히 많습니다. @mipong 은 이러한 문제점을 최대한 해결하고자 만들어진, Typescript 기반으로 strict 하게 쓰여진 결제 라이브러리입니다.
+@mipong Typescript로 strict 하게 쓰여진 결제 라이브러리입니다. 카카오페이, 네이버페이, 토스페이, 토스페이먼츠(PG), 나이스페이먼츠를 손쉽게 개발할 수 있습니다.
 
 <br/>
 
-### 시작하기
+---
+
+<br/>
+
+[목차]
+
+- [시작하기](#시작하기)
+  - [카카오페이](#카카오페이)
+  - [네이버페이](#네이버페이)
+  - [토스페이먼츠](#토스페이먼츠)
+  - [토스페이](#토스페이)
+
+<br/>
+
+---
+
+## 시작하기
+
+<br/>
 
 #### 1. 환경 변수 주입 (가맹점 키, 시크릿 키)
 
@@ -79,28 +99,34 @@ Typescript 를 위한 결제 라이브러리.
 </pre>
 <br/>
 
+---
+
 ### 카카오페이
+
+<br/>
 
 https://developers.kakao.com/docs/latest/ko/kakaopay/common
 
 - 단건 결제
-  - 결제 요청
-  - 결제 승인
+  - [결제 요청](#kakaopay-ready-onetime)
+  - [결제 승인](#kakaopay-approve-onetime)
 - 정기 결제
-  - 정기 결제 고유번호 발급
-  - 정기 결제 시작
-  - 정기 결제 요청
-  - 정기 결제 비활성화
-  - 정기 결제 상태 조회
-- 주문 조회
-- 결제 취소
+  - [정기 결제 고유번호 발급](#kakaopay-register-subscription)
+  - [정기 결제 시작](#kakaopay-approve-subscription)
+  - [정기 결제 비활성화](#kakaopay-inactivate-subscription)
+  - [정기 결제 상태 조회](#kakaopay-check-subscription)
+- 공통
+  - [주문 조회](#kakaopay-get-payment)
+  - [결제 취소](#kakaopay-cancel-payment)
 
 <br/>
+
+---
 
 ### 카카오페이 코드 예시
 
 > - 단건 결제
->   - 결제 요청 [v]
+>   - ### 결제 요청 <span id="kakaopay-ready-onetime"></span>
 >   <pre>
 >     <code>
 >         Mipong.getKakaoPay().ready(
@@ -135,7 +161,7 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >       });
 >     </code>
 >   </pre>
->   - 결제 승인 [v]
+>   - 결제 승인 <span id="kakaopay-approve-onetime"></span>
 >   <pre>
 >     <code>
 >       Mipong.getKakaoPay().approveOnetime({
@@ -155,7 +181,7 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >     </code>
 >   </pre>
 > - 정기 결제
->   - 정기 결제 고유번호 발급 [v]
+>   - 정기 결제 고유번호 발급 <span id="kakaopay-register-subscription"></span>
 >   <pre>
 >     <code>
 >         Mipong.getKakaoPay().registerSubscription(
@@ -190,7 +216,7 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >       });
 >     </code>
 >   </pre>
->   - 정기 결제 요청 [v]
+>   - 정기 결제 요청 <span id="kakaopay-approve-subscription"></span>
 >   <pre>
 >     <code>
 >       const response = await Mipong.getKakaoPay().approveSubscription({
@@ -204,7 +230,7 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >       }
 >     </code>
 >   </pre>
->   - 정기 결제 비활성화 [v]
+>   - 정기 결제 비활성화 <span id="kakaopay-inactivate-subscription"></span>
 >   <pre>
 >     <code>
 >       const response = await Mipong.getKakaoPay().inactivateSubscription({
@@ -215,7 +241,7 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >       }
 >     </code>
 >   </pre>
->   - 정기 결제 상태 조회 [v]
+>   - 정기 결제 상태 조회 <span id="kakaopay-check-subscription"></span>
 >   <pre>
 >     <code>
 >       const response = await Mipong.getKakaoPay().checkSubscription({
@@ -226,7 +252,7 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >       }
 >     </code>
 >   </pre>
-> - 주문 조회
+> - 주문 조회 <span id="kakaopay-get-payment"></span>
 >   <pre>
 >     <code>
 >       const response = await Mipong.getKakaoPay().getPayment({
@@ -240,7 +266,7 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >       }
 >     </code>
 >   </pre>
-> - 결제 취소
+> - 결제 취소 <span id="kakaopay-cancel-payment"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getKakaoPay().cancelPayment({
@@ -267,29 +293,36 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 >     </pre>
 >   <br/>
 
+<br/>
+
+---
+
+<br/>
+
 ### 네이버페이
 
 https://developer.pay.naver.com/docs/v2/api#common-common_certi
 
 > - 간편결제 플랫폼
->   - 결제 승인
->   - 결제 취소
+>   - [결제 승인](#naverpay-approve-onetime)
 > - 정기/반복결제 플랫폼
->   - 등록 완료
->   - 등록 해지
->   - 등록 내역 조회
->   - 결제 예약
->   - 결제 승인
+>   - [등록 완료](#naverpay-register-subscription)
+>   - [등록 해지](#naverpay-inactivate-subscription)
+>   - [등록 내역 조회](#naverpay-check-subscription)
+>   - [결제 예약](#naverpay-reserve-subscription)
+>   - [결제 승인](#naverpay-approve-subscription)
 > - 공통
->   - 결제 취소
->   - 결제 내역 조회
+>   - [결제 취소](#naverpay-cancel-payment)
+>   - [결제 내역 조회](#naverpay-get-payment)
 
 <br/>
+
+---
 
 #### 코드 예시
 
 > - 간편결제 플랫폼
->   - 결제 승인
+>   - 결제 승인 <span id="naverpay-approve-onetime"></span>
 >     <pre>
 >     <code>
 >     const response = await Mipong.getNaverPay().approveOnetime({
@@ -303,7 +336,7 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >     </pre>
 >     <br/>
 > - 정기/반복결제 플랫폼
->   - 등록 완료
+>   - 등록 완료 <span id="naverpay-register-subscription"></span>
 >     <pre>
 >     <code>
 >     const response = await Mipong.getNaverPay().registerSubscription({
@@ -320,7 +353,7 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >     </code>
 >     </pre>
 >     <br/>
->   - 등록 해지
+>   - 등록 해지 <span id="naverpay-inactivate-subscription"></span>
 >     <pre>
 >     <code>
 >     const response = await Mipong.getNaverPay().inactivateSubscription({
@@ -338,7 +371,7 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >     </code>
 >     </pre>
 >     <br/>
->   - 등록 내역 조회
+>   - 등록 내역 조회 <span id="naverpay-check-subscription"></span>
 >     <pre>
 >     <code>
 >     const response = await Mipong.getNaverPay().checkSubscription({
@@ -366,7 +399,7 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >     </code>
 >     </pre>
 >     <br/>
->   - 결제 예약
+>   - 결제 예약 <span id="naverpay-reserve-subscription"></span>
 >     <pre>
 >     <code>
 >     const response = await Mipong.getNaverPay().reserveSubscription({
@@ -393,7 +426,9 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >     </code>
 >     </pre>
 >     <br/>
->   - 결제 승인
+>   - 결제 승인 <span id="naverpay-approve-subscription"></span>
+>     <pre>
+>       <code>
 >     const response = await Mipong.getNaverPay().approveSubscription({
 >     recurrentId: string;
 >     paymentId: string;
@@ -405,7 +440,7 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >     </pre>
 >     <br/>
 > - 공통
->   - 결제 취소
+>   - 결제 취소 <span id="naverpay-cancel-payment"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getNaverPay().cancelPayment({
@@ -442,7 +477,7 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >         }
 >       </code>
 >     </pre>
->   - 결제내역조회
+>   - 결제내역조회 <span id="naverpay-get-payment"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getNaverPay().getPayment({
@@ -475,22 +510,29 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 >       </code>
 >     </pre>
 
-### 토스페이먼츠 (PG)
+<br/>
+
+---
+
+<br/>
+
+### 토스페이먼츠
 
 https://docs.tosspayments.com/guides/card
 
 > - 일반 결제
->   - 결제 승인
+>   - [결제 승인](#tosspayments-approve-onetime)
 > - 빌링(자동결제)
->   - 빌링키 발급하기
->   - 빌링키로 결제 요청하기
-> - 주문 조회
-> - 결제 취소
+>   - [빌링키 발급하기](#tosspayments-register-subscription)
+>   - [빌링키로 결제 요청하기](#tosspayments-approve-subscription)
+> - 공통
+>   - [주문 조회](#tosspayments-get-payment)
+>   - [결제 취소](#tosspayments-cancel-payment)
 
 ### 코드 예시
 
 > - 일반 결제
->   - 결제 승인
+>   - 결제 승인 <span id="tosspayments-approve-onetime"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPayments().approveOnetime({
@@ -508,7 +550,7 @@ https://docs.tosspayments.com/guides/card
 >       </code>
 >     </pre>
 > - 빌링(자동결제)
->   - 빌링키 발급하기
+>   - 빌링키 발급하기 <span id="tosspayments-register-subscription"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPayments().registerSubscription({
@@ -521,7 +563,7 @@ https://docs.tosspayments.com/guides/card
 >         }
 >       </code>
 >     </pre>
->   - 빌링키로 결제 요청하기
+>   - 빌링키로 결제 요청하기 <span id="tosspayments-approve-subscription"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPayments().approveSubscription({
@@ -539,7 +581,7 @@ https://docs.tosspayments.com/guides/card
 >         }
 >       </code>
 >     </pre>
-> - 주문 조회
+> - 주문 조회 <span id="tosspayments-get-payment"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPayments().getPayment({
@@ -551,7 +593,7 @@ https://docs.tosspayments.com/guides/card
 >         }
 >       </code>
 >     </pre>
-> - 결제 취소
+> - 결제 취소 <span id="tosspayments-cancel-payment"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPayments().cancelPayment({
@@ -570,23 +612,30 @@ https://docs.tosspayments.com/guides/card
 >       </code>
 >     </pre>
 
+<br/>
+
+---
+
+<br/>
+
 ### 토스페이
 
 https://tossdev.github.io/api.html
 
 > - 일반 결제
->   - 결제 생성
->   - 가맹점 결제 승인
+>   - [결제 생성](#tosspay-ready)
+>   - [가맹점 결제 승인](#tosspay-approve-onetime)
 > - 빌링(자동결제)
->   - 빌링키 발급하기
->   - 빌링키로 결제 요청하기
-> - 결제 환불
-> - 결제 상태 확인
+>   - [빌링키 발급하기](#tosspay-register-subscription)
+>   - [빌링키로 결제 요청하기](#tosspay-approve-subscription)
+> - 공통
+>   - [결제 환불](#tosspay-cancel-payment)
+>   - [결제 상태 확인](#tosspay-get-payment)
 
 ### 코드 예시
 
 > - 일반 결제
->   - 결제 생성
+>   - 결제 생성 <span id="tosspay-ready"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPay().ready({
@@ -654,7 +703,7 @@ https://tossdev.github.io/api.html
 >         }
 >       </code>
 >     </pre>
->   - 가맹점 결제 승인
+>   - 가맹점 결제 승인 <span id="tosspay-approve-onetime"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPay().approveOnetime({
@@ -668,7 +717,7 @@ https://tossdev.github.io/api.html
 >       </code>
 >     </pre>
 > - 빌링(자동결제)
->   - 빌링키 발급하기
+>   - 빌링키 발급하기 <span id="tosspay-register-subscription"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPay().registerSubscription({
@@ -724,7 +773,7 @@ https://tossdev.github.io/api.html
 >         }
 >       </code>
 >     </pre>
->   - 빌링키로 결제 요청하기
+>   - 빌링키로 결제 요청하기 <span id="tosspay-approve-subscription"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPay().approveSubscription({
@@ -763,7 +812,7 @@ https://tossdev.github.io/api.html
 >         }
 >       </code>
 >     </pre>
-> - 결제 환불
+> - 결제 환불 <span id="tosspay-cancel-payment"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPay().cancelPayment({
@@ -790,7 +839,7 @@ https://tossdev.github.io/api.html
 >         }
 >       </code>
 >     </pre>
-> - 결제 상태 확인
+> - 결제 상태 확인 <span id="tosspay-get-payment"></span>
 >     <pre>
 >       <code>
 >         const response = await Mipong.getTossPay().getPayment({
