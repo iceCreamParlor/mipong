@@ -480,22 +480,326 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 https://docs.tosspayments.com/guides/card
 
 > - 일반 결제
->   - 결제 승인 [v]
+>   - 결제 승인
 > - 빌링(자동결제)
->   - 빌링키 발급하기 [v]
->   - 빌링키로 결제 요청하기 [v]
-> - 주문 조회 [v]
-> - 결제 취소 [v]
+>   - 빌링키 발급하기
+>   - 빌링키로 결제 요청하기
+> - 주문 조회
+> - 결제 취소
+
+### 코드 예시
+
+> - 일반 결제
+>   - 결제 승인
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPayments().approveOnetime({
+>               /*! 결제 승인을 위해 사용되는 키 값입니다. 이 키를 이용해 결제 승인 API를 요청할 수 있습니다. */
+>                paymentKey: string;
+>                /*! requestPayment(결제창 호출)를 호출할 때 파라미터로 넘겼던 orderId 가 돌아옵니다. */
+>                orderId: string;
+>                /*! 사용자가 실제로 결제한 금액입니다. */
+>                amount: number;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+> - 빌링(자동결제)
+>   - 빌링키 발급하기
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPayments().registerSubscription({
+>               authKey: string;
+>               customerKey: string;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+>   - 빌링키로 결제 요청하기
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPayments().approveSubscription({
+>                billingKey: string;
+>                amount: number;
+>                customerKey: string;
+>                orderId: string;
+>                customerEmail?: string;
+>                customerName?: string;
+>                orderName?: string;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+> - 주문 조회
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPayments().getPayment({
+>                paymentKey: string;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+> - 결제 취소
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPayments().cancelPayment({
+>                paymentKey: string;
+>                cancelReason: string;
+>                cancelAmount: number;
+>                refundReceiveAccount?: TossPaymentsVBankCancelParam;
+>                taxAmount?: number;
+>                taxFreeAmount?: number;
+>                refundableAmount?: number;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
 
 ### 토스페이
 
 https://tossdev.github.io/api.html
 
 > - 일반 결제
->   - 결제 생성 [v]
->   - 가맹점 결제 승인 [v]
+>   - 결제 생성
+>   - 가맹점 결제 승인
 > - 빌링(자동결제)
->   - 빌링키 발급하기 [v]
->   - 빌링키로 결제 요청하기 [v]
-> - 결제 환불 [v]
-> - 결제 상태 확인 [v]
+>   - 빌링키 발급하기
+>   - 빌링키로 결제 요청하기
+> - 결제 환불
+> - 결제 상태 확인
+
+### 코드 예시
+
+> - 일반 결제
+>   - 결제 생성
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPay().ready({
+>              /*! 고유 주문번호 */
+>              orderNo: string;
+>              /*! 결제 금액 (string 으로 보내면 안됨) */
+>              amount: number;
+>              /*! 
+>                비과세 금액 
+>                과세 품목인 경우, 0으로 보내야 함. 안보낼 경우 에러가 발생합니다.
+>              */
+>              amountTaxFree: number;
+>              /*! 상품 정보 (UTF-8) */
+>              productDesc: string;
+>              /*! 결제 결과 callback 웹 URL (필수-자동승인설정 true의 경우) */
+>              resultCallback?: string;
+>              /*! 결제 완료 후 연결할 웹 URL (필수) */
+>              retUrl: string;
+>              /*! 결제 취소 시 연결할 웹 URL (필수) */
+>              retCancelUrl: string;
+>              /*! 결제 완료 후 연결할 가맹점 측 앱 스킴 값 */
+>              retAppScheme?: string;
+>              /*! 자동 승인 여부 설정 (true 를 설정한 경우, resultCallback 을 필수 값으로 체크합니다.) */
+>              autoExecute?: boolean;
+>              /*! callback 버전 (필수-자동승인설정 true의 경우) */
+>              /*! V1: callback 리턴 값을 파라미터로 받음, V2: callback 리턴값을 JSON 으로 받음 */
+>              /*! 이 값이 포함되지 않을 경우 기존의 V1 버전의 데이터가 전달됩니다. */
+>              callbackVersion?: string;
+>              /*! 결제 금액 중 과세금액 */
+>              amountTaxable?: number;
+>              /*! 결제 금액 중 부가세 */
+>              /*! 값이 없으면 환불할 과세금액을 11로 나눈 후 소수점 첫째 자리에서 올림으로 계산합니다. */
+>              amountVat?: number;
+>              /*! 결제 금액 중 봉사료 */
+>              amountServiceFee?: number;
+>              /*! 결제 만료 기한 (기본값 10분, 최대 60분 설정 가능) */
+>              /*! 형식 : 2020-03-03 12:30:20 */
+>              expiredTime?: string;
+>              /*! 현금영수증 발급 가능 여부 */
+>              /*! 기본값이 true 이기 때문에 현금영수증 사용 시 별도로 선언하지 않아도 됨. */
+>              cashReceipt?: boolean;
+>              cashReceiptTradeOption?: /*! 문화비 */
+>              | "CULTURE"
+>                /*! 일반(default) */
+>                | "GENERAL"
+>                /*! 교통비 */
+>                | "PUBLIC_TP";
+>              /*! 결제수단 구분변 */
+>              enablePayMethods?: string;
+>              /*! 결제창에 특정 카드만 노출하고 싶은 경우 */
+>              /*! ex) 삼성카드, 현대카드만 노출하고 싶은 경우 */
+>              /*!     {"options": [{"cardCompanyCode":3},{"cardCompanyCode":5}]} */
+>              cardOptions?: {
+>                options: {
+>                  cardCompanyCode: number;
+>                }[];
+>              };
+>              /*! 할부 제한 타입 */
+>              /*! 신용카드 결제 시, 사용자의 할부 선택을 제한할 수 있음. */
+>              installment?: "USE" | "NOT_USE";
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+>   - 가맹점 결제 승인
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPay().approveOnetime({
+>              payToken: string;
+>              orderNo: string;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+> - 빌링(자동결제)
+>   - 빌링키 발급하기
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPay().registerSubscription({
+>                /*! 가맹점 사용자 식별 값 */
+>                /*!   가맹점에서 사용자를 식별할 수 있는 유니크한 키 */
+>                /*! 가맹점에 저장된 회원 아이디를 활용할 수 있다. */
+>                /*! 추후 결제 승인 정보와 매칭하기 위하여 필요하며 유니크한 값을 사용하길 권장한다. (결제 주문번호의 >개념) */
+>                /*! 최대 50자로 지정하며 숫자, 영문자도 가능하되 특수문자는 _-:.^@ 만 허용한다 */
+>                userId: string;
+>                /*! 표시 가능한 빌링키 식별 값 */
+>                /*!   빌링키의 경우 기본적으로 하나의 가맹점 - 하나의 토스 유저 - 하나의 빌링키 만 사용이 >가능하지만, 가맹점에서 동 */
+>                /*! 일한 사람 (하나의 토스유저)이 여러개의 빌링키를 활용 이 가능 해야 한다면, 이 파라미터를 전달하여 >여러개의 빌 */
+>                /*! 링키를 생성 할 수 있다. */
+>                /*! 해당 값은 토스 앱 내에 표시가 되는 값 이므로, 사용자가 알아볼 수 있는 값을 추천 한다. */
+>                /*! 해당 값은 userId 와 함께 발급된 빌링키를 특정할 수 있는 값 이므로, 유니크한 값을 사용하길 >권장한다. */
+>                /*! 최대 50자로 지정하며 숫자, 영문자도 가능하되 특수문자는 _-:.^@ 만 허용한다. */
+>                displayId?: string;
+>                /*! 자동결제 상품명 */
+>                /*! 토스 결제창에 표기될 가맹점의 자동결제 상품명 */
+>                productDesc: string;
+>                /*! 가맹점 설정 콜백 URL */
+>                /*!   사용자가 토스 앱을 통해 인증을 완료한 후 이 곳에 입력한 가맹점 서버로 결과 callback >데이터를 전달한다. */
+>                /*! callback 호출방식은 Server(토스) to Server(가맹점) 방식이다. */
+>                /*! 80, 443 이외의 port가 포함되면 이용할 수 없으니 가맹점의 유의가 필요하다. */
+>                /*! 토스 방화벽 정책은 https://tossdev.github.io/qna.html#faq-1 링크에서 확인할 수 있다. >*/
+>                /*! 사용자의 '인증완료' 이외의 경우에도 토스에서 임의로 callback 을 전달할 수 있다. (6-B. 빌링키 >처리결과 */
+>                /*! callback 설명 참고) */
+>                /*! 응답 데이터의 상세한 설명은 3. 빌링키 생성결과 callback 에서 정의한다 */
+>                resultCallback: string;
+>                /*! 인증완료 후 연결할 가맹점의 앱 스킴 */
+>                /*!   토스 자동결제는 기본적으로 App 방식을 지원하지만 최근 PC 결제방식도 도입됐다. (진입점이 '웹>(Web)' 이라면 */
+>                /*! 앱스킴을 포함하지 않아도 된다.) */
+>                /*! 토스 앱을 띄워 사용자 인증을 완료한 후 redirect 될 가맹점 앱 스킴 값을 선언해야 한다. 앱 스킴 >선언 형식은 아래 */
+>                /*! 와 같다. */
+>                /*! 앱 스킴 예시 : testshop://  */
+>                retAppScheme?: string;
+>                /*! 인증성공 후 연결할 가맹점 성공 페이지 */
+>                /*!   retAppScheme 선언되지 않으면 returnSuccessUrl, returnFailureUrl 는 필수 >체크한다. */
+>                /*! 불필요하다면 두 값에 동일한 URL 을 설정해도 무방하다. */
+>                /*! 사용자 인증이 완료되면 URL 로 이동시키면서 빌링키 상태(status), 사용자 식별 값(userId), >빌링키 */
+>                /*! (billingKey), 실패 에러코드(errorCode) 를 query string 파라미터로 함께 보낸다. */
+>                returnSuccessUrl?: string;
+>                /*! 인증실패 시 연결할 가맹점 실패 페이지 */
+>                /*!   retAppScheme 선언되지 않으면 returnSuccessUrl, returnFailureUrl 는 필수 >체크한다. */
+>                /*! 불필요하다면 두 값에 동일한 URL 을 설정해도 무방하다. */
+>                /*! 사용자 인증이 완료되면 URL 로 이동시키면서 빌링키 상태(status), 사용자 식별 값(userId), >빌링키 */
+>                /*! (billingKey), 실패 에러코드(errorCode) 를 query string 파라미터로 함께 보낸다. */
+>                returnFailureUrl?: string;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+>   - 빌링키로 결제 요청하기
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPay().approveSubscription({
+>                            /*! 승인할 사용자의 빌링키 */
+>                              billingKey: string;
+>                              /*!   가맹점의 상품 주문번호 */
+>                              /*! 최대 50자로 지정하며 숫자, 영문자도 가능하되 특수문자는 _-:.^@ 만 허용한다. >*/
+>                              /*! 가맹점의 주문번호는 매회 유니크한 값으로 생성하길 권장한다. (테스트와 라이브 >환경에서 중복되지 않아야 된다) */
+>                              orderNo: string;
+>                              /*! 결제할 상품 설명 */
+>                              productDesc: string;
+>                              /*!   총 결제 요청 금액 */
+>                              /*! 토스에서 금액과 관련된 모든 필드는 Number 형태로 선언한다. 선언된 금액으로 >현금영수증을 발급한다. */
+>                              /*! 필수 체크는 총금액(amount) 과 비과세 금액(amountTaxFree) 만 체크한다. >판매 상품이 과세 */
+>                              /*! 상품이라면 amount 와 amountTaxFree 만 포함하면 되고, 이후 계산은 토스 >서버에서 자동으로 계산된다. */
+>                              amount: number;
+>                              /*!   판매하는 상품이 과세 품목이라면 해당 값을 0으로 선언한다. 그 외의 과세 >계산은 토스 서버에서 자동처리 한다. */
+>                              /*! 토스에서 금액과 관련된 모든 필드는 Number 형태로 선언한다. 필수 체크는 >총금액과 비과세 금액만 체크한다. */
+>                              amountTaxFree: number;
+>                              amountTaxable?: number;
+>                              amountVat?: number;
+>                              amountServiceFee?: number;
+>                              /*!   사용자가 선택한 카드 할부개월 (5만원 미만은 기본 일시불 결제) */
+>                              /*! 0(일시불) ~ 12개월 까지 숫자형태로 선언한다. */
+>                              spreadOut?: string;
+>                              /*!   토스머니와 같이 현금성 결제는 현금영수증 발행 대상이다. */
+>                              /*! 토스 현금영수증 자동발행 기능을 사용한다면 매회 결제 시 true 값을, 미 >사용하는 경우(가맹점 자체 발행) false 로 선언하면 된다. */
+>                              cashReceipt: boolean;
+>                              /*! 빌링키 결제가 실패할 경우, 해당 값이 true 일시 사용자에게 결제 실패 알람을 >발송 한다.  (기본은default) */
+>                              /*!   같은 빌링키로 다회 요청을 하더라도, 결제 실패 알람은 1시간 최대 1회 발송 >가능 하다. */
+>                              sendFailPush?: boolean;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+> - 결제 환불
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPay().cancelPayment({
+>              /*! 토스 결제 토큰 */
+>              payToken: string;
+>              /*! 환불 번호 */
+>              refundNo?: string;
+>              /*! 환불 사유 */
+>              reason?: string;
+>              /*! 환불할 금액 */
+>              amount?: number;
+>              /*! 환불할 금액 중 비과세금액 */
+>              amountTaxFree?: number;
+>              /*! 환불할 금액 중 과세금액 */
+>              amountTaxable?: number;
+>              /*! 환불할 금액 중 부가세 */
+>              amountVat?: number;
+>              /*! 환불할 금액 중 봉사료 */
+>              amountServiceFee?: number;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
+> - 결제 상태 확인
+>     <pre>
+>       <code>
+>         const response = await Mipong.getTossPay().getPayment({
+>              /*! 토스 결제 토큰 */
+>              payToken: string;
+>            },
+>         )
+>         if(response.success) {
+>           ...
+>         }
+>       </code>
+>     </pre>
