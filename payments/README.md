@@ -24,18 +24,18 @@ cancelPayment() : 결제 취소
 
 ## 목차
 
-- [시작하기](#시작하기)
-  - [카카오페이](#카카오페이)
-  - [네이버페이](#네이버페이)
-  - [토스페이먼츠](#토스페이먼츠)
-  - [토스페이](#토스페이)
-  - [나이스페이먼츠](#나이스페이먼츠)
+- [시작하기](#payment-start)
+  - [카카오페이](#kakaopay)
+  - [네이버페이](#naverpay)
+  - [토스페이먼츠](#toss-payments)
+  - [토스페이](#tosspay)
+  - [나이스페이먼츠](#nicepay)
 
 <br/>
 
 ---
 
-## 시작하기
+## 시작하기 <span id="payment-start"></span>
 
 <br/>
 
@@ -111,7 +111,7 @@ if(response.success === false) {
 
 ---
 
-### 카카오페이
+### 카카오페이 <span id="kakaopay"></span>
 
 <br/>
 
@@ -309,7 +309,7 @@ https://developers.kakao.com/docs/latest/ko/kakaopay/common
 
 <br/>
 
-### 네이버페이
+### 네이버페이 <span id="naverpay"></span>
 
 https://developer.pay.naver.com/docs/v2/api#common-common_certi
 
@@ -527,7 +527,7 @@ https://developer.pay.naver.com/docs/v2/api#common-common_certi
 
 <br/>
 
-### 토스페이먼츠
+### 토스페이먼츠 <span id="toss-payments"></span>
 
 https://docs.tosspayments.com/guides/card
 
@@ -635,7 +635,7 @@ https://docs.tosspayments.com/guides/card
 
 <br/>
 
-### 토스페이
+### 토스페이 <span id="tosspay"></span>
 
 https://tossdev.github.io/api.html
 
@@ -878,7 +878,7 @@ https://tossdev.github.io/api.html
 
 <br/>
 
-### 나이스페이먼츠
+### 나이스페이먼츠 <span id="nicepay"></span>
 
 (현재 카드빌링 기능만 구현)
 
