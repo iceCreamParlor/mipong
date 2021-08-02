@@ -5,6 +5,7 @@ import * as iconv from "iconv-lite";
 import {
   filterTruthy,
   handleError,
+  Inactivable,
   omit,
   Payment,
   PaymentAPI,
@@ -18,13 +19,17 @@ import {
   NicePayApproveSubscriptionResponse,
   NicePayCancelPaymentParam,
   NicePayCancelPaymentResponse,
+  NicePayInactivateSubscriptionParam,
+  NicePayInactivateSubscriptionResponse,
   NicePayRegisterSubscriptionParam,
   NicePayRegisterSubscriptionResponse,
   NicePayResponse,
   NicePaySuccessCode,
 } from "./type";
 
-export class NicePay implements PaymentLib<Payment.NICEPAY> {
+export class NicePay
+  implements PaymentLib<Payment.NICEPAY>, Inactivable<Payment.NICEPAY>
+{
   private readonly _secret: NicePaySecret;
   private static _instance: NicePay;
   private _baseUrl: string = "https://webapi.nicepay.co.kr/webapi";
@@ -194,6 +199,34 @@ export class NicePay implements PaymentLib<Payment.NICEPAY> {
           type
         ),
       NicePayAPI.CancelPayment
+    );
+  }
+  inactivateSubscription(
+    params: NicePayInactivateSubscriptionParam
+  ): Promise<
+    PaymentResponse<NicePayInactivateSubscriptionResponse, NicePayResponse>
+  > {
+    const ediDate = this.yyyymmddhhmiss();
+    const mid = this.secret.NICEPAY_MERCHANT_ID;
+    const mkey = this.secret.NICEPAY_MERCHANT_KEY;
+    const moid = randomBytes(20).toString("hex");
+
+    return this.withPaymentResponse(
+      () =>
+        this.callAPI(
+          NicePayAPI.InactivateSubscription,
+          {
+            ...params,
+            MID: mid,
+            Moid: moid,
+            EdiDate: ediDate,
+            SignData: this.getSignData(
+              `${mid}${ediDate}${moid}${params.BID}${mkey}`
+            ),
+          },
+          "subscription"
+        ),
+      NicePayAPI.InactivateSubscription
     );
   }
 
