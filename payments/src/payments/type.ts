@@ -293,16 +293,19 @@ export type InactivateSubscriptionParam = {
   [Payment.KAKAOPAY]: KakaoPayInactivateSubscriptionParam;
   [Payment.NAVERPAY]: NaverPayInactivateSubscriptionParam;
   [Payment.TOSSPAY]: TossPayInactivateSubscriptionParam;
+  [Payment.NICEPAY]: NicePayInactivateSubscriptionParam;
 };
 export type InactivateSubscriptionResponse = {
   [Payment.KAKAOPAY]: KakaoPayInactivateSubscriptionResponse;
   [Payment.NAVERPAY]: NaverPayInactivateSubscriptionResponse;
   [Payment.TOSSPAY]: TossPayInactivateSubscriptionResponse;
+  [Payment.NICEPAY]: NicePayInactivateSubscriptionResponse;
 };
 export type InactivateSubscriptionFailResponse = {
   [Payment.KAKAOPAY]: KakaoPayFailResponse;
   [Payment.NAVERPAY]: NaverPayFailResponse;
   [Payment.TOSSPAY]: TossPayFailResponse;
+  [Payment.NICEPAY]: NicePayResponse;
 };
 export type CheckSubscriptionParam = {
   [Payment.KAKAOPAY]: KakaoPayCheckSubscriptionParam;

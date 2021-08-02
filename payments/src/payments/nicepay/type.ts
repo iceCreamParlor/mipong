@@ -166,8 +166,8 @@ export interface NicePayCancelPaymentResponse {
 export interface NicePayInactivateSubscriptionParam {
   BID: string;
   MID?: string;
-  EdiDate: string;
-  Moid: string;
+  EdiDate?: string;
+  Moid?: string;
   SignData?: string;
   CharSet?: string;
 }

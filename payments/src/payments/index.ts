@@ -74,7 +74,8 @@ export enum Payment {
 export type InactivablePayment =
   | Payment.KAKAOPAY
   | Payment.NAVERPAY
-  | Payment.TOSSPAY;
+  | Payment.TOSSPAY
+  | Payment.NICEPAY;
 
 export type SubscriptionCheckablePayment =
   | Payment.KAKAOPAY
@@ -281,7 +282,7 @@ export const PaymentAPI = {
     },
     [NicePayAPI.InactivateSubscription]: {
       method: HttpMethod.POST,
-      url: "billing/billkey_remove.jsp",
+      url: "/billing/billkey_remove.jsp",
       contentType: ContentType.X_WWW_FORM_URL_ENCODED_EUC_KR,
     },
   },

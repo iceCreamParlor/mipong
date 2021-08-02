@@ -887,6 +887,7 @@ https://developers.nicepay.co.kr
 > - 카드빌링(자동결제)
 >   - [빌링키 발급하기](#nicepay-register-subscription)
 >   - [빌링키로 결제 요청하기](#nicepay-approve-subscription)
+>   - [빌링키 삭제하기](#nicepay-inactivate-subscription)
 > - 공통
 >   - [결제 환불](#nicepay-cancel-payment)
 
@@ -968,6 +969,17 @@ https://developers.nicepay.co.kr
 >        MallReserved?: string;
 >        },
 >     )
+>     if(response.success) {
+>       ...
+>     }
+>       </code>
+>     </pre>
+>   - 빌링키 삭제하기 <span id="nicepay-inactivate-subscription"></span>
+>     <pre>
+>       <code>
+>     const response = await Mipong.getNicePay().approveSubscription({
+>        BID: string;
+>     })
 >     if(response.success) {
 >       ...
 >     }
