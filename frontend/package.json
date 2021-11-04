@@ -14,8 +14,8 @@
     "web-vitals": "^1.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "start-https": "export HTTPS=true && react-scripts start",
+    "start": "PORT=4200 react-scripts start",
+    "start-https": "export HTTPS=true && HOST=dev.wiselycompany.com PORT=4200 react-scripts start",
     "build": "react-scripts build",
     "build-nestjs": "react-scripts build && rm -rf ../backend/react-build && mv build ../backend/react-build",
     "test": "react-scripts test",

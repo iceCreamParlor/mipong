@@ -11,12 +11,13 @@ import TossVBank from "./component/TossVBank";
 import TossPhone from "./component/TossPhone";
 import TossRoute from "./route/TossRoute";
 import NaverpayRoute from "./route/NaverpayRoute";
+import KakaoRoute from "./route/KakaoRoute";
 
 const App: React.FC = () => (
   <BrowserRouter>
     <Switch>
       <Route path="/" exact component={Home} />
-      <Route path="/kakao" exact component={Kakao} />
+      <Route path="/kakaopay" component={KakaoRoute} />
 
       <Route path="/toss" component={TossRoute} />
       <Route path="/naverpay" component={NaverpayRoute} />
@@ -28,6 +29,7 @@ const App: React.FC = () => (
   </BrowserRouter>
 );
 
-export const apiUrl = "http://localhost:8080";
+// export const apiUrl = "https://dev.wiselycompany.com:3000";
+export const apiUrl = "https://n-api-dev.wiselycompany.com";
 
 export default App;

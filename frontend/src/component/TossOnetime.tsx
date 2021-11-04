@@ -12,10 +12,10 @@ const Toss: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
       const tossPayments = await loadTossPayments(clientKey);
       tossPayments.requestPayment("카드", {
         amount: 8900,
-        orderId: `${Math.floor(Math.random() * 10000000)}`,
+        orderId: `WS202107281533566E84B36190AC4B88`,
         orderName: "면도기 세트",
         customerName: "김희재",
-        successUrl: apiUrl + "/api/payments/toss/onetime/success",
+        successUrl: apiUrl + "/payments/onetime/callback/toss",
         failUrl: apiUrl + "/api/payments/toss/onetime/fail",
       });
     };

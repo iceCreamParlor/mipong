@@ -79,12 +79,18 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
         <Link to="/naverpay/onetime">
           <button>네이버페이 일회구매</button>
         </Link>
+        <Link to="/naverpay/subscription">
+          <button>네이버페이 정기구매</button>
+        </Link>
       </div>
 
       <div>
-        <p>카카오</p>
-        <Link to="/kakao">
-          <button>Kakao</button>
+        <p>카카오페이</p>
+        <Link to="/kakaopay/onetime">
+          <button>Kakaopay 일회결제</button>
+        </Link>
+        <Link to="/kakaopay/subscription">
+          <button>Kakaopay 정기결제</button>
         </Link>
       </div>
       <div>

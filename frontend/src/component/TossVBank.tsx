@@ -11,14 +11,14 @@ const TossVBank: React.FC = (props) => {
     const getTossPayments = async () => {
       const tossPayments = await loadTossPayments(clientKey);
 
-      const orderId = `${Math.floor(Math.random() * 10000000)}`;
+      const orderId = `WS20210728144005D67DAFFF25834BC1`;
 
       tossPayments.requestPayment("가상계좌", {
         amount: 8900,
         orderId,
         orderName: "면도기 (무통장입금)",
         customerName: "김희재",
-        successUrl: apiUrl + `/api/payments/toss/vbank/success/${orderId}`,
+        successUrl: apiUrl + `/payments/onetime/callback/toss`,
         failUrl: apiUrl + "/api/payments/toss/vbank/fail",
       });
     };
