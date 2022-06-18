@@ -4,13 +4,14 @@
   "description": "- [@mipong/payments](./payments/README.md)   - https://www.npmjs.com/package/@mipong/payments",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/jest": "^28.1.2",
     "@types/node": "^14.17.6",
     "jest": "^28.1.1",
     "prettier": "^2.7.1",
+    "ts-jest": "^28.0.5",
     "typescript": "^4.2.3"
   },
   "repository": {
