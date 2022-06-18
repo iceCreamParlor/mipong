@@ -1,23 +1,14 @@
 {
+  "extends": "../../tsconfig.common.json",
   "compilerOptions": {
     "outDir": "dist",
-    "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "strict": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "declaration": true,
-    "sourceMap": true,
     "isolatedModules": true,
-    "noEmit": false,
     "removeComments": false
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["**/*.spec.ts"]
 }

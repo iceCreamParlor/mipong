@@ -158,9 +158,6 @@ export class TossPay
       this.callAPI(TossPayAPI.InactivateSubscription, params)
     );
   }
-  private get sercret() {
-    return this._secret;
-  }
 }
 export interface TossPaySecret {
   readonly TOSSPAY_API_KEY: string;

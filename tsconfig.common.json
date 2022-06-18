@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "sourceMap": true,
+    "strict": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "declaration": true,
+    "preserveSymlinks": true,
+    "declarationMap": true
+  },
+  "exclude": [
+    "node_modules",
+    "**/__mocks__/*",
+    "**/__test__/*",
+    "**/dist/*",
+    "**/esm/*"
+  ]
+}
