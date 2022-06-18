@@ -27,9 +27,12 @@ export function Retry(options: RetryOption): MethodDecorator {
           return await originalMethod.apply(this, args);
         } catch (e) {
           const errorMatched = matchErrors.some((error) => e instanceof error);
-          if (errorMatched) {
-            onEachError?.bind(this)(e as Error, this, args);
+          if (!errorMatched) {
+            throw e;
           }
+
+          await onEachError?.apply(this, [e as Error, this, args]);
+
           if (times === counter) {
             throw e;
           }

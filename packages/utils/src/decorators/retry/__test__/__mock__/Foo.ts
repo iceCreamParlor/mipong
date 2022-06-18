@@ -1,5 +1,6 @@
-import { Retry } from "../../retry/Retry";
+import { Retry } from "../../Retry";
 import { TestError, TestError2 } from "./errors";
+import { sleep } from "../../../../misc";
 
 export class Foo {
   private _counter = 0;
@@ -56,6 +57,35 @@ export class Foo {
     if (this._counter < 10) {
       throw new TestError2();
     }
+  }
+
+  @Retry({
+    times: 3,
+    onEachError: async () => {
+      await sleep(1000);
+    },
+  })
+  async retryWithSleep() {
+    throw new Error();
+  }
+
+  @Retry({
+    times: 3,
+    onEachError: async () => {
+      console.log("No MatchError");
+      await sleep(1000);
+    },
+  })
+  @Retry({
+    times: 3,
+    onEachError: async () => {
+      console.log("TestError");
+      await sleep(1000);
+    },
+    matchErrors: [TestError],
+  })
+  async nestedRetry() {
+    throw new TestError();
   }
 
   get counter() {

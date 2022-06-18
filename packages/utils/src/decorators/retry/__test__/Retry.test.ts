@@ -1,4 +1,5 @@
 import { Foo } from "./__mock__/Foo";
+import { TestError2 } from "./__mock__/errors";
 
 describe("Retry decorator TEST", () => {
   const foo = new Foo();
@@ -34,10 +35,10 @@ describe("Retry decorator TEST", () => {
     expect(foo.counter).toStrictEqual(10);
   });
   it("matchErrors 에 명시된 에러가 아니면 재시도되면 안된다", async () => {
-    // expect(() => foo.retryWithMatchErrors(TestError2)).toThrowError(TestError2);
-    foo.retryWithMatchErrors_실패();
-    // expect(() => foo.retryWithMatchErrors_실패()).toThrowError();
-
-    console.log(foo.counter);
+    try {
+      await foo.retryWithMatchErrors_실패();
+    } catch (e) {
+      expect(e instanceof TestError2).toStrictEqual(true);
+    }
   });
 });
