@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { Payment, PaymentLib } from "..";
-import { PaymentResponse, ApproveSubscriptionResponse } from "../type";
+import { PaymentResponse } from "../type";
 import { IamportApproveOnetimeParam } from "./type";
 
 export class Iamport implements PaymentLib<Payment.IAMPORT> {
