@@ -10,6 +10,5 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "autobind-decorator": "^2.4.0"
   }
 }

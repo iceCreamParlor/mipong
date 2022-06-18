@@ -4,7 +4,7 @@
   "description": "- [@mipong/payments](./payments/README.md)   - https://www.npmjs.com/package/@mipong/payments",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/jest": "^28.1.2",
