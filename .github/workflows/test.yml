@@ -1,4 +1,4 @@
-name: Node CI
+name: Install, Run Test
 on: [push]
 jobs:
   build:

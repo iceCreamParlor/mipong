@@ -1,14 +1,14 @@
 {
-  "name": "utils",
+  "name": "@mipong/utils",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Util Library for Typescript",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "build": "tsc"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Heejae Kim",
+  "license": "MIT",
   "dependencies": {
   }
 }
