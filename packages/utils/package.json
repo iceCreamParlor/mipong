@@ -1,6 +1,6 @@
 {
   "name": "@mipong/utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Util Library for Typescript",
   "main": "dist/index.js",
   "scripts": {
@@ -9,6 +9,5 @@
   },
   "author": "Heejae Kim",
   "license": "MIT",
-  "dependencies": {
-  }
+  "dependencies": {}
 }

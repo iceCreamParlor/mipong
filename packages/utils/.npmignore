@@ -1,0 +1,6 @@
+src/
+**/__test__/
+**/__mock__/
+**/jest.config.js
+**/tsconfig.json
+**/package-lock.json
