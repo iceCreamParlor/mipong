@@ -1,2 +1,2 @@
 export * from "./retry/Retry";
-export * from "./onError/OnError";
+export * from "./on-error/OnError";

@@ -6,3 +6,6 @@ export type DecoratorFunction = (
   key: string,
   descriptor?: PropertyDescriptor
 ) => any;
+export type BooleanFunction = (...args: any[]) => boolean;
+export type BooleanAsyncFunction = (...args: any) => Promise<boolean>;
+export type NeverFunction = (...args: any[]) => never;
