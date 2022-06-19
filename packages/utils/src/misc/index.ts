@@ -1,3 +1,4 @@
-export * from "./isPromise";
-export * from "./throwError";
-export * from "./sleep";
+export * from "./is-promise/isPromise";
+export * from "./throw-error/throwError";
+export * from "./sleep/sleep";
+export * from "./wait-until/waitUntil";
