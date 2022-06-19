@@ -29,10 +29,10 @@ export class ErrorHandler {
     }
     this._errorQueue.push([this._buffer, thenClause]);
 
-    return this as Pick<this, "when" | "fix">;
+    return this as Pick<this, "when" | "execute">;
   }
 
-  fix(message?: any) {
+  execute(message?: any) {
     for (let [whenClause, thenClause] of this._errorQueue) {
       const whenClauseResult =
         typeof whenClause === "function" ? whenClause() : whenClause;

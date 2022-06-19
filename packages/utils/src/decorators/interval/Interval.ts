@@ -19,11 +19,11 @@ export function Interval(option: IntervalOption): MethodDecorator {
 
     descriptor.value = function (...args: any[]) {
       return new Promise((resolve, reject) => {
-        const _setInterval = setInterval(() => {
+        const timer = setInterval(() => {
           const result = originalMethod.apply(this, args);
           const isValid = until.apply(this, [this, args]);
           if (!isValid || ++count >= maxCount) {
-            clearInterval(_setInterval);
+            clearInterval(timer);
             return isPromise(result) ? result.then(resolve) : resolve(result);
           }
         }, timeout);
