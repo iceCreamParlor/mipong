@@ -1,7 +1,7 @@
 import { AnyConstructor, AnyFunction } from "../../types";
 
 type RetryOption = {
-  times: number;
+  times?: number;
   matchErrors?: AnyConstructor[];
   onEachError?: (e: Error, self: any, args: any[]) => void;
 };
