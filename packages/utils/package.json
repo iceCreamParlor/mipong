@@ -1,11 +1,42 @@
 {
   "name": "@mipong/utils",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Util Library for Typescript",
-  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc",
+    "prerelease": "npm version prerelease --preid=rc",
+    "publish:public": "npm publish --access public"
+  },
+  "exports": {
+    "./decorators": "./dist/decorators/index.js",
+    "./errors": "./dist/errors/index.js",
+    "./misc": "./dist/misc/index.js",
+    "./types": "./dist/types/index.js",
+    "./string": "./dist/string/index.js",
+    "./is": "./dist/is/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "decorators": [
+        "dist/decorators/index.d.ts"
+      ],
+      "errors": [
+        "dist/errors/index.d.ts"
+      ],
+      "misc": [
+        "dist/misc/index.d.ts"
+      ],
+      "types": [
+        "dist/types/index.d.ts"
+      ],
+      "string": [
+        "dist/string/index.d.ts"
+      ],
+      "is": [
+        "dist/is/index.d.ts"
+      ]
+    }
   },
   "author": "Heejae Kim",
   "license": "MIT",
