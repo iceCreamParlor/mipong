@@ -9,5 +9,7 @@
   },
   "author": "Heejae Kim",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "@sindresorhus/is": "^5.1.0"
+  }
 }
