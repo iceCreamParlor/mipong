@@ -8,4 +8,6 @@ export type DecoratorFunction = (
 ) => any;
 export type BooleanFunction = (...args: any[]) => boolean;
 export type BooleanAsyncFunction = (...args: any) => Promise<boolean>;
+export type VoidFunction = (...args: any[]) => void;
+export type VoidAsyncFunction = (...args: any[]) => Promise<void>;
 export type NeverFunction = (...args: any[]) => never;

@@ -14,6 +14,7 @@
     "./misc": "./dist/misc/index.js",
     "./types": "./dist/types/index.js",
     "./string": "./dist/string/index.js",
+    "./time": "./dist/time/index.js",
     "./is": "./dist/is/index.js"
   },
   "typesVersions": {
@@ -32,6 +33,9 @@
       ],
       "string": [
         "dist/string/index.d.ts"
+      ],
+      "time": [
+        "dist/time/index..ts"
       ],
       "is": [
         "dist/is/index.d.ts"
