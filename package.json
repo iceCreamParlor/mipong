@@ -9,6 +9,7 @@
   "devDependencies": {
     "@types/jest": "^28.1.2",
     "@types/node": "^14.17.6",
+    "@types/ramda": "^0.28.14",
     "jest": "^28.1.1",
     "prettier": "^2.7.1",
     "ts-jest": "^28.0.5",
@@ -26,5 +27,9 @@
   "bugs": {
     "url": "https://github.com/iceCreamParlor/mipong/issues"
   },
-  "homepage": "https://github.com/iceCreamParlor/mipong#readme"
+  "homepage": "https://github.com/iceCreamParlor/mipong#readme",
+  "dependencies": {
+    "iconv-lite": "^0.6.3",
+    "ramda": "^0.28.0"
+  }
 }
