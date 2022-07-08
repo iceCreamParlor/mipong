@@ -1,6 +1,6 @@
 {
   "name": "@mipong/utils",
-  "version": "1.0.6-rc.0",
+  "version": "1.0.6-rc.2",
   "description": "Util Library for Typescript",
   "scripts": {
     "test": "jest",
