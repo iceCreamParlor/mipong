@@ -11,7 +11,9 @@ export class CommonHttpTemplate implements HttpTemplate {
   constructor(
     private _httpClient: HttpClient,
     private _cookieStore: CookieStore
-  ) {}
+  ) {
+    console.log(JSON.stringify(this._cookieStore));
+  }
   async post(
     url: string,
     parameter: ParameterType,

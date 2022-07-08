@@ -1,13 +1,12 @@
-import { HttpClient } from "../types/HttpClient";
-import { HttpRequest } from "../types/HttpRequest";
-import { HttpResponse } from "../types/HttpResponse";
-import axios, { Axios, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import iconv from "iconv-lite";
 import R from "ramda";
-import { HttpOptions, OriginalCharset } from "../types/HttpOptions";
-import { RedirectType } from "../types/RedirectType";
 import { HTTP } from "../constant";
-import { consoleTable } from "../../../misc/log/consoleTable";
+import { HttpClient } from "../types/HttpClient";
+import { HttpOptions, OriginalCharset } from "../types/HttpOptions";
+import { HttpRequest } from "../types/HttpRequest";
+import { HttpResponse } from "../types/HttpResponse";
+import { RedirectType } from "../types/RedirectType";
 
 export class CommonHttpClient implements HttpClient {
   private _client = axios.create();

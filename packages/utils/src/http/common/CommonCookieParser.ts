@@ -1,5 +1,7 @@
 import ToughCookie from "tough-cookie";
 
 export class CommonCookieParser {
-  parse() {}
+  parse() {
+    ToughCookie.parse("");
+  }
 }
