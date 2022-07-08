@@ -50,9 +50,11 @@
   "license": "MIT",
   "dependencies": {
     "@sindresorhus/is": "^5.1.0",
-    "axios": "^0.27.2"
+    "axios": "^0.27.2",
+    "tough-cookie": "^4.0.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0"
+    "@types/axios": "^0.14.0",
+    "@types/tough-cookie": "^4.0.2"
   }
 }

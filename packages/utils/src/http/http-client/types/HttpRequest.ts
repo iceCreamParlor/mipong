@@ -1,10 +1,11 @@
-import { ClientOptions } from "./ClientOptions";
+import { HttpOptions } from "./HttpOptions";
 import { HttpMethod } from "./HttpMethod";
+import { ParameterType } from "./HttpTemplate";
 
 export interface HttpRequest {
   url: string;
   method: HttpMethod;
-  payload: Record<string, any> | FormData | Buffer | string | null;
+  payload: ParameterType;
   headers: Record<string, string | number | boolean>;
-  options: ClientOptions;
+  options: HttpOptions;
 }
