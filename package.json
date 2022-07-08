@@ -28,8 +28,5 @@
     "url": "https://github.com/iceCreamParlor/mipong/issues"
   },
   "homepage": "https://github.com/iceCreamParlor/mipong#readme",
-  "dependencies": {
-    "iconv-lite": "^0.6.3",
-    "ramda": "^0.28.0"
-  }
+  "dependencies": {}
 }

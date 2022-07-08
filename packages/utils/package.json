@@ -51,6 +51,7 @@
   "dependencies": {
     "@sindresorhus/is": "^5.1.0",
     "axios": "^0.27.2",
+    "iconv-lite": "^0.6.3",
     "ramda": "^0.28.0",
     "tough-cookie": "^4.0.0"
   },
