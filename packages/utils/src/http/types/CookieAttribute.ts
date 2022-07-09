@@ -1,11 +1,9 @@
-export type SameSite = "Lax" | "Strict" | "None";
-
 export interface CookieAttribute {
   maxAge?: number;
   domain: string;
-  path?: string;
+  path?: string | null;
   expires?: Date;
-  sameSite?: SameSite;
+  sameSite?: string;
   secure?: boolean;
   httpOnly?: boolean;
 }

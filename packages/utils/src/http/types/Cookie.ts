@@ -1,7 +1,11 @@
-import { CookieAttribute } from "./CookieAttribute";
-
 export interface Cookie {
-  name: string;
+  key: string;
   value: string;
-  attribute: CookieAttribute;
+  maxAge?: number | "Infinity" | "-Infinity";
+  domain: string | null;
+  path?: string | null;
+  expires?: Date | "Infinity";
+  sameSite?: string;
+  secure?: boolean;
+  httpOnly?: boolean;
 }

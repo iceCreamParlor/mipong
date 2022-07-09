@@ -1,25 +1,24 @@
-import { CookieStore } from "../types/CookieStore";
+import { CookieManager } from "../types/CookieManager";
 import { HttpClient } from "../types/HttpClient";
 import { HttpMethod } from "../types/HttpMethod";
+import { HttpOptions, OriginalCharset } from "../types/HttpOptions";
+import { HttpRequest } from "../types/HttpRequest";
 import { HttpResponse } from "../types/HttpResponse";
 import { HttpTemplate, ParameterType } from "../types/HttpTemplate";
-import { HttpOptions, OriginalCharset } from "../types/HttpOptions";
 import { RedirectType } from "../types/RedirectType";
-import { HttpRequest } from "../types/HttpRequest";
 
 export class CommonHttpTemplate implements HttpTemplate {
   constructor(
     private _httpClient: HttpClient,
-    private _cookieStore: CookieStore
-  ) {
-    console.log(JSON.stringify(this._cookieStore));
-  }
+    private _cookieManager?: CookieManager
+  ) {}
+
   async post(
     url: string,
     parameter: ParameterType,
     options?: Partial<HttpOptions>
   ): Promise<HttpResponse> {
-    return this._httpClient.request(
+    return this.doRequest(
       this.makeHttpRequest(url, HttpMethod.POST, parameter, options)
     );
   }
@@ -29,7 +28,7 @@ export class CommonHttpTemplate implements HttpTemplate {
     parameter: ParameterType,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
-    return this._httpClient.request(
+    return this.doRequest(
       this.makeHttpRequest(url, HttpMethod.PUT, parameter, options)
     );
   }
@@ -38,7 +37,7 @@ export class CommonHttpTemplate implements HttpTemplate {
     parameter: ParameterType,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
-    return this._httpClient.request(
+    return this.doRequest(
       this.makeHttpRequest(url, HttpMethod.PATCH, parameter, options)
     );
   }
@@ -46,7 +45,7 @@ export class CommonHttpTemplate implements HttpTemplate {
     url: string,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
-    return this._httpClient.request(
+    return this.doRequest(
       this.makeHttpRequest(url, HttpMethod.GET, null, options)
     );
   }
@@ -54,7 +53,7 @@ export class CommonHttpTemplate implements HttpTemplate {
     url: string,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
-    return this._httpClient.request(
+    return this.doRequest(
       this.makeHttpRequest(url, HttpMethod.DELETE, null, options)
     );
   }
@@ -62,7 +61,7 @@ export class CommonHttpTemplate implements HttpTemplate {
     url: string,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
-    return this._httpClient.request(
+    return this.doRequest(
       this.makeHttpRequest(url, HttpMethod.HEAD, null, options)
     );
   }
@@ -70,12 +69,22 @@ export class CommonHttpTemplate implements HttpTemplate {
     url: string,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
-    return this._httpClient.request(
+    return this.doRequest(
       this.makeHttpRequest(url, HttpMethod.OPTIONS, null, options)
     );
   }
-  getCookieStore(): CookieStore | undefined {
-    throw new Error("Method not implemented.");
+  getCookieManager(): CookieManager | undefined {
+    return this._cookieManager;
+  }
+
+  private async doRequest(httpRequest: HttpRequest): Promise<HttpResponse> {
+    const response = await this._httpClient.request(httpRequest);
+    if (this._cookieManager) {
+      const cookies = this._cookieManager.parse(response);
+      this._cookieManager.setCookies(response.url, cookies);
+    }
+
+    return response;
   }
 
   private makeHttpRequest(
@@ -86,7 +95,14 @@ export class CommonHttpTemplate implements HttpTemplate {
   ): HttpRequest {
     return {
       url,
-      headers: options?.headers ?? {},
+      headers: {
+        ...(options?.headers ?? {}),
+        ...(this._cookieManager
+          ? {
+              Cookie: this._cookieManager.getCookieHeader(url),
+            }
+          : {}),
+      },
       method,
       payload: parameter,
       options: this.makeOptions(options),

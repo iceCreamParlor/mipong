@@ -1,26 +1,41 @@
 import { Cookie } from "../types/Cookie";
 import { CookieStore } from "../types/CookieStore";
+import ToughCookie, { CookieJar } from "tough-cookie";
 
 export class CommonCookieStore implements CookieStore {
-  private _cookies: Cookie[];
-  setCookie(cookie: Cookie): void {
-    this.setCookies([cookie]);
+  private _cookieJar = new ToughCookie.CookieJar();
+
+  async setCookie(url: string, cookie: Cookie): Promise<void> {
+    const cookieString = ToughCookie.fromJSON(JSON.stringify(cookie));
+    this._cookieJar.setCookie(cookieString, url);
   }
-  setCookies(cookies: Cookie[]): void {
-    this._cookies = [...this._cookies, ...cookies];
+  async setCookies(url: string, cookies: Cookie[]): Promise<void> {
+    await Promise.all(cookies.map((cookie) => this.setCookie(url, cookie)));
   }
-  getCookie(url: string, name: string): Cookie | undefined {
-    return this.getCookiesBy(url).find((cookie) => cookie.name === name);
+  async getCookie(url: string, name: string): Promise<Cookie | undefined> {
+    return (await this.getCookiesBy(url)).find((cookie) => cookie.key === name);
   }
-  getCookies(): Cookie[] {
-    return this._cookies;
-  }
-  getCookiesBy(url: string): Cookie[] {
-    return this.getCookies().filter((cookie) =>
-      url.includes(cookie.attribute.domain)
+
+  async getCookiesBy(url: string): Promise<Cookie[]> {
+    const cookies = await this._cookieJar.getCookies(
+      ToughCookie.canonicalDomain(url)
     );
+
+    console.log(`cookies!`);
+    console.log(cookies);
+
+    return cookies.map((cookie) => ({
+      key: cookie.key,
+      value: cookie.value,
+      maxAge: cookie.maxAge,
+      domain: cookie.domain,
+      path: cookie.path,
+      expires: cookie.expires,
+      secure: cookie.secure,
+      httpOnly: cookie.httpOnly,
+    }));
   }
   clear(): void {
-    this._cookies = [];
+    this._cookieJar.removeAllCookiesSync();
   }
 }

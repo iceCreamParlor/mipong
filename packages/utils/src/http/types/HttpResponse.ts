@@ -1,4 +1,5 @@
 export interface HttpResponse {
+  url: string;
   body: string;
   header: ResponseHeader[];
   code: number; // 응답 코드

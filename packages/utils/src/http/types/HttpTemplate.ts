@@ -1,7 +1,7 @@
 import FormData from "form-data";
+import { CookieManager } from "./CookieManager";
 
 import { HttpOptions } from "./HttpOptions";
-import { CookieStore } from "./CookieStore";
 import { HttpResponse } from "./HttpResponse";
 
 export type ParameterType =
@@ -34,9 +34,9 @@ export interface HttpTemplate {
   delete(url: string, options?: Partial<HttpOptions>): Promise<HttpResponse>;
   head(url: string, options?: Partial<HttpOptions>): Promise<HttpResponse>;
   options(url: string, options?: Partial<HttpOptions>): Promise<HttpResponse>;
-  getCookieStore(): CookieStore | undefined;
+  getCookieManager(): CookieManager | undefined;
 }
 
-export interface HttpTemplateWithCookieStore extends HttpTemplate {
-  getCookieStore(): CookieStore;
+export interface HttpTemplateWithCookieManager extends HttpTemplate {
+  getCookieManager(): CookieManager;
 }
