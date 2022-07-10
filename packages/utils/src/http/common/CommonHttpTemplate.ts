@@ -19,7 +19,7 @@ export class CommonHttpTemplate implements HttpTemplate {
     options?: Partial<HttpOptions>
   ): Promise<HttpResponse> {
     return this.doRequest(
-      this.makeHttpRequest(url, HttpMethod.POST, parameter, options)
+      await this.makeHttpRequest(url, HttpMethod.POST, parameter, options)
     );
   }
 
@@ -29,7 +29,7 @@ export class CommonHttpTemplate implements HttpTemplate {
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
     return this.doRequest(
-      this.makeHttpRequest(url, HttpMethod.PUT, parameter, options)
+      await this.makeHttpRequest(url, HttpMethod.PUT, parameter, options)
     );
   }
   async patch(
@@ -38,39 +38,39 @@ export class CommonHttpTemplate implements HttpTemplate {
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
     return this.doRequest(
-      this.makeHttpRequest(url, HttpMethod.PATCH, parameter, options)
+      await this.makeHttpRequest(url, HttpMethod.PATCH, parameter, options)
     );
   }
-  get(
+  async get(
     url: string,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
     return this.doRequest(
-      this.makeHttpRequest(url, HttpMethod.GET, null, options)
+      await this.makeHttpRequest(url, HttpMethod.GET, null, options)
     );
   }
-  delete(
+  async delete(
     url: string,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
     return this.doRequest(
-      this.makeHttpRequest(url, HttpMethod.DELETE, null, options)
+      await this.makeHttpRequest(url, HttpMethod.DELETE, null, options)
     );
   }
-  head(
+  async head(
     url: string,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
     return this.doRequest(
-      this.makeHttpRequest(url, HttpMethod.HEAD, null, options)
+      await this.makeHttpRequest(url, HttpMethod.HEAD, null, options)
     );
   }
-  options(
+  async options(
     url: string,
     options?: Partial<HttpOptions> | undefined
   ): Promise<HttpResponse> {
     return this.doRequest(
-      this.makeHttpRequest(url, HttpMethod.OPTIONS, null, options)
+      await this.makeHttpRequest(url, HttpMethod.OPTIONS, null, options)
     );
   }
   getCookieManager(): CookieManager | undefined {
@@ -87,19 +87,21 @@ export class CommonHttpTemplate implements HttpTemplate {
     return response;
   }
 
-  private makeHttpRequest(
+  private async makeHttpRequest(
     url: string,
     method: HttpMethod,
     parameter: ParameterType,
     options?: Partial<HttpOptions>
-  ): HttpRequest {
+  ): Promise<HttpRequest> {
+    console.log("cookie header~ ");
+    console.log(await this._cookieManager?.getCookieHeader(url));
     return {
       url,
       headers: {
         ...(options?.headers ?? {}),
         ...(this._cookieManager
           ? {
-              Cookie: this._cookieManager.getCookieHeader(url),
+              Cookie: await this._cookieManager.getCookieHeader(url),
             }
           : {}),
       },

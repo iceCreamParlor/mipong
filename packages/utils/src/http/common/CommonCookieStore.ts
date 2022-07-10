@@ -1,6 +1,6 @@
+import ToughCookie from "tough-cookie";
 import { Cookie } from "../types/Cookie";
 import { CookieStore } from "../types/CookieStore";
-import ToughCookie, { CookieJar } from "tough-cookie";
 
 export class CommonCookieStore implements CookieStore {
   private _cookieJar = new ToughCookie.CookieJar();
@@ -20,9 +20,6 @@ export class CommonCookieStore implements CookieStore {
     const cookies = await this._cookieJar.getCookies(
       ToughCookie.canonicalDomain(url)
     );
-
-    console.log(`cookies!`);
-    console.log(cookies);
 
     return cookies.map((cookie) => ({
       key: cookie.key,

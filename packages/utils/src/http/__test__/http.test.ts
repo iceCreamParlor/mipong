@@ -1,10 +1,10 @@
-import ToughCookie from "tough-cookie";
 import { createCommonHttpTemplate } from "../common/createCommonHttpTemplate";
+import { OriginalCharset } from "../types";
 
 jest.setTimeout(60 * 1000);
 
 describe("http TEST", () => {
-  const httpTemplate = createCommonHttpTemplate(true);
+  const httpTemplate = createCommonHttpTemplate();
 
   it("COOKIE TEST", async () => {
     // const result = await client.request({
@@ -53,20 +53,24 @@ describe("http TEST", () => {
       .getCookieManager()
       ?.setCookie("https://www.tworld.co.kr", {
         key: "TWDJSESSIONID",
-        value: "637348A3BB44BE941E04B9F75D6D02B9.jks_twdServer23",
+        value: "400964AB47430D08A211676323E7B94E.jks_twdServer33",
         httpOnly: true,
         domain: null,
-        // domain: "https://www.tworld.com",
+        // domain: "tworld.com",
       });
 
-    console.log(
-      await httpTemplate
-        .getCookieManager()
-        ?.getCookies("https://www.tworld.co.kr")
+    await httpTemplate.get(
+      "https://www.tworld.co.kr/normal.do?viewId=V_MYTW0136&serviceId=SDUMMY0001",
+      {
+        originalCharset: OriginalCharset.EUC_KR,
+      }
     );
 
     await httpTemplate.get(
-      "https://www.tworld.co.kr/normal.do?viewId=V_MYTW0136&serviceId=SDUMMY0001"
+      "https://www.tworld.co.kr/normal.do?viewId=V_MYTW0136&serviceId=SDUMMY0001",
+      {
+        originalCharset: OriginalCharset.EUC_KR,
+      }
     );
 
     // await client.get("https://www.naver.com/");

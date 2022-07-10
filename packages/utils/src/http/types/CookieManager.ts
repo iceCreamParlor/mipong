@@ -27,7 +27,7 @@ export interface CookieManager {
    */
   setCookies(url: string, cookies: Cookie[]): Promise<void>;
 
-  getCookieHeader(url: string): string;
+  getCookieHeader(url: string): Promise<string>;
 
   parse(response: HttpResponse): Cookie[];
 }

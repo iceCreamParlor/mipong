@@ -5,7 +5,7 @@ import { CommonCookieStore } from "./CommonCookieStore";
 import { CommonHttpClient } from "./CommonHttpClient";
 import { CommonHttpTemplate } from "./CommonHttpTemplate";
 
-export function createCommonHttpTemplate(withCookieStore: boolean) {
+export function createCommonHttpTemplate(withCookieStore = true) {
   const client: HttpClient = new CommonHttpClient();
   const cookieStore = new CommonCookieStore();
   const cookieParser = new CommonCookieParser();

@@ -53,11 +53,11 @@
     "axios": "^0.27.2",
     "iconv-lite": "^0.6.3",
     "ramda": "^0.28.0",
-    "tough-cookie": "4.0.2",
+    "tough-cookie": "4.0.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/ramda": "^0.28.14",
-    "@types/tough-cookie": "^4.0.2"
+    "@types/tough-cookie": "4.0.0"
   }
 }

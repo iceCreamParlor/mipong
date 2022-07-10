@@ -12,14 +12,14 @@ export class CommonCookieManager implements CookieManager {
     return this._cookieParser.parse(response);
   }
 
-  getCookieHeader(url: string) {
-    const cookies = this._cookieStore.getCookiesBy(url);
+  async getCookieHeader(url: string) {
+    const cookies = await this._cookieStore.getCookiesBy(url);
 
     return cookies.reduce((ac, cv) => `${ac}${cv.key}=${cv.value};`, "");
   }
 
   async getCookie(url: string, name: string): Promise<Cookie> {
-    const cookie = this._cookieStore.getCookie(url, name);
+    const cookie = await this._cookieStore.getCookie(url, name);
     if (!cookie) {
       throw new Error("Cookie Not Exists");
     }
@@ -27,13 +27,13 @@ export class CommonCookieManager implements CookieManager {
     return cookie;
   }
   async getCookies(url: string) {
-    return this._cookieStore.getCookiesBy(url);
+    return await this._cookieStore.getCookiesBy(url);
   }
 
   async setCookie(url: string, cookie: Cookie): Promise<void> {
-    this._cookieStore.setCookie(url, cookie);
+    await this._cookieStore.setCookie(url, cookie);
   }
   async setCookies(url: string, cookie: Cookie[]): Promise<void> {
-    this._cookieStore.setCookies(url, cookie);
+    await this._cookieStore.setCookies(url, cookie);
   }
 }
