@@ -1,10 +1,9 @@
 import { Cookie } from "./Cookie";
 
 export interface CookieStore {
-  setCookie(cookie: Cookie): void;
-  setCookies(cookies: Cookie[]): void;
-  getCookie(url: string, name: string): Cookie | undefined;
-  getCookies(): Cookie[];
-  getCookiesBy(url: string): Cookie[];
+  setCookie(url: string, cookie: Cookie): Promise<void>;
+  setCookies(url: string, cookies: Cookie[]): Promise<void>;
+  getCookie(url: string, name: string): Promise<Cookie | undefined>;
+  getCookiesBy(url: string): Promise<Cookie[]>;
   clear(): void;
 }

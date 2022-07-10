@@ -1,17 +1,11 @@
-import { CommonCookieStore } from "../common/CommonCookieStore";
-import { CommonHttpClient } from "../common/CommonHttpClient";
-import { CommonHttpTemplate } from "../common/CommonHttpTemplate";
-import { HttpClient } from "../types/HttpClient";
-import { HttpTemplate } from "../types/HttpTemplate";
+import ToughCookie from "tough-cookie";
+import { createCommonHttpTemplate } from "../common/createCommonHttpTemplate";
 
 jest.setTimeout(60 * 1000);
 
 describe("http TEST", () => {
-  const client: HttpClient = new CommonHttpClient();
-  const httpTemplate: HttpTemplate = new CommonHttpTemplate(
-    client,
-    new CommonCookieStore()
-  );
+  const httpTemplate = createCommonHttpTemplate(true);
+
   it("COOKIE TEST", async () => {
     // const result = await client.request({
     //   url: "https://kim.heejae.info/api/auth/login",
@@ -40,12 +34,7 @@ describe("http TEST", () => {
     //   }
     // );
 
-    const result = await httpTemplate.get(
-      "https://www.skt-id.co.kr/member/identification/findId.do",
-      {}
-    );
-
-    // const result = await httpTemplate.post(
+    // await httpTemplate.post(
     //   "https://kim.heejae.info/api/auth/login",
     //   JSON.stringify({
     //     username: "heejjeeh@gmail.com",
@@ -60,7 +49,25 @@ describe("http TEST", () => {
     //   }
     // );
 
-    console.log(result);
+    await httpTemplate
+      .getCookieManager()
+      ?.setCookie("https://www.tworld.co.kr", {
+        key: "TWDJSESSIONID",
+        value: "637348A3BB44BE941E04B9F75D6D02B9.jks_twdServer23",
+        httpOnly: true,
+        domain: null,
+        // domain: "https://www.tworld.com",
+      });
+
+    console.log(
+      await httpTemplate
+        .getCookieManager()
+        ?.getCookies("https://www.tworld.co.kr")
+    );
+
+    await httpTemplate.get(
+      "https://www.tworld.co.kr/normal.do?viewId=V_MYTW0136&serviceId=SDUMMY0001"
+    );
 
     // await client.get("https://www.naver.com/");
   });

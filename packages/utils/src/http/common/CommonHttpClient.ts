@@ -18,7 +18,8 @@ export class CommonHttpClient implements HttpClient {
     console.log(JSON.stringify(requestInfo, null, 2));
 
     const rawResponse = await this._client.request(requestInfo);
-    const response = this.makeResponse(rawResponse, httpRequest.options);
+
+    const response = this.makeResponse(rawResponse, httpRequest);
 
     console.log("==========[RESPONSE INFO]==========");
     console.log(JSON.stringify(response, null, 2));
@@ -28,14 +29,15 @@ export class CommonHttpClient implements HttpClient {
 
   private makeResponse(
     response: AxiosResponse<any, any>,
-    options: HttpOptions
+    httpRequest: HttpRequest
   ): HttpResponse {
     const responseHeaders = this.parseResponseHeaders(response);
-    const responseBody = this.parseBody(response, options);
+    const responseBody = this.parseBody(response, httpRequest.options);
     const statusCode = response.status;
     const isRedirect = [301, 302].includes(statusCode);
 
     return {
+      url: response.config.url ?? response.request.responseURL,
       body: responseBody,
       code: statusCode,
       isRedirect,
