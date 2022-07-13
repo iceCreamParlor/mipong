@@ -1,6 +1,6 @@
 {
   "name": "@mipong/utils",
-  "version": "1.0.5",
+  "version": "1.0.6-rc.2",
   "description": "Util Library for Typescript",
   "scripts": {
     "test": "jest",
@@ -15,6 +15,7 @@
     "./types": "./dist/types/index.js",
     "./string": "./dist/string/index.js",
     "./time": "./dist/time/index.js",
+    "./http": "./dist/http/index.js",
     "./is": "./dist/is/index.js"
   },
   "typesVersions": {
@@ -37,6 +38,9 @@
       "time": [
         "dist/time/index..ts"
       ],
+      "http": [
+        "dist/http/index.d.ts"
+      ],
       "is": [
         "dist/is/index.d.ts"
       ]
@@ -45,6 +49,15 @@
   "author": "Heejae Kim",
   "license": "MIT",
   "dependencies": {
-    "@sindresorhus/is": "^5.1.0"
+    "@sindresorhus/is": "^5.1.0",
+    "axios": "^0.27.2",
+    "iconv-lite": "^0.6.3",
+    "ramda": "^0.28.0",
+    "tough-cookie": "4.0.0"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/ramda": "^0.28.14",
+    "@types/tough-cookie": "4.0.0"
   }
 }
